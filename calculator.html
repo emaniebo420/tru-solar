@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TruSolar — Solar Design Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1B2D6B;--navy2:#0F1D4A;--gold:#F0B429;--gold2:#FFC93E;
+  --white:#FFFFFF;--off:#F5F5F7;--ink:#0D1117;--gray:#6B7280;
+  --gray2:#9CA3AF;--line:#E5E7EB;--green:#059669;--red:#EF4444;--blue:#3B82F6;
+}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--off);color:var(--ink);-webkit-font-smoothing:antialiased;}
+
+/* ── WIZARD SHELL ── */
+.wizard{
+  display:grid;grid-template-columns:1fr 420px;
+  min-height:100vh;
+}
+
+/* LEFT PANEL */
+.w-left{
+  background:var(--white);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.w-left-header{
+  padding:18px 28px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--white);
+}
+.w-progress-wrap{flex:1;margin:0 24px;}
+.w-step-label{font-size:.72rem;color:var(--gray2);font-weight:500;margin-bottom:5px;}
+.w-progress-bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;}
+.w-progress-fill{height:100%;background:var(--navy);border-radius:2px;transition:width .4s ease;}
+.w-pct{font-size:.72rem;color:var(--gray2);font-weight:500;white-space:nowrap;}
+
+.w-visual{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:32px;position:relative;overflow:hidden;
+}
+
+/* Visual states */
+.vis-home{display:none;width:100%;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.vis-home.active{display:flex;}
+.vis-home-icon{font-size:8rem;filter:grayscale(30%);}
+
+.vis-graph{display:none;flex-direction:column;width:100%;height:100%;}
+.vis-graph.active{display:flex;}
+.graph-tabs{display:flex;gap:6px;margin-bottom:16px;}
+.graph-tab{padding:7px 16px;border-radius:20px;border:1px solid var(--line);background:var(--white);font-size:.78rem;font-weight:500;cursor:pointer;color:var(--gray);transition:all .15s;font-family:'Inter',sans-serif;}
+.graph-tab.active{background:var(--navy);color:var(--white);border-color:var(--navy);}
+.graph-canvas-wrap{flex:1;position:relative;}
+canvas#usageChart{width:100%!important;height:100%!important;}
+
+.vis-roof{display:none;width:100%;height:100%;align-items:center;justify-content:center;}
+.vis-roof.active{display:flex;}
+.vis-roof-icon{font-size:7rem;}
+
+.vis-map{display:none;width:100%;height:100%;}
+.vis-map.active{display:block;}
+.vis-map iframe{width:100%;height:100%;border:none;border-radius:12px;}
+
+.vis-proposal{display:none;width:100%;height:100%;overflow-y:auto;}
+.vis-proposal.active{display:flex;flex-direction:column;gap:16px;}
+
+/* Proposal left panels */
+.prop-panel{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:22px;}
+.prop-panel h4{font-size:.8rem;font-weight:700;color:var(--gray2);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;}
+
+/* Bill comparison bars */
+.bill-compare{display:flex;align-items:flex-end;gap:32px;height:200px;padding-top:16px;}
+.bill-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;}
+.bill-bar{width:80px;border-radius:8px 8px 0 0;transition:height .8s ease;position:relative;min-height:4px;}
+.bill-bar.current{background:#EF4444;}
+.bill-bar.future-total{background:var(--line);position:relative;}
+.bill-bar.future-solar{background:var(--blue);position:absolute;bottom:0;left:0;right:0;border-radius:0;}
+.bill-bar-label{font-size:.72rem;color:var(--gray);text-align:center;}
+.bill-bar-amount{font-size:.8rem;font-weight:700;color:var(--ink);}
+
+/* Energy breakdown */
+.energy-bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden;margin-bottom:10px;}
+.energy-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--navy));border-radius:5px;transition:width .8s ease;}
+.energy-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.estat{background:var(--off);border-radius:8px;padding:12px;text-align:center;}
+.estat .ev{font-size:1.1rem;font-weight:700;color:var(--navy);}
+.estat .el{font-size:.68rem;color:var(--gray2);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+
+/* Score circle */
+.score-circle{width:80px;height:80px;position:relative;margin:0 auto 12px;}
+.score-circle svg{width:100%;height:100%;transform:rotate(-90deg);}
+.score-circle .sc-bg{fill:none;stroke:var(--line);stroke-width:8;}
+.score-circle .sc-fill{fill:none;stroke:var(--green);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s ease;}
+.score-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-label .sv{font-size:1rem;font-weight:800;color:var(--navy);}
+.score-label .sl{font-size:.55rem;color:var(--gray2);}
+
+/* RIGHT PANEL */
+.w-right{
+  background:var(--white);border-left:1px solid var(--line);
+  display:flex;flex-direction:column;
+}
+.w-right-inner{flex:1;padding:36px 32px;overflow-y:auto;}
+.w-section-label{font-size:.75rem;font-weight:600;color:var(--gray2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;}
+.w-title{font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;color:var(--ink);letter-spacing:-.5px;line-height:1.2;margin-bottom:28px;}
+
+/* Choice buttons */
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.choice-btn{
+  border:1.5px solid var(--line);border-radius:10px;padding:16px 14px;
+  background:var(--white);text-align:center;cursor:pointer;
+  font-size:.875rem;font-weight:600;color:var(--ink);
+  transition:all .15s;font-family:'Inter',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.choice-btn:hover{border-color:var(--navy);background:var(--off);}
+.choice-btn.selected{border-color:var(--navy);background:var(--navy);color:var(--white);}
+.choice-btn .cb-icon{font-size:1.1rem;}
+
+/* Bill input */
+.bill-input-wrap{position:relative;margin-bottom:6px;}
+.bill-input-wrap .bi-prefix{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:.95rem;color:var(--gray);font-weight:500;}
+.bill-input-wrap input{
+  width:100%;padding:14px 14px 14px 32px;
+  border:1.5px solid var(--line);border-radius:10px;
+  font-size:1.1rem;font-family:'Inter',sans-serif;
+  color:var(--ink);outline:none;transition:border .15s;
+  background:var(--white);
+}
+.bill-input-wrap input:focus{border-color:var(--navy);}
+.bill-toggle{font-size:.78rem;color:var(--blue);font-weight:500;cursor:pointer;margin-bottom:20px;display:inline-flex;align-items:center;gap:4px;}
+.bill-hint{font-size:.75rem;color:var(--gray2);margin-bottom:20px;}
+
+/* Roof options */
+.roof-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.roof-btn{
+  border:1.5px solid var(--line);border-radius:8px;padding:12px;
+  background:var(--white);cursor:pointer;
+  font-size:.82rem;font-weight:600;color:var(--ink);
+  transition:all .15s;font-family:'Inter',sans-serif;text-align:center;
+}
+.roof-btn:hover{border-color:var(--navy);}
+.roof-btn.selected{border-color:var(--navy);background:var(--navy);color:var(--white);}
+
+/* Address input */
+.addr-wrap{position:relative;margin-bottom:6px;}
+.addr-wrap input{
+  width:100%;padding:13px 14px;
+  border:1.5px solid var(--line);border-radius:10px;
+  font-size:.9rem;font-family:'Inter',sans-serif;
+  color:var(--ink);outline:none;transition:border .15s;
+}
+.addr-wrap input:focus{border-color:var(--navy);}
+.addr-hint{font-size:.72rem;color:var(--gray2);margin-bottom:20px;}
+
+/* Proposal right side */
+.prop-accordion{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:8px;}
+.prop-acc-header{
+  width:100%;background:var(--white);border:none;padding:14px 16px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.875rem;font-weight:600;color:var(--ink);cursor:pointer;
+  font-family:'Inter',sans-serif;text-align:left;
+}
+.prop-acc-header .acc-arrow{transition:transform .2s;color:var(--gray2);font-size:.8rem;}
+.prop-acc-header.open .acc-arrow{transform:rotate(180deg);}
+.prop-acc-body{display:none;padding:16px;border-top:1px solid var(--line);background:var(--white);}
+.prop-acc-body.open{display:block;}
+
+.savings-stat{background:var(--off);border-radius:8px;padding:14px;margin-bottom:8px;text-align:center;}
+.savings-stat .ss-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray2);margin-bottom:4px;}
+.savings-stat .ss-val{font-size:1.3rem;font-weight:800;color:var(--navy);}
+.savings-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+
+/* CTA footer */
+.w-right-footer{
+  padding:16px 24px;border-top:1px solid var(--line);
+  display:flex;gap:10px;background:var(--white);
+}
+.btn-back{flex:1;padding:12px;border:1.5px solid var(--line);border-radius:9px;background:var(--white);font-size:.875rem;font-weight:600;color:var(--ink);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
+.btn-back:hover{border-color:var(--ink);}
+.btn-next{flex:2;padding:12px;border:none;border-radius:9px;background:var(--navy);color:var(--white);font-size:.875rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s;}
+.btn-next:hover{background:var(--navy2);}
+.btn-next:disabled{background:var(--gray2);cursor:not-allowed;}
+.btn-book{flex:2;padding:12px;border:none;border-radius:9px;background:var(--navy);color:var(--white);font-size:.875rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+
+/* Proposal top bar */
+.proposal-topbar{
+  display:none;
+  padding:10px 24px;
+  background:var(--white);border-bottom:1px solid var(--line);
+  align-items:center;justify-content:space-between;
+}
+.proposal-topbar.show{display:flex;}
+.ptb-savings{display:flex;align-items:center;gap:10px;}
+.ptb-circle{width:44px;height:44px;position:relative;}
+.ptb-circle svg{width:100%;height:100%;transform:rotate(-90deg);}
+.ptb-circle .pc-bg{fill:none;stroke:var(--line);stroke-width:5;}
+.ptb-circle .pc-fill{fill:none;stroke:var(--gold);stroke-width:5;stroke-linecap:round;}
+.ptb-circle-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--navy);}
+.ptb-monthly{}
+.ptb-monthly .ptb-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray2);}
+.ptb-monthly .ptb-val{font-size:.95rem;font-weight:800;color:var(--gold);}
+.ptb-divider{width:1px;height:32px;background:var(--line);}
+.ptb-cost{}
+.ptb-cost .ptb-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray2);}
+.ptb-cost .ptb-val{font-size:.95rem;font-weight:800;color:var(--blue);}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:none;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--white);border-radius:14px;width:480px;max-width:90vw;overflow:hidden;}
+.modal-header{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);}
+.modal-header h3{font-size:1rem;font-weight:700;}
+.modal-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--gray);}
+.modal-img{height:180px;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:5rem;}
+.modal-options{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:16px;}
+.modal-opt{border:1.5px solid var(--line);border-radius:8px;padding:10px;text-align:center;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .15s;font-family:'Inter',sans-serif;}
+.modal-opt:hover{border-color:var(--navy);}
+.modal-opt.selected{border-color:var(--navy);background:var(--navy);color:var(--white);}
+.modal-select{width:calc(100% - 32px);margin:0 16px 16px;padding:12px;background:var(--navy);color:var(--white);border:none;border-radius:8px;font-size:.875rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+.modal-select:disabled{background:var(--gray2);cursor:not-allowed;}
+
+/* Responsive */
+@media(max-width:768px){
+  .wizard{grid-template-columns:1fr;min-height:auto;}
+  .w-left{min-height:260px;max-height:320px;}
+  .w-right{border-left:none;border-top:1px solid var(--line);}
+  .w-title{font-size:1.4rem;}
+  .bill-compare{height:140px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ROOF TYPE MODAL -->
+<div class="modal-overlay" id="roofModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Select Roof Type</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-img" id="modalRoofImg">🏠</div>
+    <div class="modal-options">
+      <div class="modal-opt" onclick="selectRoofType('Metal',this)">Metal</div>
+      <div class="modal-opt" onclick="selectRoofType('Shingles',this)">Shingles</div>
+      <div class="modal-opt" onclick="selectRoofType('Tiles',this)">Tiles</div>
+      <div class="modal-opt" onclick="selectRoofType('Flatroof',this)">Flatroof</div>
+    </div>
+    <button class="modal-select" id="modalSelectBtn" disabled onclick="confirmRoofType()">Select</button>
+  </div>
+</div>
+
+<!-- WIZARD -->
+<div class="wizard">
+
+  <!-- LEFT VISUAL -->
+  <div class="w-left">
+    <!-- Progress header (hidden on step 1) -->
+    <div class="w-left-header" id="progressHeader" style="display:none">
+      <span class="w-step-label" id="stepLabel">Step 1 of 5</span>
+      <div class="w-progress-wrap">
+        <div class="w-progress-bar"><div class="w-progress-fill" id="progressFill" style="width:20%"></div></div>
+      </div>
+      <span class="w-pct" id="pctLabel">20%</span>
+    </div>
+
+    <!-- Proposal top bar -->
+    <div class="proposal-topbar" id="proposalTopbar">
+      <div class="ptb-savings">
+        <div class="ptb-circle">
+          <svg viewBox="0 0 44 44"><circle class="pc-bg" cx="22" cy="22" r="19"/><circle class="pc-fill" id="ptbArc" cx="22" cy="22" r="19" stroke-dasharray="119.4" stroke-dashoffset="55.9"/></svg>
+          <div class="ptb-circle-label" id="ptbPct">53%</div>
+        </div>
+        <div class="ptb-monthly">
+          <div class="ptb-label">Monthly Savings</div>
+          <div class="ptb-val" id="ptbSavings">₱0</div>
+        </div>
+      </div>
+      <div class="ptb-divider"></div>
+      <div class="ptb-cost">
+        <div class="ptb-label">Monthly Cost (36 months)</div>
+        <div class="ptb-val" id="ptbCost">₱0</div>
+      </div>
+    </div>
+
+    <div class="w-visual">
+      <!-- Step 1: intro visual -->
+      <div class="vis-home active" id="vis1">
+        <div class="vis-home-icon">☀️🏠</div>
+        <p style="font-size:.9rem;color:var(--gray);text-align:center;max-width:280px;line-height:1.6;">Get a personalized solar proposal instantly. Tell us a few details and we'll design the right system for you.</p>
+      </div>
+
+      <!-- Step 2: graph -->
+      <div class="vis-graph" id="vis2">
+        <div class="graph-tabs">
+          <button class="graph-tab active" onclick="setGraphMode('day',this)">Day time</button>
+          <button class="graph-tab" onclick="setGraphMode('night',this)">Night time</button>
+          <button class="graph-tab" onclick="setGraphMode('24h',this)">24 Hours</button>
+          <button class="graph-tab" onclick="setGraphMode('custom',this)">Custom</button>
+        </div>
+        <div class="graph-canvas-wrap">
+          <canvas id="usageChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Step 3: roof visual -->
+      <div class="vis-roof" id="vis3">
+        <div style="text-align:center">
+          <div class="vis-roof-icon" id="vis3Icon">🏗️</div>
+          <p style="font-size:.9rem;color:var(--gray);margin-top:12px;" id="vis3Label">Select your project type</p>
+        </div>
+      </div>
+
+      <!-- Step 4: map -->
+      <div class="vis-map" id="vis4">
+        <iframe id="mapFrame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247289!2d121.0!3d14.6!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ca03571ec38b%3A0x69d1d5751069c0b0!2sQuezon%20City%2C%20Metro%20Manila!5e0!3m2!1sen!2sph!4v1" allowfullscreen loading="lazy"></iframe>
+      </div>
+
+      <!-- Step 5: proposal visuals -->
+      <div class="vis-proposal" id="vis5">
+        <!-- Bill comparison -->
+        <div class="prop-panel">
+          <h4>Savings</h4>
+          <div class="bill-compare">
+            <div class="bill-bar-wrap">
+              <div style="position:relative;flex:1;display:flex;align-items:flex-end;">
+                <div class="bill-bar current" id="bar-current" style="height:80%;width:80px;"></div>
+              </div>
+              <div class="bill-bar-amount" id="lbl-current">₱0</div>
+              <div class="bill-bar-label">Your Current Bill</div>
+            </div>
+            <div class="bill-bar-wrap">
+              <div style="position:relative;flex:1;display:flex;align-items:flex-end;">
+                <div style="position:relative;width:80px;" id="future-bar-wrap">
+                  <div class="bill-bar future-total" id="bar-future-bg" style="height:60%;"></div>
+                  <div class="bill-bar future-solar" id="bar-future-solar" style="height:40%;"></div>
+                </div>
+              </div>
+              <div class="bill-bar-amount" id="lbl-future">₱0</div>
+              <div class="bill-bar-label">Your Future Bill</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Energy breakdown -->
+        <div class="prop-panel">
+          <h4>Daily Energy Simulation</h4>
+          <div class="energy-bar"><div class="energy-bar-fill" id="energyFill" style="width:52%"></div></div>
+          <div style="display:flex;gap:12px;font-size:.7rem;color:var(--gray2);margin-bottom:12px;">
+            <span>● Solar</span><span style="color:var(--gray)">● Grid</span>
+          </div>
+          <div class="energy-stats">
+            <div class="estat"><div class="ev" id="es-usage">0 kWh</div><div class="el">Usage</div></div>
+            <div class="estat"><div class="ev" id="es-prod">0 kWh</div><div class="el">Production</div></div>
+            <div class="estat"><div class="ev" id="es-import">0 kWh</div><div class="el">Import</div></div>
+            <div class="estat">
+              <div class="score-circle" style="width:50px;height:50px;margin-bottom:4px;">
+                <svg viewBox="0 0 44 44"><circle class="sc-bg" cx="22" cy="22" r="18"/><circle class="sc-fill" id="scoreArc" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="28.3"/></svg>
+                <div class="score-label"><span class="sv" id="scoreVal" style="font-size:.75rem">75%</span></div>
+              </div>
+              <div class="el">Design Score</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="w-right">
+    <div class="w-right-inner" id="rightInner">
+
+      <!-- STEP 1: Property type -->
+      <div id="step1">
+        <div class="w-section-label">Solar Design Studio</div>
+        <h1 class="w-title">Get a personalized solar proposal instantly</h1>
+        <p style="font-size:.875rem;color:var(--gray);margin-bottom:24px;line-height:1.6;">I'm looking to get solar for:</p>
+        <div class="choice-grid">
+          <button class="choice-btn" onclick="selectType('residential',this)"><span class="cb-icon">🏠</span> Residential</button>
+          <button class="choice-btn" onclick="selectType('commercial',this)"><span class="cb-icon">🏢</span> Commercial</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Bill / kWh -->
+      <div id="step2" style="display:none">
+        <div class="w-section-label">Solar Design Studio</div>
+        <h1 class="w-title">Tell us more about your energy usage.</h1>
+        <div id="bill-mode">
+          <p style="font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:10px;">What is your average monthly electricity bill?</p>
+          <div style="text-align:right;margin-bottom:6px;">
+            <span class="bill-toggle" onclick="toggleInputMode()">⇌ Enter by kWh instead</span>
+          </div>
+          <div class="bill-input-wrap">
+            <span class="bi-prefix">₱</span>
+            <input type="number" id="billInput" placeholder="18,000" oninput="onBillInput()" min="0">
+          </div>
+          <p class="bill-hint">We will use this info to determine the optimal system size for you. <span style="color:var(--blue);cursor:pointer;">Don't know yet?</span></p>
+        </div>
+        <div id="kwh-mode" style="display:none">
+          <p style="font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:10px;">What is your average daily kWh usage?</p>
+          <div style="text-align:right;margin-bottom:6px;">
+            <span class="bill-toggle" onclick="toggleInputMode()">⇌ Enter by bill instead</span>
+          </div>
+          <div class="bill-input-wrap">
+            <span class="bi-prefix" style="left:auto;right:14px;transform:translateY(-50%);">kWh</span>
+            <input type="number" id="kwhInput" placeholder="20" oninput="onKwhInput()" min="0" style="padding-left:14px;padding-right:48px;">
+          </div>
+          <p class="bill-hint">Typical Philippine home: 15–30 kWh/day</p>
+        </div>
+      </div>
+
+      <!-- STEP 3: Project type -->
+      <div id="step3" style="display:none">
+        <div class="w-section-label">Solar Design Studio</div>
+        <h1 class="w-title">Tell us about your project.</h1>
+        <p style="font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:12px;">What type of solar project is this?</p>
+        <div class="choice-grid" style="grid-template-columns:1fr 1fr 1fr;">
+          <button class="choice-btn" onclick="selectProject('Roof',this)">Roof</button>
+          <button class="choice-btn" onclick="selectProject('Ground',this)">Ground</button>
+          <button class="choice-btn" onclick="selectProject('Canopy',this)">Canopy</button>
+        </div>
+        <p style="font-size:.75rem;color:var(--gray2);line-height:1.5;margin-top:8px;">This info gives us an understanding of how much you can save with the different types of systems available.</p>
+      </div>
+
+      <!-- STEP 4: Address -->
+      <div id="step4" style="display:none">
+        <div class="w-section-label">Solar Design Studio</div>
+        <h1 class="w-title">Tell us more about your project.</h1>
+        <p style="font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:10px;">Address of your project</p>
+        <div class="addr-wrap">
+          <input type="text" id="addrInput" placeholder="22 Ilagan St, Quezon City" oninput="onAddrInput()">
+        </div>
+        <p class="addr-hint">We only use your address so that we can check your roof layout & panel placements.</p>
+      </div>
+
+      <!-- STEP 5: Proposal -->
+      <div id="step5" style="display:none">
+        <div class="w-section-label">Solar Design Studio</div>
+        <h1 class="w-title" style="font-size:1.4rem;">Your Personalized Solar Proposal</h1>
+
+        <!-- System specs accordion -->
+        <div class="prop-accordion">
+          <button class="prop-acc-header open" onclick="toggleAcc(this)">Your System Specs <span class="acc-arrow">▼</span></button>
+          <div class="prop-acc-body open">
+            <div class="savings-grid">
+              <div class="estat"><div class="ev" id="spec-kwp">0 kWp</div><div class="el">System Size</div></div>
+              <div class="estat"><div class="ev" id="spec-panels">0 panels</div><div class="el">400W Panels</div></div>
+            </div>
+            <div class="savings-stat"><div class="ss-label">Net Metering</div><div class="ss-val" style="font-size:.9rem;color:var(--gray);">6–8 months · ₱6.75/kWh export rate</div></div>
+          </div>
+        </div>
+
+        <!-- Savings accordion -->
+        <div class="prop-accordion">
+          <button class="prop-acc-header open" onclick="toggleAcc(this)">Savings <span class="acc-arrow">▼</span></button>
+          <div class="prop-acc-body open">
+            <div class="savings-stat"><div class="ss-label">Monthly Savings</div><div class="ss-val" id="acc-monthly">₱0</div></div>
+            <div class="savings-grid">
+              <div class="estat"><div class="ev" id="acc-daily">₱0</div><div class="el">Daily</div></div>
+              <div class="estat"><div class="ev" id="acc-weekly">₱0</div><div class="el">Weekly</div></div>
+            </div>
+            <div class="savings-stat"><div class="ss-label">Lifetime Savings</div><div class="ss-val" id="acc-lifetime">₱0</div></div>
+            <div class="savings-stat"><div class="ss-label">Return on Investment</div><div class="ss-val" id="acc-roi" style="font-size:1rem;">0 years</div></div>
+          </div>
+        </div>
+
+        <!-- Pricing accordion -->
+        <div class="prop-accordion">
+          <button class="prop-acc-header" onclick="toggleAcc(this)">Pricing Summary <span class="acc-arrow">▼</span></button>
+          <div class="prop-acc-body">
+            <div style="font-size:.82rem;color:var(--gray);line-height:2;">
+              <div style="display:flex;justify-content:space-between;"><span>Solar, Wiring, Mounting</span><span id="p-solar" style="color:var(--ink);font-weight:600;">₱0</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Inverter</span><span id="p-inverter" style="color:var(--ink);font-weight:600;">₱0</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Design & Installation</span><span id="p-install" style="color:var(--ink);font-weight:600;">₱0</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>VAT (12%)</span><span id="p-vat" style="color:var(--ink);font-weight:600;">₱0</span></div>
+              <div style="display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:8px;padding-top:8px;font-weight:700;color:var(--ink);"><span>Total System Cost</span><span id="p-total">₱0</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer buttons -->
+    <div class="w-right-footer" id="wizardFooter">
+      <button class="btn-back" id="btnBack" onclick="goBack()" style="display:none">Back</button>
+      <button class="btn-next" id="btnNext" onclick="goNext()" disabled>Next</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──
+let step = 1;
+let totalSteps = 5;
+let state = {
+  type: null,        // residential / commercial
+  bill: null,        // monthly ₱
+  dailyKwh: null,
+  project: null,     // Roof / Ground / Canopy
+  roofType: null,    // Metal / Shingles / Tiles / Flatroof
+  address: '',
+  graphMode: 'day',
+};
+const RATE = 12;      // ₱/kWh
+const CPK  = 55000;   // ₱/kWp installed
+
+// ── Navigation ──
+function updateUI() {
+  // Show/hide panels
+  for (let i = 1; i <= totalSteps; i++) {
+    document.getElementById('step' + i).style.display = i === step ? 'block' : 'none';
+    const vis = document.getElementById('vis' + i);
+    if (vis) { vis.classList.toggle('active', i === step); }
+  }
+
+  // Progress bar
+  const pct = Math.round((step / totalSteps) * 100);
+  document.getElementById('progressHeader').style.display = step > 1 && step < 5 ? 'flex' : 'none';
+  document.getElementById('stepLabel').textContent = `Step ${step} of ${totalSteps}`;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('pctLabel').textContent = pct + '%';
+
+  // Back button
+  document.getElementById('btnBack').style.display = step > 1 ? 'inline-block' : 'none';
+
+  // Proposal top bar
+  document.getElementById('proposalTopbar').classList.toggle('show', step === 5);
+
+  // Footer on step 5
+  const footer = document.getElementById('wizardFooter');
+  if (step === 5) {
+    footer.innerHTML = `
+      <button class="btn-back" onclick="goBack()">‹ Back</button>
+      <button class="btn-book" onclick="bookVisit()">Book Site Visit</button>
+    `;
+  } else {
+    footer.innerHTML = `
+      <button class="btn-back" id="btnBack" onclick="goBack()" style="${step > 1 ? '' : 'display:none'}">Back</button>
+      <button class="btn-next" id="btnNext" onclick="goNext()" ${canProceed() ? '' : 'disabled'}>Next</button>
+    `;
+  }
+}
+
+function canProceed() {
+  if (step === 1) return !!state.type;
+  if (step === 2) return !!(state.bill || state.dailyKwh);
+  if (step === 3) return !!state.project;
+  if (step === 4) return state.address.length > 3;
+  return true;
+}
+
+function goNext() {
+  if (!canProceed()) return;
+  if (step === 3 && state.project === 'Roof' && !state.roofType) {
+    openModal(); return;
+  }
+  if (step < totalSteps) { step++; updateUI(); }
+  if (step === 5) buildProposal();
+}
+
+function goBack() {
+  if (step > 1) { step--; updateUI(); }
+}
+
+// ── Step 1 ──
+function selectType(t, el) {
+  state.type = t;
+  document.querySelectorAll('#step1 .choice-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  updateUI();
+}
+
+// ── Step 2 ──
+let inputMode = 'bill'; // bill | kwh
+function toggleInputMode() {
+  inputMode = inputMode === 'bill' ? 'kwh' : 'bill';
+  document.getElementById('bill-mode').style.display = inputMode === 'bill' ? 'block' : 'none';
+  document.getElementById('kwh-mode').style.display  = inputMode === 'kwh'  ? 'block' : 'none';
+}
+
+function onBillInput() {
+  const v = parseFloat(document.getElementById('billInput').value);
+  if (v > 0) {
+    state.bill     = v;
+    state.dailyKwh = (v / RATE) / 30;
+  } else { state.bill = null; state.dailyKwh = null; }
+  drawGraph();
+  updateUI();
+}
+
+function onKwhInput() {
+  const v = parseFloat(document.getElementById('kwhInput').value);
+  if (v > 0) {
+    state.dailyKwh = v;
+    state.bill     = v * 30 * RATE;
+  } else { state.dailyKwh = null; state.bill = null; }
+  drawGraph();
+  updateUI();
+}
+
+// ── Graph ──
+let graphMode = 'day';
+function setGraphMode(mode, el) {
+  graphMode = mode;
+  document.querySelectorAll('.graph-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  drawGraph();
+}
+
+function drawGraph() {
+  const canvas = document.getElementById('usageChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 600;
+  const H = canvas.offsetHeight || 300;
+  canvas.width = W; canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+
+  const hours = ['12AM','2AM','4AM','6AM','8AM','10AM','12PM','2PM','4PM','6PM','8PM','10PM'];
+  const profiles = {
+    day:    [4,4,4.5,5,12,13,12,12,12,4,4.5,4.5],
+    night:  [8,10,11,8,3,2,2,2,3,8,12,14],
+    '24h':  [6,7,7,6,8,9,9,9,8,8,9,8],
+    custom: [4,3,4,6,10,11,9,10,11,9,7,6],
+  };
+  const data = profiles[graphMode] || profiles.day;
+  const maxV = Math.max(...data);
+  const pad = { t:20, r:20, b:36, l:40 };
+  const cW = W - pad.l - pad.r;
+  const cH = H - pad.t - pad.b;
+
+  // Grid lines
+  ctx.strokeStyle = '#F0F0F0'; ctx.lineWidth = 1;
+  [0,.05,.1,.12,.14,.16,.18,.20].forEach(v => {
+    const pct = v / 0.20;
+    const y = pad.t + cH - pct * cH;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cW, y); ctx.stroke();
+    ctx.fillStyle = '#9CA3AF'; ctx.font = '10px Inter'; ctx.textAlign = 'right';
+    ctx.fillText(Math.round(v * 100) + '%', pad.l - 4, y + 3);
+  });
+
+  // X labels
+  ctx.fillStyle = '#9CA3AF'; ctx.font = '10px Inter'; ctx.textAlign = 'center';
+  hours.forEach((h, i) => {
+    const x = pad.l + (i / (hours.length - 1)) * cW;
+    ctx.fillText(h, x, H - 6);
+  });
+
+  // Area chart
+  const pts = data.map((v, i) => ({
+    x: pad.l + (i / (data.length - 1)) * cW,
+    y: pad.t + cH - (v / (maxV * 1.3)) * cH,
+  }));
+
+  // Fill
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pad.t + cH);
+  pts.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(pts[pts.length-1].x, pad.t + cH);
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t + cH);
+  grad.addColorStop(0, 'rgba(59,130,246,.35)');
+  grad.addColorStop(1, 'rgba(59,130,246,.03)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.strokeStyle = '#3B82F6'; ctx.lineWidth = 2.5; ctx.stroke();
+
+  // Dots
+  pts.forEach(p => {
+    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.strokeStyle = '#3B82F6'; ctx.lineWidth = 2; ctx.stroke();
+  });
+}
+
+// ── Step 3 ──
+function selectProject(type, el) {
+  state.project = type;
+  document.querySelectorAll('#step3 .choice-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  const icons = { Roof:'🏠', Ground:'🌿', Canopy:'🏗️' };
+  document.getElementById('vis3Icon').textContent = icons[type] || '🏗️';
+  document.getElementById('vis3Label').textContent = type + ' solar installation';
+  updateUI();
+  if (type === 'Roof') setTimeout(openModal, 300);
+}
+
+// ── Modal ──
+let selectedRoofType = null;
+function openModal() {
+  document.getElementById('roofModal').classList.add('show');
+  selectedRoofType = null;
+  document.getElementById('modalSelectBtn').disabled = true;
+  document.querySelectorAll('.modal-opt').forEach(o => o.classList.remove('selected'));
+}
+function closeModal() { document.getElementById('roofModal').classList.remove('show'); }
+function selectRoofType(t, el) {
+  selectedRoofType = t;
+  document.querySelectorAll('.modal-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('modalSelectBtn').disabled = false;
+  const imgs = { Metal:'🔩', Shingles:'🏘️', Tiles:'🧱', Flatroof:'🏢' };
+  document.getElementById('modalRoofImg').textContent = imgs[t];
+}
+function confirmRoofType() {
+  state.roofType = selectedRoofType;
+  closeModal();
+  updateUI();
+}
+
+// ── Step 4 ──
+function onAddrInput() {
+  state.address = document.getElementById('addrInput').value;
+  updateUI();
+}
+
+// ── Step 5: Proposal ──
+function buildProposal() {
+  const daily   = state.dailyKwh || 20;
+  const monthly = daily * 30;
+  const bill    = state.bill || monthly * RATE;
+  const sun     = 5.0, eff = 0.85;
+  const kwp     = daily / (sun * eff);
+  const panels  = Math.ceil((kwp * 1000) / 400);
+  const off     = 0.53; // 53% offset
+  const mSave   = bill * off;
+  const aSave   = mSave * 12;
+  const solarCost = kwp * 18000;
+  const inverter  = kwp * 8000;
+  const install   = kwp * 7000;
+  const subtotal  = solarCost + inverter + install;
+  const vat       = subtotal * 0.12;
+  const total     = subtotal + vat;
+  const pbk       = total / aSave;
+  const lifetime  = aSave * 25;
+  const monthly36 = total / 36;
+  const futureBill = bill - mSave;
+  const prodKwh = daily * off;
+  const importKwh = daily - prodKwh;
+  const score = Math.round(off * 100 + 20);
+
+  // Top bar
+  document.getElementById('ptbSavings').textContent = fmt(mSave);
+  document.getElementById('ptbCost').textContent    = fmt(monthly36);
+  document.getElementById('ptbPct').textContent     = Math.round(off*100)+'%';
+  const arc = document.getElementById('ptbArc');
+  const circ = 2 * Math.PI * 19;
+  arc.setAttribute('stroke-dasharray', circ);
+  arc.setAttribute('stroke-dashoffset', circ - circ * off);
+
+  // Bill bars (normalize to max height 100%)
+  const maxBill = Math.max(bill, futureBill);
+  const curH  = (bill / maxBill * 75).toFixed(0);
+  const futH  = (futureBill / maxBill * 75).toFixed(0);
+  const solH  = ((mSave / bill) * (bill / maxBill * 75)).toFixed(0);
+  document.getElementById('bar-current').style.height = curH + '%';
+  document.getElementById('bar-future-bg').style.height = (bill / maxBill * 75) + '%';
+  document.getElementById('bar-future-solar').style.height = solH + '%';
+  document.getElementById('lbl-current').textContent = fmt(bill);
+  document.getElementById('lbl-future').textContent  = fmt(futureBill);
+
+  // Energy stats
+  document.getElementById('es-usage').textContent  = daily.toFixed(2) + ' kWh';
+  document.getElementById('es-prod').textContent   = prodKwh.toFixed(2) + ' kWh';
+  document.getElementById('es-import').textContent = importKwh.toFixed(2) + ' kWh';
+  document.getElementById('scoreVal').textContent  = score + '%';
+  const sArc = document.getElementById('scoreArc');
+  const sc = 2 * Math.PI * 18;
+  sArc.setAttribute('stroke-dasharray', sc);
+  sArc.setAttribute('stroke-dashoffset', sc - sc * (score/100));
+  document.getElementById('energyFill').style.width = Math.round(off*100) + '%';
+
+  // Spec accordion
+  document.getElementById('spec-kwp').textContent    = kwp.toFixed(2) + ' kWp';
+  document.getElementById('spec-panels').textContent = panels + ' panels';
+
+  // Savings accordion
+  document.getElementById('acc-monthly').textContent  = fmt(mSave);
+  document.getElementById('acc-daily').textContent    = fmt(mSave / 30);
+  document.getElementById('acc-weekly').textContent   = fmt(mSave / 4.3);
+  document.getElementById('acc-lifetime').textContent = fmt(lifetime);
+  document.getElementById('acc-roi').textContent      = pbk.toFixed(0) + ' years';
+
+  // Pricing
+  document.getElementById('p-solar').textContent    = fmt(solarCost);
+  document.getElementById('p-inverter').textContent = fmt(inverter);
+  document.getElementById('p-install').textContent  = fmt(install);
+  document.getElementById('p-vat').textContent      = fmt(vat);
+  document.getElementById('p-total').textContent    = fmt(total);
+}
+
+function toggleAcc(btn) {
+  btn.classList.toggle('open');
+  btn.nextElementSibling.classList.toggle('open');
+}
+
+function bookVisit() {
+  window.location.href = 'trusolar-website.html#contact';
+}
+
+function fmt(n) { return '₱' + Math.round(n).toLocaleString(); }
+
+// ── Init ──
+updateUI();
+
+// Redraw graph on resize
+window.addEventListener('resize', () => {
+  if (step === 2 && (state.bill || state.dailyKwh)) drawGraph();
+});
+</script>
+</body>
+</html>
