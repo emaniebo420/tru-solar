@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TruSolar — The Best Way to Power Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:  #1B2D6B;
+  --navy2: #152358;
+  --gold:  #F0B429;
+  --gold2: #FFC93E;
+  --sun:   #FFFBF0;
+  --white: #FFFFFF;
+  --ink:   #111827;
+  --gray:  #6B7280;
+  --line:  #E5E7EB;
+  --green: #16A34A;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Outfit', sans-serif; color: var(--ink); background: var(--white); line-height: 1.6; }
+
+/* NAV */
+.nav {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--navy);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 58px;
+}
+.nav-brand { font-size: 1.1rem; font-weight: 700; color: var(--white); text-decoration: none; letter-spacing: 1px; }
+.nav-brand span { color: var(--gold); }
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a { color: rgba(255,255,255,.6); text-decoration: none; font-size: .875rem; transition: color .15s; }
+.nav-links a:hover { color: var(--white); }
+.nav-phone { background: var(--gold); color: var(--navy); font-weight: 700; font-size: .85rem; padding: 8px 18px; border-radius: 6px; text-decoration: none; transition: background .15s; }
+.nav-phone:hover { background: var(--gold2); }
+
+/* HERO */
+.hero { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 58px); }
+
+.hero-left { background: var(--gold); padding: 72px 56px; display: flex; flex-direction: column; justify-content: center; }
+.hero-tag { display: inline-block; background: var(--navy); color: var(--white); font-size: .7rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 5px 12px; border-radius: 4px; margin-bottom: 28px; }
+.hero-left h1 { font-size: clamp(2.2rem, 3.2vw, 3.6rem); font-weight: 800; line-height: 1.05; color: var(--navy); margin-bottom: 24px; letter-spacing: -1.5px; }
+.hero-left p { font-size: 1rem; color: rgba(27,45,107,.75); max-width: 400px; line-height: 1.7; margin-bottom: 36px; }
+.hero-bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.hero-bullets li { font-size: .88rem; font-weight: 500; color: var(--navy); display: flex; align-items: center; gap: 10px; }
+.hero-bullets li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--navy); flex-shrink: 0; }
+.hero-founded { margin-top: auto; padding-top: 40px; font-size: .78rem; font-weight: 600; color: rgba(27,45,107,.45); letter-spacing: 1px; text-transform: uppercase; }
+
+.hero-right { background: var(--navy); padding: 40px 44px; display: flex; flex-direction: column; justify-content: center; overflow-y: auto; }
+.calc-heading { font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+.calc-sub { font-size: .8rem; color: rgba(255,255,255,.4); margin-bottom: 20px; }
+
+/* TABS */
+.ctabs { display: flex; background: rgba(255,255,255,.07); border-radius: 8px; padding: 4px; margin-bottom: 18px; gap: 3px; }
+.ctab { flex: 1; padding: 7px 4px; background: none; border: none; border-radius: 6px; color: rgba(255,255,255,.4); font-size: .75rem; font-weight: 500; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all .2s; line-height: 1.3; text-align: center; }
+.ctab.on { background: var(--gold); color: var(--navy); font-weight: 700; }
+
+/* FIELDS */
+.cfield { margin-bottom: 12px; }
+.cfield label { display: block; font-size: .73rem; font-weight: 500; color: rgba(255,255,255,.5); margin-bottom: 4px; }
+.cfield input, .cfield select { width: 100%; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.13); border-radius: 7px; padding: 9px 12px; color: var(--white); font-size: .88rem; font-family: 'Outfit', sans-serif; outline: none; transition: border .15s; -webkit-appearance: none; }
+.cfield input:focus, .cfield select:focus { border-color: var(--gold); }
+.cfield input::placeholder { color: rgba(255,255,255,.2); }
+.cfield select option { background: var(--navy2); }
+.sfx-wrap { position: relative; }
+.sfx-wrap input { padding-right: 42px; }
+.sfx-wrap .sfx { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); font-size: .75rem; color: rgba(255,255,255,.3); pointer-events: none; }
+.cfield .hint { font-size: .68rem; color: rgba(255,255,255,.28); margin-top: 3px; }
+
+/* APPLIANCE CALCULATOR */
+.appl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+.appl-row { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 7px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.appl-name { font-size: .75rem; color: rgba(255,255,255,.7); font-weight: 500; flex: 1; line-height: 1.3; }
+.appl-watts { font-size: .65rem; color: rgba(255,255,255,.3); }
+.appl-qty-wrap { display: flex; align-items: center; gap: 5px; }
+.appl-qty-btn { width: 22px; height: 22px; border-radius: 4px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08); color: var(--white); font-size: .9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; transition: background .15s; flex-shrink: 0; line-height: 1; }
+.appl-qty-btn:hover { background: rgba(255,255,255,.18); }
+.appl-qty { width: 26px; text-align: center; font-size: .82rem; font-weight: 600; color: var(--white); }
+.appl-hours-row { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.05); border-radius: 7px; padding: 8px 12px; margin-bottom: 10px; }
+.appl-hours-row label { font-size: .73rem; color: rgba(255,255,255,.5); }
+.appl-hours-row input { width: 60px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 5px; padding: 5px 8px; color: var(--white); font-size: .82rem; font-family: 'Outfit', sans-serif; outline: none; text-align: center; }
+.appl-total { background: rgba(240,180,41,.12); border: 1px solid rgba(240,180,41,.25); border-radius: 7px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.appl-total .at-label { font-size: .72rem; color: rgba(255,255,255,.5); }
+.appl-total .at-val { font-size: 1.1rem; font-weight: 800; color: var(--gold); letter-spacing: -.5px; }
+
+.cgo { width: 100%; margin-top: 4px; padding: 12px; background: var(--gold); color: var(--navy); border: none; border-radius: 8px; font-size: .92rem; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; transition: background .15s; }
+.cgo:hover { background: var(--gold2); }
+
+/* RESULTS */
+.cresult { margin-top: 16px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 18px; display: none; }
+.cresult.show { display: block; }
+.cr-main { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.cr-main .crl { font-size: .68rem; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 3px; }
+.cr-main .crn { font-size: 2rem; font-weight: 800; color: var(--gold); line-height: 1; letter-spacing: -1px; }
+.cr-main .cru { font-size: .72rem; color: rgba(255,255,255,.33); margin-top: 2px; }
+.cr-rows {}
+.cr-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: .8rem; }
+.cr-row:last-child { border-bottom: none; }
+.cr-row .crl2 { color: rgba(255,255,255,.4); }
+.cr-row .crv { color: var(--white); font-weight: 600; }
+.cr-row .crv.good { color: #4ADE80; }
+.cr-bar-wrap { margin: 12px 0 3px; }
+.cr-bar-track { background: rgba(255,255,255,.08); border-radius: 3px; height: 4px; overflow: hidden; }
+.cr-bar-fill { height: 100%; border-radius: 3px; background: var(--gold); width: 0; transition: width .8s cubic-bezier(.4,0,.2,1); }
+.cr-bar-label { font-size: .66rem; color: rgba(255,255,255,.3); margin-top: 4px; }
+.cr-footnote { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.07); font-size: .76rem; color: rgba(255,255,255,.4); line-height: 1.6; }
+.cr-footnote strong { color: rgba(255,255,255,.75); }
+.cr-footnote a { color: var(--gold); text-decoration: underline; }
+
+/* ABOUT */
+.about { background: var(--sun); padding: 96px 48px; }
+.about-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 380px 1fr; gap: 80px; align-items: start; }
+.about-left h2 { font-size: 2.6rem; font-weight: 800; color: var(--navy); letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 20px; }
+.about-left p { font-size: .95rem; color: var(--gray); line-height: 1.75; margin-bottom: 14px; }
+.about-left p strong { color: var(--ink); font-weight: 600; }
+.fact-block { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-bottom: 28px; }
+.fact-cell { background: var(--white); padding: 22px 24px; }
+.fact-cell .fnum { font-size: 1.8rem; font-weight: 800; color: var(--navy); letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
+.fact-cell .flabel { font-size: .75rem; color: var(--gray); font-weight: 500; }
+.values-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.val { font-size: .78rem; font-weight: 600; color: var(--navy); background: var(--white); border: 1.5px solid var(--navy); padding: 4px 13px; border-radius: 20px; }
+
+/* SERVICES */
+.services { background: var(--navy); padding: 96px 48px; }
+.services-inner { max-width: 1100px; margin: 0 auto; }
+.srv-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,.12); padding-bottom: 28px; }
+.srv-top h2 { font-size: 2.4rem; font-weight: 800; color: var(--white); letter-spacing: -1.5px; line-height: 1.1; }
+.srv-top h2 span { color: var(--gold); }
+.srv-top p { font-size: .88rem; color: rgba(255,255,255,.4); max-width: 260px; text-align: right; line-height: 1.6; }
+.srv-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
+.srv-card { padding: 26px 22px; border: 1px solid rgba(255,255,255,.1); border-radius: 10px; transition: border-color .2s; }
+.srv-card:hover { border-color: var(--gold); }
+.srv-num { font-size: .68rem; font-weight: 700; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+.srv-card h3 { font-size: .95rem; font-weight: 700; color: var(--white); margin-bottom: 14px; }
+.srv-card ul { list-style: none; }
+.srv-card ul li { font-size: .81rem; color: rgba(255,255,255,.5); padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05); line-height: 1.4; }
+.srv-card ul li:last-child { border-bottom: none; }
+
+/* PROJECTS */
+.projects { background: var(--white); padding: 96px 48px; }
+.projects-inner { max-width: 1100px; margin: 0 auto; }
+.proj-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; }
+.proj-head h2 { font-size: 2.4rem; font-weight: 800; color: var(--navy); letter-spacing: -1.5px; }
+.proj-head p { font-size: .875rem; color: var(--gray); }
+.proj-item { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 24px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.proj-item:first-child { border-top: 1px solid var(--line); }
+.proj-name { font-size: .97rem; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+.proj-loc { font-size: .78rem; color: var(--gray); }
+.proj-type { font-size: .8rem; color: var(--gray); }
+.proj-tags-wrap { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+.ptag { font-size: .68rem; font-weight: 600; background: #EEF2FF; color: var(--navy); padding: 3px 9px; border-radius: 4px; }
+
+/* WHY */
+.why { background: var(--sun); padding: 96px 48px; }
+.why-inner { max-width: 1100px; margin: 0 auto; }
+.why h2 { font-size: 2.4rem; font-weight: 800; color: var(--navy); letter-spacing: -1.5px; margin-bottom: 40px; max-width: 500px; line-height: 1.1; }
+.why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.why-item { padding: 26px 28px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); background: var(--white); }
+.why-item:nth-child(2n) { border-right: none; }
+.why-item:nth-last-child(-n+2) { border-bottom: none; }
+.why-tick { width: 26px; height: 26px; background: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+.why-tick svg { width: 12px; height: 12px; stroke: var(--gold); stroke-width: 2.5; fill: none; }
+.why-item h3 { font-size: .92rem; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
+.why-item p { font-size: .83rem; color: var(--gray); line-height: 1.65; }
+
+/* CONTACT */
+.contact { background: var(--navy); padding: 96px 48px; }
+.contact-inner { max-width: 1100px; margin: 0 auto; }
+.contact-inner h2 { font-size: 2.4rem; font-weight: 800; color: var(--white); letter-spacing: -1.5px; margin-bottom: 8px; }
+.contact-inner > p { font-size: .92rem; color: rgba(255,255,255,.4); margin-bottom: 48px; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+.cinfo-block { margin-bottom: 24px; }
+.cinfo-block h4 { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 5px; }
+.cinfo-block p, .cinfo-block a { font-size: .92rem; color: rgba(255,255,255,.75); text-decoration: none; line-height: 1.6; }
+.cinfo-block a:hover { color: var(--gold); }
+.cta-box { background: var(--gold); border-radius: 12px; padding: 32px; display: flex; flex-direction: column; gap: 20px; }
+.cta-box h3 { font-size: 1.5rem; font-weight: 800; color: var(--navy); line-height: 1.2; letter-spacing: -.5px; }
+.cta-box p { font-size: .875rem; color: rgba(27,45,107,.7); line-height: 1.6; }
+.cta-box a { display: inline-block; background: var(--navy); color: var(--white); padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: .9rem; text-decoration: none; transition: background .15s; align-self: flex-start; }
+.cta-box a:hover { background: var(--navy2); }
+.safety-note { margin-top: 28px; padding: 18px 22px; border: 1px solid rgba(255,255,255,.1); border-radius: 10px; }
+.safety-note h4 { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,.35); margin-bottom: 10px; }
+.safety-note ul { list-style: none; }
+.safety-note ul li { font-size: .8rem; color: rgba(255,255,255,.5); padding: 4px 0; display: flex; gap: 8px; }
+.safety-note ul li::before { content: '—'; color: var(--gold); }
+
+/* FOOTER */
+footer { background: var(--navy2); border-top: 1px solid rgba(255,255,255,.06); padding: 20px 48px; display: flex; align-items: center; justify-content: space-between; }
+footer p { font-size: .76rem; color: rgba(255,255,255,.3); }
+footer a { font-size: .76rem; color: rgba(255,255,255,.4); text-decoration: none; }
+footer a:hover { color: var(--gold); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-left { padding: 48px 24px; }
+  .hero-right { padding: 36px 24px; }
+  .about { padding: 64px 24px; }
+  .about-inner { grid-template-columns: 1fr; gap: 36px; }
+  .services { padding: 64px 24px; }
+  .srv-grid { grid-template-columns: 1fr 1fr; }
+  .srv-top { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .srv-top p { text-align: left; max-width: 100%; }
+  .projects { padding: 64px 24px; }
+  .proj-item { grid-template-columns: 1fr; gap: 6px; }
+  .proj-tags-wrap { justify-content: flex-start; }
+  .why { padding: 64px 24px; }
+  .contact { padding: 64px 24px; }
+  .contact-grid { grid-template-columns: 1fr; gap: 36px; }
+  .appl-grid { grid-template-columns: 1fr; }
+  footer { padding: 18px 24px; flex-direction: column; gap: 6px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-brand" href="#">TRU<span>SOLAR</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="nav-phone" href="tel:09271374314">0927 137 4314</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <span class="hero-tag">Solar energy · Philippines</span>
+    <h1>Cut your electric bill. Not corners.</h1>
+    <p>TruSolar designs and installs solar systems built for your actual usage — not a generic package. Residential and commercial, anywhere in the Philippines.</p>
+    <ul class="hero-bullets">
+      <li>Grid-tied, hybrid, and off-grid systems</li>
+      <li>Battery energy storage solutions</li>
+      <li>Full engineering and maintenance support</li>
+      <li>Nationwide service coverage</li>
+    </ul>
+    <p class="hero-founded">Est. 2022 · Quezon City</p>
+  </div>
+
+  <div class="hero-right">
+    <p class="calc-heading">Find your system size</p>
+    <p class="calc-sub">Enter your usage, bill, or pick your appliances.</p>
+
+    <div class="ctabs">
+      <button class="ctab on"  id="tab-kwh"   onclick="switchTab('kwh')">By kWh</button>
+      <button class="ctab"     id="tab-bill"  onclick="switchTab('bill')">By bill</button>
+      <button class="ctab"     id="tab-appl"  onclick="switchTab('appl')">By appliances</button>
+    </div>
+
+    <!-- kWh panel -->
+    <div id="panel-kwh">
+      <div class="cfield">
+        <label>Period</label>
+        <select id="usage-period" onchange="updateLabels()">
+          <option value="daily">Daily usage (kWh/day)</option>
+          <option value="monthly">Monthly usage (kWh/month)</option>
+        </select>
+      </div>
+      <div class="cfield">
+        <label id="kwh-label">Daily usage</label>
+        <div class="sfx-wrap">
+          <input type="number" id="kwh-input" placeholder="e.g. 20" min="0" step="0.1">
+          <span class="sfx">kWh</span>
+        </div>
+        <p class="hint" id="kwh-hint">Typical PH home: 15–30 kWh/day</p>
+      </div>
+      <div class="cfield">
+        <label>Your area</label>
+        <select id="sun-hours">
+          <option value="4.5">Low sun — 4.5 hrs (some Luzon)</option>
+          <option value="5" selected>Average — 5.0 hrs (NCR, Calabarzon)</option>
+          <option value="5.5">Good — 5.5 hrs (Visayas)</option>
+          <option value="6">Excellent — 6.0 hrs (Mindanao, Palawan)</option>
+        </select>
+      </div>
+      <div class="cfield">
+        <label>System efficiency</label>
+        <select id="eff-kwh">
+          <option value="0.80">Standard — 80%</option>
+          <option value="0.85" selected>Good — 85% (most installs)</option>
+          <option value="0.90">Premium — 90%</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Bill panel -->
+    <div id="panel-bill" style="display:none">
+      <div class="cfield">
+        <label>Monthly bill</label>
+        <div class="sfx-wrap">
+          <input type="number" id="bill-input" placeholder="e.g. 8000" min="0">
+          <span class="sfx">₱</span>
+        </div>
+        <p class="hint">From your latest Meralco or utility bill</p>
+      </div>
+      <div class="cfield">
+        <label>Rate per kWh</label>
+        <div class="sfx-wrap">
+          <input type="number" id="rate-input" value="12" min="1" step="0.5">
+          <span class="sfx">₱</span>
+        </div>
+        <p class="hint">Meralco avg ≈ ₱12–14/kWh</p>
+      </div>
+      <div class="cfield">
+        <label>Your area</label>
+        <select id="sun-hours-bill">
+          <option value="4.5">Low sun — 4.5 hrs</option>
+          <option value="5" selected>Average — 5.0 hrs (NCR, Calabarzon)</option>
+          <option value="5.5">Good — 5.5 hrs (Visayas)</option>
+          <option value="6">Excellent — 6.0 hrs (Mindanao, Palawan)</option>
+        </select>
+      </div>
+      <div class="cfield">
+        <label>System efficiency</label>
+        <select id="eff-bill">
+          <option value="0.80">Standard — 80%</option>
+          <option value="0.85" selected>Good — 85% (most installs)</option>
+          <option value="0.90">Premium — 90%</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Appliances panel -->
+    <div id="panel-appl" style="display:none">
+      <div class="appl-grid" id="appl-grid">
+        <!-- Rendered by JS -->
+      </div>
+      <div class="appl-hours-row">
+        <label>Avg hours used per day</label>
+        <input type="number" id="appl-hours" value="8" min="1" max="24" step="0.5">
+      </div>
+      <div class="appl-total">
+        <span class="at-label">Estimated daily usage</span>
+        <span class="at-val" id="appl-total-val">0 kWh/day</span>
+      </div>
+      <div class="cfield">
+        <label>Your area</label>
+        <select id="sun-hours-appl">
+          <option value="4.5">Low sun — 4.5 hrs</option>
+          <option value="5" selected>Average — 5.0 hrs (NCR, Calabarzon)</option>
+          <option value="5.5">Good — 5.5 hrs (Visayas)</option>
+          <option value="6">Excellent — 6.0 hrs (Mindanao, Palawan)</option>
+        </select>
+      </div>
+      <div class="cfield">
+        <label>System efficiency</label>
+        <select id="eff-appl">
+          <option value="0.80">Standard — 80%</option>
+          <option value="0.85" selected>Good — 85% (most installs)</option>
+          <option value="0.90">Premium — 90%</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="cgo" onclick="calculate()">Calculate →</button>
+
+    <div class="cresult" id="cresult">
+      <div class="cr-main">
+        <p class="crl">Recommended system</p>
+        <div class="crn" id="r-size">—</div>
+        <p class="cru">kilowatt-peak (kWp)</p>
+      </div>
+      <div class="cr-rows">
+        <div class="cr-row"><span class="crl2">Daily usage</span><span class="crv" id="r-daily">—</span></div>
+        <div class="cr-row"><span class="crl2">Monthly usage</span><span class="crv" id="r-mwh">—</span></div>
+        <div class="cr-row"><span class="crl2">Current monthly bill</span><span class="crv" id="r-bill">—</span></div>
+        <div class="cr-row"><span class="crl2">Monthly savings</span><span class="crv good" id="r-save">—</span></div>
+        <div class="cr-row"><span class="crl2">Annual savings</span><span class="crv" id="r-annual">—</span></div>
+        <div class="cr-row"><span class="crl2">Approx. payback</span><span class="crv" id="r-payback">—</span></div>
+      </div>
+      <div class="cr-bar-wrap">
+        <div class="cr-bar-track"><div class="cr-bar-fill" id="r-bar"></div></div>
+        <p class="cr-bar-label" id="r-bar-label"></p>
+      </div>
+      <div class="cr-footnote" id="r-note"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-inner">
+    <div class="about-left">
+      <h2>Who we are</h2>
+      <p>TruSolar is a <strong>Philippine solar energy company</strong> founded in 2022, based in Quezon City. We specialize in the design, supply, installation, engineering, and maintenance of solar power systems.</p>
+      <p>We serve residential homeowners and commercial clients — and we stay with you after installation, not just during it.</p>
+      <p>Our goal is simple: give every client a system that genuinely fits their energy needs, at a price that makes sense.</p>
+    </div>
+    <div class="about-right">
+      <div class="fact-block">
+        <div class="fact-cell"><div class="fnum">2022</div><div class="flabel">Year established</div></div>
+        <div class="fact-cell"><div class="fnum">QC</div><div class="flabel">Quezon City based</div></div>
+        <div class="fact-cell"><div class="fnum">25 yr</div><div class="flabel">Panel warranty</div></div>
+        <div class="fact-cell"><div class="fnum">Nationwide</div><div class="flabel">Service coverage</div></div>
+      </div>
+      <p style="font-size:.75rem;color:var(--gray);margin-bottom:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Our values</p>
+      <div class="values-row">
+        <span class="val">Integrity</span>
+        <span class="val">Quality</span>
+        <span class="val">Teamwork</span>
+        <span class="val">Innovation</span>
+        <span class="val">Sustainability</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="services-inner">
+    <div class="srv-top">
+      <h2>What we <span>do</span></h2>
+      <p>End-to-end solar — from site assessment to long-term maintenance.</p>
+    </div>
+    <div class="srv-grid">
+      <div class="srv-card">
+        <p class="srv-num">Solar installation</p>
+        <h3>System Types</h3>
+        <ul>
+          <li>Grid-tied systems</li>
+          <li>Hybrid systems</li>
+          <li>Off-grid systems</li>
+          <li>Battery energy storage</li>
+        </ul>
+      </div>
+      <div class="srv-card">
+        <p class="srv-num">Engineering</p>
+        <h3>Design & Planning</h3>
+        <ul>
+          <li>Site assessment</li>
+          <li>System design</li>
+          <li>Technical planning</li>
+          <li>Energy analysis</li>
+        </ul>
+      </div>
+      <div class="srv-card">
+        <p class="srv-num">Maintenance</p>
+        <h3>After-Sale Support</h3>
+        <ul>
+          <li>Preventive maintenance</li>
+          <li>System monitoring</li>
+          <li>Troubleshooting</li>
+          <li>Repair & support</li>
+        </ul>
+      </div>
+      <div class="srv-card">
+        <p class="srv-num">Energy solutions</p>
+        <h3>Custom Setups</h3>
+        <ul>
+          <li>Residential solutions</li>
+          <li>Commercial solutions</li>
+          <li>Industrial systems</li>
+          <li>Custom energy design</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="projects">
+  <div class="projects-inner">
+    <div class="proj-head">
+      <h2>Completed projects</h2>
+      <p>Homes and businesses we've powered up.</p>
+    </div>
+    <div>
+      <div class="proj-item">
+        <div><p class="proj-name">Arcellana Family</p><p class="proj-loc">Alaminos City, Pangasinan</p></div>
+        <p class="proj-type">Residential · Hybrid</p>
+        <div class="proj-tags-wrap"><span class="ptag">5 kW</span><span class="ptag">6 panels</span><span class="ptag">10 kWh battery</span></div>
+      </div>
+      <div class="proj-item">
+        <div><p class="proj-name">Metro Feeds Commercial Setup</p><p class="proj-loc">Sta Maria, Bulacan</p></div>
+        <p class="proj-type">Commercial · Large-scale</p>
+        <div class="proj-tags-wrap"><span class="ptag">Commercial</span><span class="ptag">Energy reduction</span></div>
+      </div>
+      <div class="proj-item">
+        <div><p class="proj-name">Dargantes Family</p><p class="proj-loc">SJDM, Bulacan</p></div>
+        <p class="proj-type">Residential · Grid-tied</p>
+        <div class="proj-tags-wrap"><span class="ptag">Rooftop</span><span class="ptag">Grid-tied</span></div>
+      </div>
+      <div class="proj-item">
+        <div><p class="proj-name">Abrera Family</p><p class="proj-loc">Novaliches, Quezon City</p></div>
+        <p class="proj-type">Residential · Rooftop</p>
+        <div class="proj-tags-wrap"><span class="ptag">Rooftop</span><span class="ptag">Long-term savings</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why" id="why">
+  <div class="why-inner">
+    <h2>Why homeowners and businesses pick us</h2>
+    <div class="why-grid">
+      <div class="why-item">
+        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
+        <h3>Experienced installation team</h3>
+        <p>Professional technicians who prioritize safety and quality on every job, regardless of size.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
+        <h3>High-quality components only</h3>
+        <p>Tier-1 panels, proven inverters, and reliable hardware — nothing we wouldn't put on our own roof.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
+        <h3>Systems built around your usage</h3>
+        <p>Every system is sized for your actual consumption — no upselling, no generic packages.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
+        <h3>Philippine Electrical Code compliant</h3>
+        <p>Full compliance with safety and electrical standards. We handle all permits and paperwork.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
+        <h3>After-sales support you can rely on</h3>
+        <p>Ongoing maintenance, monitoring, and repair so your system runs well for years, not just months.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
+        <h3>Honest pricing, flexible options</h3>
+        <p>Competitive rates and installment options — because solar should be accessible, not just aspirational.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-inner">
+    <h2>Get in touch</h2>
+    <p>Free site assessment — no hard sell, no obligation.</p>
+    <div class="contact-grid">
+      <div>
+        <div class="cinfo-block"><h4>Phone</h4><p><a href="tel:09271374314">0927 137 4314</a></p></div>
+        <div class="cinfo-block"><h4>Email</h4><p><a href="mailto:trusolarph@gmail.com">trusolarph@gmail.com</a></p></div>
+        <div class="cinfo-block"><h4>Office</h4><p>Room 333 Celandine Residences<br>Balintawak, Quezon City</p></div>
+        <div class="cinfo-block"><h4>Facebook</h4><p><a href="https://facebook.com/trusolar.ph" target="_blank">facebook.com/trusolar.ph</a></p></div>
+        <div class="cinfo-block"><h4>Service areas</h4><p>SSS Fairview · Novaliches · Bulacan · Pangasinan · Nationwide</p></div>
+        <div class="safety-note">
+          <h4>Safety & quality</h4>
+          <ul>
+            <li>Safety-first on every project</li>
+            <li>Full PPE compliance on all sites</li>
+            <li>Philippine Electrical Code compliant</li>
+            <li>Premium components, strict QC</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="cta-box">
+          <div>
+            <h3>Book a free site visit</h3>
+            <p>We'll come to you, assess your roof and current usage, and give you an honest quote — at no cost.</p>
+          </div>
+          <a href="tel:09271374314">Call now →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 TruSolar Philippines — The Best Way to Power Up</p>
+  <a href="https://facebook.com/trusolar.ph" target="_blank">facebook.com/trusolar.ph</a>
+</footer>
+
+<script>
+// ── Appliances data (watts) ──
+const APPLIANCES = [
+  { name: 'Air conditioner (1HP)', w: 750 },
+  { name: 'Air conditioner (1.5HP)', w: 1100 },
+  { name: 'Refrigerator', w: 150 },
+  { name: 'Washing machine', w: 500 },
+  { name: 'Electric fan', w: 60 },
+  { name: 'LED TV (40")', w: 80 },
+  { name: 'Rice cooker', w: 700 },
+  { name: 'Electric iron', w: 1000 },
+  { name: 'Desktop computer', w: 200 },
+  { name: 'Laptop', w: 65 },
+  { name: 'Water heater', w: 1500 },
+  { name: 'Microwave oven', w: 1000 },
+  { name: 'LED lights (per bulb)', w: 10 },
+  { name: 'Water pump', w: 370 },
+];
+
+// qty state
+const qty = {};
+APPLIANCES.forEach((_,i) => qty[i] = 0);
+
+function renderAppliances() {
+  const grid = document.getElementById('appl-grid');
+  grid.innerHTML = APPLIANCES.map((a, i) => `
+    <div class="appl-row">
+      <div>
+        <div class="appl-name">${a.name}</div>
+        <div class="appl-watts">${a.w}W</div>
+      </div>
+      <div class="appl-qty-wrap">
+        <button class="appl-qty-btn" onclick="adjQty(${i},-1)">−</button>
+        <span class="appl-qty" id="qty-${i}">0</span>
+        <button class="appl-qty-btn" onclick="adjQty(${i},1)">+</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function adjQty(i, delta) {
+  qty[i] = Math.max(0, (qty[i] || 0) + delta);
+  document.getElementById('qty-' + i).textContent = qty[i];
+  updateApplTotal();
+}
+
+function updateApplTotal() {
+  const hours = parseFloat(document.getElementById('appl-hours').value) || 8;
+  let totalW = 0;
+  APPLIANCES.forEach((a, i) => { totalW += a.w * (qty[i] || 0); });
+  const dailyKwh = (totalW * hours) / 1000;
+  document.getElementById('appl-total-val').textContent = dailyKwh.toFixed(2) + ' kWh/day';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderAppliances();
+  document.getElementById('appl-hours').addEventListener('input', updateApplTotal);
+});
+
+// ── Tabs ──
+let activeTab = 'kwh';
+function switchTab(t) {
+  activeTab = t;
+  ['kwh','bill','appl'].forEach(id => {
+    document.getElementById('panel-' + id).style.display = t === id ? 'block' : 'none';
+    document.getElementById('tab-' + id).classList.toggle('on', t === id);
+  });
+  document.getElementById('cresult').classList.remove('show');
+}
+
+function updateLabels() {
+  const p = document.getElementById('usage-period').value;
+  document.getElementById('kwh-label').textContent = p === 'daily' ? 'Daily usage' : 'Monthly usage';
+  document.getElementById('kwh-hint').textContent  = p === 'daily'
+    ? 'Typical PH home: 15–30 kWh/day'
+    : 'Typical PH home: 400–900 kWh/month';
+  document.getElementById('kwh-input').placeholder = p === 'daily' ? 'e.g. 20' : 'e.g. 600';
+}
+
+// ── Calculate ──
+function fmt(n) { return '₱' + Math.round(n).toLocaleString(); }
+
+function calculate() {
+  const RATE = 12, CPK = 55000;
+  let daily, monthly, bill;
+
+  if (activeTab === 'kwh') {
+    const v = parseFloat(document.getElementById('kwh-input').value);
+    if (!v || v <= 0) { alert('Please enter your kWh usage.'); return; }
+    const p = document.getElementById('usage-period').value;
+    daily   = p === 'daily' ? v : v / 30;
+    monthly = daily * 30;
+    bill    = monthly * RATE;
+  } else if (activeTab === 'bill') {
+    const b = parseFloat(document.getElementById('bill-input').value);
+    const r = parseFloat(document.getElementById('rate-input').value) || RATE;
+    if (!b || b <= 0) { alert('Please enter your monthly bill.'); return; }
+    bill    = b;
+    monthly = b / r;
+    daily   = monthly / 30;
+  } else {
+    // appliances
+    const hours = parseFloat(document.getElementById('appl-hours').value) || 8;
+    let totalW = 0;
+    APPLIANCES.forEach((a, i) => { totalW += a.w * (qty[i] || 0); });
+    if (totalW === 0) { alert('Please add at least one appliance.'); return; }
+    daily   = (totalW * hours) / 1000;
+    monthly = daily * 30;
+    bill    = monthly * RATE;
+  }
+
+  const sunEl = activeTab === 'kwh'   ? 'sun-hours'
+              : activeTab === 'bill'  ? 'sun-hours-bill'
+                                      : 'sun-hours-appl';
+  const effEl = activeTab === 'kwh'   ? 'eff-kwh'
+              : activeTab === 'bill'  ? 'eff-bill'
+                                      : 'eff-appl';
+
+  const sun  = parseFloat(document.getElementById(sunEl).value);
+  const eff  = parseFloat(document.getElementById(effEl).value);
+  const kwp  = daily / (sun * eff);
+  const off  = 0.95;
+  const save = bill * off;
+  const ann  = save * 12;
+  const cost = kwp * CPK;
+  const pbk  = cost / ann;
+  const pnls = Math.ceil((kwp * 1000) / 400);
+  const free = Math.max(0, 25 - pbk);
+
+  document.getElementById('r-size').textContent   = kwp.toFixed(2) + ' kWp';
+  document.getElementById('r-daily').textContent  = daily.toFixed(2) + ' kWh';
+  document.getElementById('r-mwh').textContent    = Math.round(monthly) + ' kWh';
+  document.getElementById('r-bill').textContent   = fmt(bill);
+  document.getElementById('r-save').textContent   = fmt(save) + '/mo';
+  document.getElementById('r-annual').textContent = fmt(ann) + '/yr';
+  document.getElementById('r-payback').textContent= pbk.toFixed(1) + ' years';
+  document.getElementById('r-bar-label').textContent = Math.round(off * 100) + '% of bill offset by solar';
+  document.getElementById('r-note').innerHTML =
+    `~<strong>${pnls} × 400W panels</strong>. Est. system cost <strong>${fmt(cost)}</strong>. ` +
+    `Pays for itself in ${pbk.toFixed(1)} yrs — then <strong>${free.toFixed(0)} years</strong> of near-free power. ` +
+    `<a href="#contact">Get an exact quote →</a>`;
+
+  setTimeout(() => { document.getElementById('r-bar').style.width = (off * 100) + '%'; }, 80);
+  document.getElementById('cresult').classList.add('show');
+}
+</script>
+</body>
+</html>
