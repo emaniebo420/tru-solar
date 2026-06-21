@@ -2,727 +2,1345 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 <title>TruSolar — The Best Way to Power Up</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="description" content="Clean energy can start with you. Get solar panels installed today in the Philippines. TruSolar designs, supplies, and installs solar systems for homes and businesses nationwide.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1B2D6B;
+  --navy2:#0F1D4A;
+  --gold:#F0B429;
+  --gold2:#FFC93E;
+  --white:#FFFFFF;
+  --off:#F7F8FC;
+  --ink:#0D1117;
+  --gray:#6B7280;
+  --gray2:#9CA3AF;
+  --line:#E5E7EB;
+  --green:#059669;
+  --r:10px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;color:var(--ink);background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.15;}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button{cursor:pointer;font-family:'Inter',sans-serif;}
 
-:root {
-  --navy:  #1B2D6B;
-  --navy2: #152358;
-  --gold:  #F0B429;
-  --gold2: #FFC93E;
-  --sun:   #FFFBF0;
-  --white: #FFFFFF;
-  --ink:   #111827;
-  --gray:  #6B7280;
-  --line:  #E5E7EB;
-  --green: #16A34A;
+/* ── PROGRESS BAR ── */
+#pbar{position:fixed;top:0;left:0;height:2px;background:var(--gold);width:0%;z-index:9999;transition:width .1s linear;}
+
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;z-index:500;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 60px;height:64px;
+}
+.nav-left{display:flex;align-items:center;gap:40px;}
+.nav-brand{display:flex;align-items:center;gap:10px;}
+.nav-brand svg{width:38px;height:38px;flex-shrink:0;}
+.nav-brand-name{font-family:'Sora',sans-serif;font-size:1.05rem;font-weight:700;color:var(--navy);letter-spacing:.5px;}
+.nav-brand-name span{color:var(--gold);}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{font-size:.875rem;color:var(--gray);font-weight:500;transition:color .15s;}
+.nav-links a:hover{color:var(--navy);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-btn-ghost{font-size:.85rem;font-weight:600;color:var(--navy);padding:8px 18px;border-radius:8px;border:1.5px solid var(--line);transition:all .15s;}
+.nav-btn-ghost:hover{border-color:var(--navy);background:var(--off);}
+.nav-btn-solid{font-size:.85rem;font-weight:600;color:var(--navy);background:var(--gold);padding:8px 18px;border-radius:8px;border:none;transition:background .15s;}
+.nav-btn-solid:hover{background:var(--gold2);}
+
+/* ── HERO ── */
+.hero{
+  background:var(--white);
+  padding:80px 60px 0;
+  text-align:center;
+  border-bottom:1px solid var(--line);
+  overflow:hidden;
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--off);border:1px solid var(--line);
+  color:var(--gray);font-size:.75rem;font-weight:600;
+  letter-spacing:1px;text-transform:uppercase;
+  padding:5px 14px;border-radius:20px;margin-bottom:28px;
+}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);}
+.hero h1{
+  font-size:clamp(2.4rem,5vw,4rem);
+  font-weight:800;color:var(--navy);
+  letter-spacing:-2px;line-height:1.08;
+  max-width:800px;margin:0 auto 20px;
+}
+.hero h1 em{font-style:normal;color:var(--gold);}
+.hero-sub{
+  font-size:1.05rem;color:var(--gray);
+  max-width:520px;margin:0 auto 36px;line-height:1.7;
+}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;}
+.btn-primary{
+  background:var(--navy);color:var(--white);
+  font-weight:600;font-size:.9rem;
+  padding:13px 28px;border-radius:9px;border:none;
+  transition:background .15s;
+}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{
+  background:var(--white);color:var(--navy);
+  font-weight:600;font-size:.9rem;
+  padding:13px 28px;border-radius:9px;
+  border:1.5px solid var(--line);
+  transition:all .15s;
+}
+.btn-secondary:hover{border-color:var(--navy);background:var(--off);}
+.hero-rating{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:.8rem;color:var(--gray);margin-bottom:40px;
+}
+.stars{color:#FBBF24;letter-spacing:2px;}
+
+/* Hero image strip */
+.hero-img-strip{
+  background:linear-gradient(to bottom, var(--white) 0%, var(--off) 100%);
+  border-radius:16px 16px 0 0;
+  border:1px solid var(--line);
+  border-bottom:none;
+  height:340px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  position:relative;
+}
+.hero-img-inner{
+  display:flex;align-items:center;justify-content:center;
+  gap:20px;width:100%;padding:32px;
+}
+.hero-stat-pill{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:18px 24px;
+  text-align:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+  min-width:140px;
+}
+.hero-stat-pill .hsp-num{
+  font-family:'Sora',sans-serif;
+  font-size:1.8rem;font-weight:800;
+  color:var(--navy);letter-spacing:-1px;line-height:1;
+}
+.hero-stat-pill .hsp-label{
+  font-size:.72rem;color:var(--gray);margin-top:4px;font-weight:500;
+}
+.hero-stat-pill.gold-pill .hsp-num{color:var(--gold);}
+
+/* ── STATS BAR ── */
+.stats-bar{
+  background:var(--navy);
+  display:flex;justify-content:center;
+  gap:0;
+}
+.stat-item{
+  padding:28px 48px;
+  border-right:1px solid rgba(255,255,255,.1);
+  text-align:center;flex:1;max-width:240px;
+}
+.stat-item:last-child{border-right:none;}
+.stat-num{
+  font-family:'Sora',sans-serif;
+  font-size:1.8rem;font-weight:800;
+  color:var(--gold);line-height:1;
+  letter-spacing:-1px;margin-bottom:4px;
+}
+.stat-label{font-size:.75rem;color:rgba(255,255,255,.55);font-weight:500;}
+
+/* ── SECTION SHARED ── */
+.section{padding:88px 60px;}
+.section-inner{max-width:1100px;margin:0 auto;}
+.eyebrow{
+  font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:2px;color:var(--gray2);margin-bottom:10px;
+}
+.section-title{
+  font-size:clamp(1.8rem,3vw,2.5rem);
+  font-weight:800;color:var(--navy);
+  letter-spacing:-1px;margin-bottom:12px;
+}
+.section-sub{font-size:.95rem;color:var(--gray);line-height:1.7;max-width:540px;}
+
+/* ── CLIENT TYPES (TABS) ── */
+.clients-section{background:var(--white);padding:88px 60px;}
+.clients-inner{max-width:1100px;margin:0 auto;}
+.client-tabs{
+  display:flex;gap:0;
+  border-bottom:2px solid var(--line);
+  margin-bottom:56px;
+  overflow-x:auto;
+}
+.client-tab{
+  padding:12px 24px;
+  font-size:.875rem;font-weight:600;
+  color:var(--gray);background:none;border:none;
+  border-bottom:2px solid transparent;
+  margin-bottom:-2px;white-space:nowrap;
+  transition:all .2s;
+}
+.client-tab.active{color:var(--navy);border-bottom-color:var(--navy);}
+.client-tab:hover{color:var(--navy);}
+
+.client-panel{display:none;}
+.client-panel.active{display:block;}
+
+.client-layout{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:64px;align-items:start;
+}
+.client-text h3{
+  font-size:1.6rem;font-weight:800;
+  color:var(--navy);letter-spacing:-.5px;
+  margin-bottom:16px;line-height:1.2;
+}
+.client-text p{font-size:.9rem;color:var(--gray);line-height:1.75;margin-bottom:24px;}
+.client-features{list-style:none;margin-bottom:28px;}
+.client-features li{
+  font-size:.875rem;color:var(--ink);
+  padding:10px 0;border-bottom:1px solid var(--line);
+  display:flex;gap:10px;align-items:flex-start;
+}
+.client-features li:first-child{border-top:1px solid var(--line);}
+.cf-check{
+  width:18px;height:18px;border-radius:50%;
+  background:var(--navy);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.cf-check svg{width:9px;height:9px;stroke:var(--gold);stroke-width:2.5;fill:none;}
+.client-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--navy);color:var(--white);
+  font-weight:600;font-size:.875rem;
+  padding:12px 22px;border-radius:8px;
+  border:none;transition:background .15s;
+}
+.client-cta:hover{background:var(--navy2);}
+
+.client-visual{
+  background:var(--off);
+  border:1px solid var(--line);
+  border-radius:16px;
+  min-height:340px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.cv-icon{font-size:5rem;opacity:.15;}
+.cv-badge{
+  position:absolute;bottom:20px;left:20px;
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:12px 16px;
+  box-shadow:0 4px 16px rgba(0,0,0,.08);
+}
+.cv-badge .cvb-num{
+  font-family:'Sora',sans-serif;
+  font-size:1.3rem;font-weight:800;
+  color:var(--navy);letter-spacing:-.5px;
+}
+.cv-badge .cvb-label{font-size:.7rem;color:var(--gray);margin-top:2px;}
+
+/* ── HOW IT WORKS ── */
+.how-section{background:var(--off);padding:88px 60px;}
+.how-inner{max-width:1100px;margin:0 auto;}
+.how-steps{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:0;margin-top:48px;
+  border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+}
+.how-step{
+  background:var(--white);
+  padding:28px 22px;
+  border-right:1px solid var(--line);
+  position:relative;
+}
+.how-step:last-child{border-right:none;}
+.step-num{
+  font-family:'Sora',sans-serif;
+  font-size:.7rem;font-weight:800;
+  color:var(--gold);letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:14px;
+}
+.how-step h4{font-size:.9rem;font-weight:700;color:var(--navy);margin-bottom:8px;line-height:1.3;}
+.how-step p{font-size:.78rem;color:var(--gray);line-height:1.6;}
+
+/* ── CALCULATOR ── */
+.calc-section{background:var(--white);padding:88px 60px;}
+.calc-inner{max-width:1100px;margin:0 auto;}
+.calc-layout{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:48px;align-items:start;margin-top:48px;
+}
+.calc-box{
+  background:var(--off);
+  border:1px solid var(--line);
+  border-radius:16px;padding:32px;
+}
+.calc-tabs{
+  display:flex;background:var(--white);
+  border:1px solid var(--line);
+  border-radius:9px;padding:4px;
+  gap:4px;margin-bottom:24px;
+}
+.calc-tab{
+  flex:1;padding:8px;
+  background:none;border:none;border-radius:7px;
+  color:var(--gray);font-size:.78rem;font-weight:600;
+  transition:all .2s;text-align:center;
+}
+.calc-tab.on{background:var(--navy);color:var(--white);}
+.cfield{margin-bottom:14px;}
+.cfield label{display:block;font-size:.75rem;font-weight:600;color:var(--gray);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.cfield input,.cfield select{
+  width:100%;padding:10px 13px;
+  background:var(--white);border:1px solid var(--line);
+  border-radius:8px;color:var(--ink);
+  font-size:.88rem;font-family:'Inter',sans-serif;
+  outline:none;transition:border .15s;-webkit-appearance:none;
+}
+.cfield input:focus,.cfield select:focus{border-color:var(--navy);}
+.cfield .hint{font-size:.7rem;color:var(--gray2);margin-top:3px;}
+.sfx-wrap{position:relative;}
+.sfx-wrap input{padding-right:44px;}
+.sfx-wrap .sfx{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:.78rem;color:var(--gray2);pointer-events:none;}
+
+/* appliances */
+.appl-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+.appl-row{
+  background:var(--white);border:1px solid var(--line);
+  border-radius:8px;padding:8px 10px;
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+}
+.appl-name{font-size:.72rem;color:var(--ink);font-weight:500;flex:1;line-height:1.3;}
+.appl-watts{font-size:.62rem;color:var(--gray2);}
+.appl-qty-wrap{display:flex;align-items:center;gap:4px;}
+.appl-qty-btn{
+  width:22px;height:22px;border-radius:4px;
+  border:1px solid var(--line);background:var(--off);
+  color:var(--ink);font-size:.9rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .15s;flex-shrink:0;
+}
+.appl-qty-btn:hover{background:var(--line);}
+.appl-qty{width:22px;text-align:center;font-size:.8rem;font-weight:700;color:var(--navy);}
+.appl-hours-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--white);border:1px solid var(--line);
+  border-radius:8px;padding:8px 12px;margin-bottom:10px;
+}
+.appl-hours-row label{font-size:.75rem;color:var(--gray);font-weight:500;}
+.appl-hours-row input{
+  width:56px;border:1px solid var(--line);border-radius:6px;
+  padding:4px 8px;font-size:.8rem;text-align:center;
+  font-family:'Inter',sans-serif;outline:none;
+}
+.appl-total{
+  background:var(--navy);border-radius:8px;
+  padding:10px 14px;display:flex;
+  justify-content:space-between;align-items:center;margin-bottom:10px;
+}
+.appl-total .at-label{font-size:.72rem;color:rgba(255,255,255,.6);}
+.appl-total .at-val{font-size:1rem;font-weight:800;color:var(--gold);font-family:'Sora',sans-serif;}
+
+.calc-go{
+  width:100%;margin-top:6px;padding:12px;
+  background:var(--navy);color:var(--white);
+  border:none;border-radius:9px;
+  font-size:.9rem;font-weight:700;
+  font-family:'Inter',sans-serif;transition:background .15s;
+}
+.calc-go:hover{background:var(--navy2);}
+
+/* results */
+.calc-results{
+  background:var(--off);border:1px solid var(--line);
+  border-radius:16px;padding:32px;
+  display:flex;flex-direction:column;
+}
+.calc-results-empty{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;gap:12px;min-height:300px;
+  color:var(--gray2);
+}
+.calc-results-empty p{font-size:.85rem;max-width:200px;line-height:1.5;}
+.calc-results-empty svg{opacity:.3;width:48px;height:48px;}
+
+.res-filled{display:none;}
+.res-filled.show{display:block;}
+.res-empty.hide{display:none;}
+
+.res-main{
+  background:var(--navy);border-radius:12px;
+  padding:22px;margin-bottom:20px;text-align:center;
+}
+.res-main .rl{font-size:.68rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px;}
+.res-main .rn{font-family:'Sora',sans-serif;font-size:2.8rem;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-2px;}
+.res-main .ru{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:4px;}
+
+.res-rows{}
+.res-row{
+  display:flex;justify-content:space-between;
+  padding:9px 0;border-bottom:1px solid var(--line);
+  font-size:.84rem;
+}
+.res-row:last-child{border-bottom:none;}
+.res-row .rl2{color:var(--gray);}
+.res-row .rv{color:var(--ink);font-weight:600;}
+.res-row .rv.good{color:var(--green);}
+
+.res-bar-wrap{margin:16px 0 4px;}
+.res-bar-track{background:var(--line);border-radius:4px;height:6px;overflow:hidden;}
+.res-bar-fill{height:100%;border-radius:4px;background:var(--gold);width:0;transition:width .8s ease;}
+.res-bar-label{font-size:.7rem;color:var(--gray2);margin-top:5px;}
+
+.res-note{
+  margin-top:16px;padding:14px 16px;
+  background:var(--off);border-radius:8px;
+  font-size:.8rem;color:var(--gray);line-height:1.65;
+}
+.res-note strong{color:var(--navy);}
+.res-note a{color:var(--navy);font-weight:600;text-decoration:underline;}
+
+/* ── ROI SECTION ── */
+.roi-section{background:var(--off);padding:88px 60px;}
+.roi-inner{max-width:1100px;margin:0 auto;}
+.roi-empty{
+  background:var(--white);border:1px solid var(--line);
+  border-radius:12px;padding:32px;text-align:center;
+  color:var(--gray2);font-size:.875rem;margin-top:36px;
+}
+.roi-chart{display:none;margin-top:36px;}
+.roi-chart.show{display:block;}
+.roi-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+.roi-card{
+  background:var(--white);border:1px solid var(--line);
+  border-radius:12px;padding:22px;
+}
+.roi-card .rc-label{font-size:.7rem;color:var(--gray2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:600;}
+.roi-card .rc-val{font-family:'Sora',sans-serif;font-size:1.5rem;font-weight:800;color:var(--green);letter-spacing:-.5px;}
+.roi-card .rc-sub{font-size:.72rem;color:var(--gray2);margin-top:3px;}
+
+.roi-compare{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:28px;}
+.roi-compare-title{font-size:.8rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:1px;margin-bottom:20px;}
+.roi-bar-row{display:grid;grid-template-columns:80px 1fr 1fr;gap:12px;align-items:center;margin-bottom:10px;}
+.roi-bar-row:last-of-type{margin-bottom:0;}
+.roi-bar-period{font-size:.75rem;color:var(--gray);font-weight:600;}
+.roi-track{background:var(--off);border-radius:4px;height:32px;overflow:hidden;position:relative;}
+.roi-bar-with{height:100%;background:var(--navy);border-radius:4px;display:flex;align-items:center;padding:0 10px;font-size:.7rem;font-weight:700;color:var(--white);width:0;transition:width 1s ease;white-space:nowrap;overflow:hidden;}
+.roi-bar-without{height:100%;background:var(--line);border-radius:4px;display:flex;align-items:center;padding:0 10px;font-size:.7rem;color:var(--gray);width:0;transition:width 1s ease;white-space:nowrap;overflow:hidden;}
+.roi-legend{display:flex;gap:20px;margin-top:14px;}
+.roi-legend-item{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--gray);}
+.roi-legend-dot{width:10px;height:10px;border-radius:2px;}
+
+/* ── PROJECTS ── */
+.projects-section{background:var(--white);padding:88px 60px;}
+.proj-inner{max-width:1100px;margin:0 auto;}
+.proj-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36px;}
+.proj-head h2{font-size:2.2rem;font-weight:800;color:var(--navy);letter-spacing:-1px;}
+.proj-table{}
+.proj-row{
+  display:grid;grid-template-columns:2fr 1fr 1fr;
+  gap:20px;align-items:center;
+  padding:18px 0;border-bottom:1px solid var(--line);
+}
+.proj-row:first-child{border-top:1px solid var(--line);}
+.proj-name{font-size:.95rem;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.proj-loc{font-size:.78rem;color:var(--gray2);}
+.proj-type{font-size:.8rem;color:var(--gray);}
+.proj-tags{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;}
+.ptag{font-size:.68rem;font-weight:600;background:var(--off);color:var(--navy);padding:3px 9px;border-radius:4px;border:1px solid var(--line);}
+
+/* ── TESTIMONIALS ── */
+.testi-section{background:var(--off);padding:88px 60px;}
+.testi-inner{max-width:1100px;margin:0 auto;}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px;}
+.testi-card{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:26px;display:flex;flex-direction:column;gap:16px;}
+.testi-stars{color:#FBBF24;font-size:.9rem;letter-spacing:2px;}
+.testi-quote{font-size:.9rem;color:var(--ink);line-height:1.7;flex:1;}
+.testi-author{padding-top:14px;border-top:1px solid var(--line);}
+.testi-name{font-size:.875rem;font-weight:700;color:var(--navy);}
+.testi-loc{font-size:.75rem;color:var(--gray2);margin-top:1px;}
+.testi-system{font-size:.72rem;color:var(--gold);font-weight:600;margin-top:3px;}
+
+/* ── WHY ── */
+.why-section{background:var(--white);padding:88px 60px;}
+.why-inner{max-width:1100px;margin:0 auto;}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:40px;}
+.why-cell{padding:28px 26px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--white);}
+.why-cell:nth-child(3n){border-right:none;}
+.why-cell:nth-last-child(-n+3){border-bottom:none;}
+.why-icon{width:36px;height:36px;background:var(--off);border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:1rem;}
+.why-cell h3{font-size:.9rem;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.why-cell p{font-size:.82rem;color:var(--gray);line-height:1.65;}
+
+/* ── FAQ ── */
+.faq-section{background:var(--off);padding:88px 60px;}
+.faq-inner{max-width:720px;margin:0 auto;}
+.faq-list{margin-top:40px;}
+.faq-item{border-bottom:1px solid var(--line);}
+.faq-item:first-child{border-top:1px solid var(--line);}
+.faq-q{
+  width:100%;background:none;border:none;
+  text-align:left;padding:20px 0;
+  font-size:.93rem;font-weight:600;color:var(--navy);
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  font-family:'Inter',sans-serif;
+}
+.faq-icon{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--off);border:1px solid var(--line);
+  color:var(--navy);display:flex;align-items:center;
+  justify-content:center;font-size:1rem;flex-shrink:0;
+  transition:transform .2s;font-weight:700;line-height:1;
+}
+.faq-item.open .faq-icon{transform:rotate(45deg);background:var(--navy);color:var(--white);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;font-size:.875rem;color:var(--gray);line-height:1.75;}
+.faq-item.open .faq-a{max-height:400px;padding-bottom:20px;}
+
+/* ── CONTACT ── */
+.contact-section{background:var(--navy);padding:88px 60px;}
+.contact-inner{max-width:1100px;margin:0 auto;}
+.contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:56px;margin-top:40px;}
+.contact-info{}
+.ci-block{margin-bottom:24px;}
+.ci-block h4{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin-bottom:5px;}
+.ci-block p,.ci-block a{font-size:.9rem;color:rgba(255,255,255,.75);line-height:1.65;}
+.ci-block a:hover{color:var(--gold);}
+.safety-box{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:18px;margin-top:24px;
+}
+.safety-box h4{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.35);margin-bottom:10px;}
+.safety-box ul{list-style:none;}
+.safety-box li{font-size:.8rem;color:rgba(255,255,255,.5);padding:4px 0;display:flex;gap:8px;}
+.safety-box li::before{content:'—';color:var(--gold);}
+.map-box{margin-top:20px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.1);}
+.map-box iframe{width:100%;height:180px;border:none;display:block;filter:grayscale(20%);}
+
+/* FORM */
+.contact-form{
+  background:var(--white);border-radius:16px;padding:32px;
+}
+.contact-form h3{font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:20px;}
+.form-field{margin-bottom:14px;}
+.form-field label{display:block;font-size:.72rem;font-weight:700;color:var(--gray);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.form-field input,.form-field textarea,.form-field select{
+  width:100%;padding:10px 13px;
+  background:var(--off);border:1px solid var(--line);
+  border-radius:8px;color:var(--ink);
+  font-size:.875rem;font-family:'Inter',sans-serif;
+  outline:none;transition:border .15s;-webkit-appearance:none;
+}
+.form-field input:focus,.form-field textarea:focus,.form-field select:focus{border-color:var(--navy);background:var(--white);}
+.form-field input::placeholder,.form-field textarea::placeholder{color:var(--gray2);}
+.form-field textarea{resize:vertical;min-height:88px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-submit{
+  width:100%;padding:13px;background:var(--navy);color:var(--white);
+  border:none;border-radius:9px;font-size:.9rem;font-weight:700;
+  font-family:'Inter',sans-serif;transition:background .15s;margin-top:6px;
+}
+.form-submit:hover{background:var(--navy2);}
+.form-success{display:none;text-align:center;padding:28px;}
+.form-success.show{display:block;}
+.form-success .fs-check{font-size:2.5rem;margin-bottom:12px;}
+.form-success h4{font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:8px;}
+.form-success p{font-size:.875rem;color:var(--gray);line-height:1.6;}
+
+/* ── FOOTER ── */
+footer{background:var(--navy2);border-top:1px solid rgba(255,255,255,.06);padding:48px 60px 28px;}
+.footer-inner{max-width:1100px;margin:0 auto;}
+.footer-top{
+  display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;
+  gap:40px;padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,.08);
+  margin-bottom:24px;
+}
+.footer-brand{}
+.footer-brand-name{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;color:var(--white);margin-bottom:8px;}
+.footer-brand-name span{color:var(--gold);}
+.footer-tagline{font-size:.8rem;color:rgba(255,255,255,.4);line-height:1.6;max-width:200px;}
+.footer-col h4{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.4);margin-bottom:14px;}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:8px;}
+.footer-col a{font-size:.82rem;color:rgba(255,255,255,.6);transition:color .15s;}
+.footer-col a:hover{color:var(--gold);}
+.footer-col p{font-size:.82rem;color:rgba(255,255,255,.6);line-height:1.6;}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;}
+.footer-copy{font-size:.75rem;color:rgba(255,255,255,.3);}
+.footer-socials{display:flex;gap:12px;}
+.social-link{
+  width:32px;height:32px;border-radius:6px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.5);font-size:.75rem;
+  transition:all .15s;
+}
+.social-link:hover{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+
+/* ── MOBILE CTA BAR ── */
+.mobile-cta-bar{display:none;background:var(--gold);padding:10px 20px;justify-content:center;}
+.mobile-cta-bar a{color:var(--navy);font-weight:700;font-size:.875rem;}
+
+/* ════════════════════════════════════
+   RESPONSIVE — TABLET (≤1024px)
+   ════════════════════════════════════ */
+@media(max-width:1024px){
+  .nav{padding:0 28px;}
+  .section{padding:72px 32px;}
+  .clients-section,.how-section,.calc-section,.roi-section,.projects-section,.testi-section,.why-section,.faq-section,.contact-section{padding:72px 32px;}
+  .hero{padding:64px 32px 0;}
+  .stats-bar{flex-wrap:wrap;}
+  .stat-item{min-width:50%;flex:none;border-bottom:1px solid rgba(255,255,255,.1);}
+  .client-layout{grid-template-columns:1fr;gap:36px;}
+  .how-steps{grid-template-columns:1fr 1fr;overflow:visible;border-radius:0;}
+  .how-step{border-bottom:1px solid var(--line);}
+  .calc-layout{grid-template-columns:1fr;}
+  .roi-cards{grid-template-columns:1fr 1fr;}
+  .testi-grid{grid-template-columns:1fr 1fr;}
+  .why-grid{grid-template-columns:1fr 1fr;}
+  .why-cell:nth-child(3n){border-right:1px solid var(--line);}
+  .why-cell:nth-child(2n){border-right:none;}
+  .why-cell:nth-last-child(-n+2){border-bottom:none;}
+  .why-cell:nth-last-child(3){border-bottom:1px solid var(--line);}
+  .contact-layout{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:28px;}
+  footer{padding:40px 32px 24px;}
 }
 
-html { scroll-behavior: smooth; }
-body { font-family: 'Outfit', sans-serif; color: var(--ink); background: var(--white); line-height: 1.6; }
+/* ════════════════════════════════════
+   RESPONSIVE — MOBILE (≤768px)
+   ════════════════════════════════════ */
+@media(max-width:768px){
+  .nav{padding:0 16px;height:56px;}
+  .nav-links{display:none;}
+  .nav-btn-ghost{display:none;}
+  .nav-btn-solid{font-size:.78rem;padding:7px 14px;}
+  .nav-brand-name{font-size:.95rem;}
+  .mobile-cta-bar{display:flex;}
 
-/* NAV */
-.nav {
-  position: sticky; top: 0; z-index: 200;
-  background: var(--navy);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 48px; height: 58px;
+  .hero{padding:48px 16px 0;}
+  .hero h1{font-size:2rem;letter-spacing:-1px;}
+  .hero-sub{font-size:.9rem;}
+  .hero-img-strip{height:240px;}
+  .hero-stat-pill .hsp-num{font-size:1.4rem;}
+  .hero-img-inner{gap:10px;padding:16px;}
+
+  .stats-bar{flex-direction:column;}
+  .stat-item{width:100%;max-width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.1);padding:20px 24px;}
+  .stat-item:last-child{border-bottom:none;}
+
+  .section{padding:56px 16px;}
+  .clients-section,.how-section,.calc-section,.roi-section,.projects-section,.testi-section,.why-section,.faq-section,.contact-section{padding:56px 16px;}
+
+  .client-tabs{gap:0;}
+  .client-tab{padding:10px 14px;font-size:.78rem;}
+  .client-layout{grid-template-columns:1fr;gap:28px;}
+  .client-visual{min-height:220px;}
+  .client-text h3{font-size:1.3rem;}
+
+  .how-steps{grid-template-columns:1fr;}
+  .how-step{border-right:none;border-bottom:1px solid var(--line);}
+  .how-step:last-child{border-bottom:none;}
+
+  .calc-layout{grid-template-columns:1fr;}
+  .appl-grid{grid-template-columns:1fr;}
+  .calc-box{padding:20px;}
+  .calc-results{padding:20px;}
+
+  .roi-cards{grid-template-columns:1fr;gap:10px;}
+  .roi-bar-row{grid-template-columns:60px 1fr;gap:8px;}
+  .roi-bar-row .roi-track:last-of-type{display:none;}
+
+  .proj-row{grid-template-columns:1fr;gap:6px;padding:14px 0;}
+  .proj-tags{justify-content:flex-start;}
+  .proj-head{flex-direction:column;align-items:flex-start;gap:4px;}
+
+  .testi-grid{grid-template-columns:1fr;gap:14px;}
+
+  .why-grid{grid-template-columns:1fr;}
+  .why-cell{border-right:none !important;border-bottom:1px solid var(--line) !important;}
+  .why-cell:last-child{border-bottom:none !important;}
+
+  .contact-layout{grid-template-columns:1fr;gap:28px;}
+  .form-row{grid-template-columns:1fr;}
+  .contact-form{padding:20px;}
+
+  .footer-top{grid-template-columns:1fr 1fr;gap:24px;}
+  footer{padding:36px 16px 20px;}
+  .footer-bottom{flex-direction:column;gap:14px;text-align:center;}
+  .section-title{font-size:1.8rem;}
 }
-.nav-brand { font-size: 1.1rem; font-weight: 700; color: var(--white); text-decoration: none; letter-spacing: 1px; }
-.nav-brand span { color: var(--gold); }
-.nav-links { display: flex; gap: 28px; list-style: none; }
-.nav-links a { color: rgba(255,255,255,.6); text-decoration: none; font-size: .875rem; transition: color .15s; }
-.nav-links a:hover { color: var(--white); }
-.nav-phone { background: var(--gold); color: var(--navy); font-weight: 700; font-size: .85rem; padding: 8px 18px; border-radius: 6px; text-decoration: none; transition: background .15s; }
-.nav-phone:hover { background: var(--gold2); }
 
-/* HERO */
-.hero { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 58px); }
-
-.hero-left { background: var(--gold); padding: 72px 56px; display: flex; flex-direction: column; justify-content: center; }
-.hero-tag { display: inline-block; background: var(--navy); color: var(--white); font-size: .7rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 5px 12px; border-radius: 4px; margin-bottom: 28px; }
-.hero-left h1 { font-size: clamp(2.2rem, 3.2vw, 3.6rem); font-weight: 800; line-height: 1.05; color: var(--navy); margin-bottom: 24px; letter-spacing: -1.5px; }
-.hero-left p { font-size: 1rem; color: rgba(27,45,107,.75); max-width: 400px; line-height: 1.7; margin-bottom: 36px; }
-.hero-bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.hero-bullets li { font-size: .88rem; font-weight: 500; color: var(--navy); display: flex; align-items: center; gap: 10px; }
-.hero-bullets li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--navy); flex-shrink: 0; }
-.hero-founded { margin-top: auto; padding-top: 40px; font-size: .78rem; font-weight: 600; color: rgba(27,45,107,.45); letter-spacing: 1px; text-transform: uppercase; }
-
-.hero-right { background: var(--navy); padding: 40px 44px; display: flex; flex-direction: column; justify-content: center; overflow-y: auto; }
-.calc-heading { font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: 4px; }
-.calc-sub { font-size: .8rem; color: rgba(255,255,255,.4); margin-bottom: 20px; }
-
-/* TABS */
-.ctabs { display: flex; background: rgba(255,255,255,.07); border-radius: 8px; padding: 4px; margin-bottom: 18px; gap: 3px; }
-.ctab { flex: 1; padding: 7px 4px; background: none; border: none; border-radius: 6px; color: rgba(255,255,255,.4); font-size: .75rem; font-weight: 500; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all .2s; line-height: 1.3; text-align: center; }
-.ctab.on { background: var(--gold); color: var(--navy); font-weight: 700; }
-
-/* FIELDS */
-.cfield { margin-bottom: 12px; }
-.cfield label { display: block; font-size: .73rem; font-weight: 500; color: rgba(255,255,255,.5); margin-bottom: 4px; }
-.cfield input, .cfield select { width: 100%; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.13); border-radius: 7px; padding: 9px 12px; color: var(--white); font-size: .88rem; font-family: 'Outfit', sans-serif; outline: none; transition: border .15s; -webkit-appearance: none; }
-.cfield input:focus, .cfield select:focus { border-color: var(--gold); }
-.cfield input::placeholder { color: rgba(255,255,255,.2); }
-.cfield select option { background: var(--navy2); }
-.sfx-wrap { position: relative; }
-.sfx-wrap input { padding-right: 42px; }
-.sfx-wrap .sfx { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); font-size: .75rem; color: rgba(255,255,255,.3); pointer-events: none; }
-.cfield .hint { font-size: .68rem; color: rgba(255,255,255,.28); margin-top: 3px; }
-
-/* APPLIANCE CALCULATOR */
-.appl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-.appl-row { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 7px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-.appl-name { font-size: .75rem; color: rgba(255,255,255,.7); font-weight: 500; flex: 1; line-height: 1.3; }
-.appl-watts { font-size: .65rem; color: rgba(255,255,255,.3); }
-.appl-qty-wrap { display: flex; align-items: center; gap: 5px; }
-.appl-qty-btn { width: 22px; height: 22px; border-radius: 4px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08); color: var(--white); font-size: .9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; transition: background .15s; flex-shrink: 0; line-height: 1; }
-.appl-qty-btn:hover { background: rgba(255,255,255,.18); }
-.appl-qty { width: 26px; text-align: center; font-size: .82rem; font-weight: 600; color: var(--white); }
-.appl-hours-row { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.05); border-radius: 7px; padding: 8px 12px; margin-bottom: 10px; }
-.appl-hours-row label { font-size: .73rem; color: rgba(255,255,255,.5); }
-.appl-hours-row input { width: 60px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 5px; padding: 5px 8px; color: var(--white); font-size: .82rem; font-family: 'Outfit', sans-serif; outline: none; text-align: center; }
-.appl-total { background: rgba(240,180,41,.12); border: 1px solid rgba(240,180,41,.25); border-radius: 7px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.appl-total .at-label { font-size: .72rem; color: rgba(255,255,255,.5); }
-.appl-total .at-val { font-size: 1.1rem; font-weight: 800; color: var(--gold); letter-spacing: -.5px; }
-
-.cgo { width: 100%; margin-top: 4px; padding: 12px; background: var(--gold); color: var(--navy); border: none; border-radius: 8px; font-size: .92rem; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; transition: background .15s; }
-.cgo:hover { background: var(--gold2); }
-
-/* RESULTS */
-.cresult { margin-top: 16px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 18px; display: none; }
-.cresult.show { display: block; }
-.cr-main { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.08); }
-.cr-main .crl { font-size: .68rem; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 3px; }
-.cr-main .crn { font-size: 2rem; font-weight: 800; color: var(--gold); line-height: 1; letter-spacing: -1px; }
-.cr-main .cru { font-size: .72rem; color: rgba(255,255,255,.33); margin-top: 2px; }
-.cr-rows {}
-.cr-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: .8rem; }
-.cr-row:last-child { border-bottom: none; }
-.cr-row .crl2 { color: rgba(255,255,255,.4); }
-.cr-row .crv { color: var(--white); font-weight: 600; }
-.cr-row .crv.good { color: #4ADE80; }
-.cr-bar-wrap { margin: 12px 0 3px; }
-.cr-bar-track { background: rgba(255,255,255,.08); border-radius: 3px; height: 4px; overflow: hidden; }
-.cr-bar-fill { height: 100%; border-radius: 3px; background: var(--gold); width: 0; transition: width .8s cubic-bezier(.4,0,.2,1); }
-.cr-bar-label { font-size: .66rem; color: rgba(255,255,255,.3); margin-top: 4px; }
-.cr-footnote { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.07); font-size: .76rem; color: rgba(255,255,255,.4); line-height: 1.6; }
-.cr-footnote strong { color: rgba(255,255,255,.75); }
-.cr-footnote a { color: var(--gold); text-decoration: underline; }
-
-/* ABOUT */
-.about { background: var(--sun); padding: 96px 48px; }
-.about-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 380px 1fr; gap: 80px; align-items: start; }
-.about-left h2 { font-size: 2.6rem; font-weight: 800; color: var(--navy); letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 20px; }
-.about-left p { font-size: .95rem; color: var(--gray); line-height: 1.75; margin-bottom: 14px; }
-.about-left p strong { color: var(--ink); font-weight: 600; }
-.fact-block { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-bottom: 28px; }
-.fact-cell { background: var(--white); padding: 22px 24px; }
-.fact-cell .fnum { font-size: 1.8rem; font-weight: 800; color: var(--navy); letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
-.fact-cell .flabel { font-size: .75rem; color: var(--gray); font-weight: 500; }
-.values-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.val { font-size: .78rem; font-weight: 600; color: var(--navy); background: var(--white); border: 1.5px solid var(--navy); padding: 4px 13px; border-radius: 20px; }
-
-/* SERVICES */
-.services { background: var(--navy); padding: 96px 48px; }
-.services-inner { max-width: 1100px; margin: 0 auto; }
-.srv-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,.12); padding-bottom: 28px; }
-.srv-top h2 { font-size: 2.4rem; font-weight: 800; color: var(--white); letter-spacing: -1.5px; line-height: 1.1; }
-.srv-top h2 span { color: var(--gold); }
-.srv-top p { font-size: .88rem; color: rgba(255,255,255,.4); max-width: 260px; text-align: right; line-height: 1.6; }
-.srv-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
-.srv-card { padding: 26px 22px; border: 1px solid rgba(255,255,255,.1); border-radius: 10px; transition: border-color .2s; }
-.srv-card:hover { border-color: var(--gold); }
-.srv-num { font-size: .68rem; font-weight: 700; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
-.srv-card h3 { font-size: .95rem; font-weight: 700; color: var(--white); margin-bottom: 14px; }
-.srv-card ul { list-style: none; }
-.srv-card ul li { font-size: .81rem; color: rgba(255,255,255,.5); padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05); line-height: 1.4; }
-.srv-card ul li:last-child { border-bottom: none; }
-
-/* PROJECTS */
-.projects { background: var(--white); padding: 96px 48px; }
-.projects-inner { max-width: 1100px; margin: 0 auto; }
-.proj-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; }
-.proj-head h2 { font-size: 2.4rem; font-weight: 800; color: var(--navy); letter-spacing: -1.5px; }
-.proj-head p { font-size: .875rem; color: var(--gray); }
-.proj-item { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 24px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); }
-.proj-item:first-child { border-top: 1px solid var(--line); }
-.proj-name { font-size: .97rem; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
-.proj-loc { font-size: .78rem; color: var(--gray); }
-.proj-type { font-size: .8rem; color: var(--gray); }
-.proj-tags-wrap { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
-.ptag { font-size: .68rem; font-weight: 600; background: #EEF2FF; color: var(--navy); padding: 3px 9px; border-radius: 4px; }
-
-/* WHY */
-.why { background: var(--sun); padding: 96px 48px; }
-.why-inner { max-width: 1100px; margin: 0 auto; }
-.why h2 { font-size: 2.4rem; font-weight: 800; color: var(--navy); letter-spacing: -1.5px; margin-bottom: 40px; max-width: 500px; line-height: 1.1; }
-.why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-.why-item { padding: 26px 28px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); background: var(--white); }
-.why-item:nth-child(2n) { border-right: none; }
-.why-item:nth-last-child(-n+2) { border-bottom: none; }
-.why-tick { width: 26px; height: 26px; background: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
-.why-tick svg { width: 12px; height: 12px; stroke: var(--gold); stroke-width: 2.5; fill: none; }
-.why-item h3 { font-size: .92rem; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
-.why-item p { font-size: .83rem; color: var(--gray); line-height: 1.65; }
-
-/* CONTACT */
-.contact { background: var(--navy); padding: 96px 48px; }
-.contact-inner { max-width: 1100px; margin: 0 auto; }
-.contact-inner h2 { font-size: 2.4rem; font-weight: 800; color: var(--white); letter-spacing: -1.5px; margin-bottom: 8px; }
-.contact-inner > p { font-size: .92rem; color: rgba(255,255,255,.4); margin-bottom: 48px; }
-.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
-.cinfo-block { margin-bottom: 24px; }
-.cinfo-block h4 { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 5px; }
-.cinfo-block p, .cinfo-block a { font-size: .92rem; color: rgba(255,255,255,.75); text-decoration: none; line-height: 1.6; }
-.cinfo-block a:hover { color: var(--gold); }
-.cta-box { background: var(--gold); border-radius: 12px; padding: 32px; display: flex; flex-direction: column; gap: 20px; }
-.cta-box h3 { font-size: 1.5rem; font-weight: 800; color: var(--navy); line-height: 1.2; letter-spacing: -.5px; }
-.cta-box p { font-size: .875rem; color: rgba(27,45,107,.7); line-height: 1.6; }
-.cta-box a { display: inline-block; background: var(--navy); color: var(--white); padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: .9rem; text-decoration: none; transition: background .15s; align-self: flex-start; }
-.cta-box a:hover { background: var(--navy2); }
-.safety-note { margin-top: 28px; padding: 18px 22px; border: 1px solid rgba(255,255,255,.1); border-radius: 10px; }
-.safety-note h4 { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,.35); margin-bottom: 10px; }
-.safety-note ul { list-style: none; }
-.safety-note ul li { font-size: .8rem; color: rgba(255,255,255,.5); padding: 4px 0; display: flex; gap: 8px; }
-.safety-note ul li::before { content: '—'; color: var(--gold); }
-
-/* FOOTER */
-footer { background: var(--navy2); border-top: 1px solid rgba(255,255,255,.06); padding: 20px 48px; display: flex; align-items: center; justify-content: space-between; }
-footer p { font-size: .76rem; color: rgba(255,255,255,.3); }
-footer a { font-size: .76rem; color: rgba(255,255,255,.4); text-decoration: none; }
-footer a:hover { color: var(--gold); }
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .nav { padding: 0 20px; }
-  .nav-links { display: none; }
-  .hero { grid-template-columns: 1fr; min-height: auto; }
-  .hero-left { padding: 48px 24px; }
-  .hero-right { padding: 36px 24px; }
-  .about { padding: 64px 24px; }
-  .about-inner { grid-template-columns: 1fr; gap: 36px; }
-  .services { padding: 64px 24px; }
-  .srv-grid { grid-template-columns: 1fr 1fr; }
-  .srv-top { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .srv-top p { text-align: left; max-width: 100%; }
-  .projects { padding: 64px 24px; }
-  .proj-item { grid-template-columns: 1fr; gap: 6px; }
-  .proj-tags-wrap { justify-content: flex-start; }
-  .why { padding: 64px 24px; }
-  .contact { padding: 64px 24px; }
-  .contact-grid { grid-template-columns: 1fr; gap: 36px; }
-  .appl-grid { grid-template-columns: 1fr; }
-  footer { padding: 18px 24px; flex-direction: column; gap: 6px; text-align: center; }
+/* ════════════════════════════════════
+   RESPONSIVE — SMALL PHONES (≤480px)
+   ════════════════════════════════════ */
+@media(max-width:480px){
+  .hero h1{font-size:1.75rem;}
+  .hero-btns{flex-direction:column;align-items:center;}
+  .btn-primary,.btn-secondary{width:100%;text-align:center;}
+  .hero-img-inner{flex-direction:column;gap:8px;}
+  .hero-stat-pill{width:100%;}
+  .nav-btn-solid{display:none;}
+  .footer-top{grid-template-columns:1fr;}
+  .how-steps{border:none;}
+  .how-step{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;}
+  .section-title{font-size:1.6rem;}
+  .client-tab{padding:8px 10px;font-size:.72rem;}
+  .stat-num{font-size:1.5rem;}
 }
 </style>
 </head>
 <body>
 
+<div id="pbar"></div>
+
+<!-- MOBILE CTA BAR -->
+<div class="mobile-cta-bar">
+  <a href="tel:09271374314">Call us: 0927 137 4314</a>
+</div>
+
 <!-- NAV -->
 <nav class="nav">
-  <a class="nav-brand" href="#">TRU<span>SOLAR</span></a>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#services">Services</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-  <a class="nav-phone" href="tel:09271374314">0927 137 4314</a>
+  <div class="nav-left">
+    <a class="nav-brand" href="#">
+      <svg viewBox="0 0 44 44" fill="none">
+        <ellipse cx="22" cy="7"    rx="3.5" ry="2"   fill="#F0B429" opacity=".95" transform="rotate(-20 22 7)"/>
+        <ellipse cx="28" cy="8.5"  rx="3.2" ry="1.8" fill="#F0B429" opacity=".9"  transform="rotate(5 28 8.5)"/>
+        <ellipse cx="33" cy="12"   rx="3"   ry="1.7" fill="#F0B429" opacity=".85" transform="rotate(30 33 12)"/>
+        <ellipse cx="36" cy="17.5" rx="2.8" ry="1.6" fill="#F0B429" opacity=".8"  transform="rotate(55 36 17.5)"/>
+        <ellipse cx="36" cy="23.5" rx="2.6" ry="1.5" fill="#F0B429" opacity=".75" transform="rotate(80 36 23.5)"/>
+        <ellipse cx="33" cy="29"   rx="2.4" ry="1.4" fill="#F0B429" opacity=".7"  transform="rotate(105 33 29)"/>
+        <ellipse cx="28" cy="33.5" rx="2.2" ry="1.3" fill="#F0B429" opacity=".65" transform="rotate(130 28 33.5)"/>
+        <ellipse cx="22" cy="36"   rx="2"   ry="1.2" fill="#F0B429" opacity=".6"  transform="rotate(155 22 36)"/>
+        <ellipse cx="16" cy="35"   rx="1.9" ry="1.1" fill="#F0B429" opacity=".55" transform="rotate(175 16 35)"/>
+        <ellipse cx="11" cy="31.5" rx="1.8" ry="1"   fill="#F0B429" opacity=".55" transform="rotate(-155 11 31.5)"/>
+        <ellipse cx="8"  cy="26.5" rx="2"   ry="1.2" fill="#F0B429" opacity=".62" transform="rotate(-130 8 26.5)"/>
+        <ellipse cx="7.5" cy="21"  rx="2.3" ry="1.4" fill="#F0B429" opacity=".7"  transform="rotate(-105 7.5 21)"/>
+        <ellipse cx="9"  cy="15.5" rx="2.6" ry="1.6" fill="#F0B429" opacity=".78" transform="rotate(-80 9 15.5)"/>
+        <ellipse cx="13" cy="10.5" rx="3"   ry="1.8" fill="#F0B429" opacity=".86" transform="rotate(-55 13 10.5)"/>
+        <ellipse cx="17.5" cy="7.5" rx="3.3" ry="1.9" fill="#F0B429" opacity=".93" transform="rotate(-30 17.5 7.5)"/>
+      </svg>
+      <span class="nav-brand-name">TRU<span>SOLAR</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#clients">Services</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="calculator.html">Calculator</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </div>
+  <div class="nav-right">
+    <a class="nav-btn-ghost" href="tel:09271374314">0927 137 4314</a>
+    <a class="nav-btn-solid" href="#contact">Get started</a>
+  </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-left">
-    <span class="hero-tag">Solar energy · Philippines</span>
-    <h1>Cut your electric bill. Not corners.</h1>
-    <p>TruSolar designs and installs solar systems built for your actual usage — not a generic package. Residential and commercial, anywhere in the Philippines.</p>
-    <ul class="hero-bullets">
-      <li>Grid-tied, hybrid, and off-grid systems</li>
-      <li>Battery energy storage solutions</li>
-      <li>Full engineering and maintenance support</li>
-      <li>Nationwide service coverage</li>
-    </ul>
-    <p class="hero-founded">Est. 2022 · Quezon City</p>
-  </div>
-
-  <div class="hero-right">
-    <p class="calc-heading">Find your system size</p>
-    <p class="calc-sub">Enter your usage, bill, or pick your appliances.</p>
-
-    <div class="ctabs">
-      <button class="ctab on"  id="tab-kwh"   onclick="switchTab('kwh')">By kWh</button>
-      <button class="ctab"     id="tab-bill"  onclick="switchTab('bill')">By bill</button>
-      <button class="ctab"     id="tab-appl"  onclick="switchTab('appl')">By appliances</button>
-    </div>
-
-    <!-- kWh panel -->
-    <div id="panel-kwh">
-      <div class="cfield">
-        <label>Period</label>
-        <select id="usage-period" onchange="updateLabels()">
-          <option value="daily">Daily usage (kWh/day)</option>
-          <option value="monthly">Monthly usage (kWh/month)</option>
-        </select>
-      </div>
-      <div class="cfield">
-        <label id="kwh-label">Daily usage</label>
-        <div class="sfx-wrap">
-          <input type="number" id="kwh-input" placeholder="e.g. 20" min="0" step="0.1">
-          <span class="sfx">kWh</span>
-        </div>
-        <p class="hint" id="kwh-hint">Typical PH home: 15–30 kWh/day</p>
-      </div>
-      <div class="cfield">
-        <label>Your area</label>
-        <select id="sun-hours">
-          <option value="4.5">Low sun — 4.5 hrs (some Luzon)</option>
-          <option value="5" selected>Average — 5.0 hrs (NCR, Calabarzon)</option>
-          <option value="5.5">Good — 5.5 hrs (Visayas)</option>
-          <option value="6">Excellent — 6.0 hrs (Mindanao, Palawan)</option>
-        </select>
-      </div>
-      <div class="cfield">
-        <label>System efficiency</label>
-        <select id="eff-kwh">
-          <option value="0.80">Standard — 80%</option>
-          <option value="0.85" selected>Good — 85% (most installs)</option>
-          <option value="0.90">Premium — 90%</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Bill panel -->
-    <div id="panel-bill" style="display:none">
-      <div class="cfield">
-        <label>Monthly bill</label>
-        <div class="sfx-wrap">
-          <input type="number" id="bill-input" placeholder="e.g. 8000" min="0">
-          <span class="sfx">₱</span>
-        </div>
-        <p class="hint">From your latest Meralco or utility bill</p>
-      </div>
-      <div class="cfield">
-        <label>Rate per kWh</label>
-        <div class="sfx-wrap">
-          <input type="number" id="rate-input" value="12" min="1" step="0.5">
-          <span class="sfx">₱</span>
-        </div>
-        <p class="hint">Meralco avg ≈ ₱12–14/kWh</p>
-      </div>
-      <div class="cfield">
-        <label>Your area</label>
-        <select id="sun-hours-bill">
-          <option value="4.5">Low sun — 4.5 hrs</option>
-          <option value="5" selected>Average — 5.0 hrs (NCR, Calabarzon)</option>
-          <option value="5.5">Good — 5.5 hrs (Visayas)</option>
-          <option value="6">Excellent — 6.0 hrs (Mindanao, Palawan)</option>
-        </select>
-      </div>
-      <div class="cfield">
-        <label>System efficiency</label>
-        <select id="eff-bill">
-          <option value="0.80">Standard — 80%</option>
-          <option value="0.85" selected>Good — 85% (most installs)</option>
-          <option value="0.90">Premium — 90%</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Appliances panel -->
-    <div id="panel-appl" style="display:none">
-      <div class="appl-grid" id="appl-grid">
-        <!-- Rendered by JS -->
-      </div>
-      <div class="appl-hours-row">
-        <label>Avg hours used per day</label>
-        <input type="number" id="appl-hours" value="8" min="1" max="24" step="0.5">
-      </div>
-      <div class="appl-total">
-        <span class="at-label">Estimated daily usage</span>
-        <span class="at-val" id="appl-total-val">0 kWh/day</span>
-      </div>
-      <div class="cfield">
-        <label>Your area</label>
-        <select id="sun-hours-appl">
-          <option value="4.5">Low sun — 4.5 hrs</option>
-          <option value="5" selected>Average — 5.0 hrs (NCR, Calabarzon)</option>
-          <option value="5.5">Good — 5.5 hrs (Visayas)</option>
-          <option value="6">Excellent — 6.0 hrs (Mindanao, Palawan)</option>
-        </select>
-      </div>
-      <div class="cfield">
-        <label>System efficiency</label>
-        <select id="eff-appl">
-          <option value="0.80">Standard — 80%</option>
-          <option value="0.85" selected>Good — 85% (most installs)</option>
-          <option value="0.90">Premium — 90%</option>
-        </select>
-      </div>
-    </div>
-
+  <div class="hero-tag">Clean energy · Philippines · Est. 2022</div>
+  <h1>Replace high electricity costs<br>with <em>solar</em>.</h1>
+  <p class="hero-sub">Create energy, reduce costs, and go green with a personally designed system for your home or business.</p>
+  <div class="hero-btns">
     <a class="btn-primary" href="calculator.html">Calculate my savings</a>
-
-    <div class="cresult" id="cresult">
-      <div class="cr-main">
-        <p class="crl">Recommended system</p>
-        <div class="crn" id="r-size">—</div>
-        <p class="cru">kilowatt-peak (kWp)</p>
-      </div>
-      <div class="cr-rows">
-        <div class="cr-row"><span class="crl2">Daily usage</span><span class="crv" id="r-daily">—</span></div>
-        <div class="cr-row"><span class="crl2">Monthly usage</span><span class="crv" id="r-mwh">—</span></div>
-        <div class="cr-row"><span class="crl2">Current monthly bill</span><span class="crv" id="r-bill">—</span></div>
-        <div class="cr-row"><span class="crl2">Monthly savings</span><span class="crv good" id="r-save">—</span></div>
-        <div class="cr-row"><span class="crl2">Annual savings</span><span class="crv" id="r-annual">—</span></div>
-        <div class="cr-row"><span class="crl2">Approx. payback</span><span class="crv" id="r-payback">—</span></div>
-      </div>
-      <div class="cr-bar-wrap">
-        <div class="cr-bar-track"><div class="cr-bar-fill" id="r-bar"></div></div>
-        <p class="cr-bar-label" id="r-bar-label"></p>
-      </div>
-      <div class="cr-footnote" id="r-note"></div>
-    </div>
+    <a class="btn-secondary" href="#contact">Contact us</a>
   </div>
-</section>
-
-<!-- ABOUT -->
-<section class="about" id="about">
-  <div class="about-inner">
-    <div class="about-left">
-      <h2>Who we are</h2>
-      <p>TruSolar is a <strong>Philippine solar energy company</strong> founded in 2022, based in Quezon City. We specialize in the design, supply, installation, engineering, and maintenance of solar power systems.</p>
-      <p>We serve residential homeowners and commercial clients — and we stay with you after installation, not just during it.</p>
-      <p>Our goal is simple: give every client a system that genuinely fits their energy needs, at a price that makes sense.</p>
-    </div>
-    <div class="about-right">
-      <div class="fact-block">
-        <div class="fact-cell"><div class="fnum">2022</div><div class="flabel">Year established</div></div>
-        <div class="fact-cell"><div class="fnum">QC</div><div class="flabel">Quezon City based</div></div>
-        <div class="fact-cell"><div class="fnum">25 yr</div><div class="flabel">Panel warranty</div></div>
-        <div class="fact-cell"><div class="fnum">Nationwide</div><div class="flabel">Service coverage</div></div>
+  <div class="hero-rating">
+    <span class="stars">★★★★★</span>
+    Trusted by homeowners & businesses nationwide
+  </div>
+  <div class="hero-img-strip">
+    <div class="hero-img-inner">
+      <div class="hero-stat-pill gold-pill">
+        <div class="hsp-num">+25%</div>
+        <div class="hsp-label">Est. annual return</div>
       </div>
-      <p style="font-size:.75rem;color:var(--gray);margin-bottom:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Our values</p>
-      <div class="values-row">
-        <span class="val">Integrity</span>
-        <span class="val">Quality</span>
-        <span class="val">Teamwork</span>
-        <span class="val">Innovation</span>
-        <span class="val">Sustainability</span>
+      <div class="hero-stat-pill">
+        <div class="hsp-num">₱0</div>
+        <div class="hsp-label">Site assessment fee</div>
+      </div>
+      <div class="hero-stat-pill">
+        <div class="hsp-num">25 yr</div>
+        <div class="hsp-label">Panel warranty</div>
+      </div>
+      <div class="hero-stat-pill">
+        <div class="hsp-num">95%</div>
+        <div class="hsp-label">Bill reduction</div>
+      </div>
+      <div class="hero-stat-pill gold-pill">
+        <div class="hsp-num">4–7 yr</div>
+        <div class="hsp-label">Payback period</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- SERVICES -->
-<section class="services" id="services">
-  <div class="services-inner">
-    <div class="srv-top">
-      <h2>What we <span>do</span></h2>
-      <p>End-to-end solar — from site assessment to long-term maintenance.</p>
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-num">2022</div><div class="stat-label">Established</div></div>
+  <div class="stat-item"><div class="stat-num">Nationwide</div><div class="stat-label">Service coverage</div></div>
+  <div class="stat-item"><div class="stat-num">Res + Com</div><div class="stat-label">Residential & commercial</div></div>
+  <div class="stat-item"><div class="stat-num">25 yr</div><div class="stat-label">Panel warranty</div></div>
+</div>
+
+<!-- CLIENT TYPES -->
+<section class="clients-section" id="clients">
+  <div class="clients-inner">
+    <p class="eyebrow">Who we serve</p>
+    <h2 class="section-title">Your complete solar journey with us.</h2>
+    <div class="client-tabs">
+      <button class="client-tab active" onclick="switchClient('homes',this)">Homes</button>
+      <button class="client-tab" onclick="switchClient('offices',this)">Offices & Warehouses</button>
+      <button class="client-tab" onclick="switchClient('commercial',this)">Commercial</button>
+      <button class="client-tab" onclick="switchClient('industrial',this)">Industrial</button>
     </div>
-    <div class="srv-grid">
-      <div class="srv-card">
-        <p class="srv-num">Solar installation</p>
-        <h3>System Types</h3>
-        <ul>
-          <li>Grid-tied systems</li>
-          <li>Hybrid systems</li>
-          <li>Off-grid systems</li>
-          <li>Battery energy storage</li>
-        </ul>
+
+    <div class="client-panel active" id="cp-homes">
+      <div class="client-layout">
+        <div class="client-text">
+          <h3>Transition from your monthly electricity bill to solar savings.</h3>
+          <p>We'll help you choose the best solar setup based on your energy needs, monthly usage, and appliances to create a plan that fits your lifestyle and budget.</p>
+          <ul class="client-features">
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Custom system design based on your actual usage</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Grid-tied, hybrid, and off-grid options available</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Battery storage for brownout protection</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Net metering application handled by us</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Ongoing monitoring and maintenance support</li>
+          </ul>
+          <a class="client-cta" href="#contact">Get a free assessment →</a>
+        </div>
+        <div class="client-visual">
+          <div class="cv-icon">🏡</div>
+          <div class="cv-badge">
+            <div class="cvb-num">Up to 95%</div>
+            <div class="cvb-label">Bill reduction possible</div>
+          </div>
+        </div>
       </div>
-      <div class="srv-card">
-        <p class="srv-num">Engineering</p>
-        <h3>Design & Planning</h3>
-        <ul>
-          <li>Site assessment</li>
-          <li>System design</li>
-          <li>Technical planning</li>
-          <li>Energy analysis</li>
-        </ul>
+    </div>
+
+    <div class="client-panel" id="cp-offices">
+      <div class="client-layout">
+        <div class="client-text">
+          <h3>Power your daytime office & warehouse operations with solar.</h3>
+          <p>Take advantage of your daytime operations with unused roof space. We'll design a system that maximizes your ROI based on your operating hours and energy profile.</p>
+          <ul class="client-features">
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Predictable returns on consistent daytime usage</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Large roof space fully utilized</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Net metering to export excess power</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>System monitoring included</li>
+          </ul>
+          <a class="client-cta" href="#contact">Talk to our team →</a>
+        </div>
+        <div class="client-visual">
+          <div class="cv-icon">🏢</div>
+          <div class="cv-badge">
+            <div class="cvb-num">Fast ROI</div>
+            <div class="cvb-label">Daytime operations = max solar use</div>
+          </div>
+        </div>
       </div>
-      <div class="srv-card">
-        <p class="srv-num">Maintenance</p>
-        <h3>After-Sale Support</h3>
-        <ul>
-          <li>Preventive maintenance</li>
-          <li>System monitoring</li>
-          <li>Troubleshooting</li>
-          <li>Repair & support</li>
-        </ul>
+    </div>
+
+    <div class="client-panel" id="cp-commercial">
+      <div class="client-layout">
+        <div class="client-text">
+          <h3>Allow your guests to choose sustainable stays while saving you money.</h3>
+          <p>For hotels, resorts, and hospitality businesses running 24 hours — we design systems that offset your daytime power needs while exporting excess to the grid at night.</p>
+          <ul class="client-features">
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>24-hour power strategy built in</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Export program for night-time offset</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Real-time system performance monitoring</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Sustainability story for your guests</li>
+          </ul>
+          <a class="client-cta" href="#contact">Get a quote →</a>
+        </div>
+        <div class="client-visual">
+          <div class="cv-icon">🏨</div>
+          <div class="cv-badge">
+            <div class="cvb-num">24/7</div>
+            <div class="cvb-label">Power strategy designed for you</div>
+          </div>
+        </div>
       </div>
-      <div class="srv-card">
-        <p class="srv-num">Energy solutions</p>
-        <h3>Custom Setups</h3>
-        <ul>
-          <li>Residential solutions</li>
-          <li>Commercial solutions</li>
-          <li>Industrial systems</li>
-          <li>Custom energy design</li>
-        </ul>
+    </div>
+
+    <div class="client-panel" id="cp-industrial">
+      <div class="client-layout">
+        <div class="client-text">
+          <h3>Reduce the cost of your products with cheaper energy.</h3>
+          <p>For manufacturing facilities — cut operating costs with a fully integrated solar system. From inverters to panels, design, construction, permitting, and monitoring.</p>
+          <ul class="client-features">
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Fully integrated, all-in-one solution</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Lower cost of goods through cheaper energy</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Design, construction, and permitting included</li>
+            <li><span class="cf-check"><svg viewBox="0 0 10 10"><polyline points="1,5 4,8 9,2"/></svg></span>Minimize downtime with 24/7 monitoring</li>
+          </ul>
+          <a class="client-cta" href="#contact">Contact our team →</a>
+        </div>
+        <div class="client-visual">
+          <div class="cv-icon">🏭</div>
+          <div class="cv-badge">
+            <div class="cvb-num">Lower OpEx</div>
+            <div class="cvb-label">Reduce cost of production</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="how-inner">
+    <p class="eyebrow">The process</p>
+    <h2 class="section-title">Get started in 5 simple steps.</h2>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="step-num">Step 01</div>
+        <h4>Contact us or use the calculator</h4>
+        <p>Reach out or use our solar calculator to get an instant estimate for your home or business.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">Step 02</div>
+        <h4>Free site assessment</h4>
+        <p>We visit your property, assess your roof and energy usage, and design your ideal system — at no cost.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">Step 03</div>
+        <h4>Approve the design</h4>
+        <p>We share a panel placement design for your approval before any work begins.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">Step 04</div>
+        <h4>Schedule installation</h4>
+        <p>Pick a date. Our certified team installs your system in 1–2 days with zero mess.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">Step 05</div>
+        <h4>Power up & save</h4>
+        <p>We do final checks and you start saving immediately. Net metering handled by us if applicable.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="calc-section" id="calculator" style="background:var(--navy);padding:88px 60px;">
+  <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;">
+    <div>
+      <p class="eyebrow" style="color:var(--gold);">Solar Design Studio</p>
+      <h2 class="section-title" style="color:var(--white);margin-bottom:16px;">Get your personalized solar proposal instantly.</h2>
+      <p style="color:rgba(255,255,255,.55);font-size:.95rem;line-height:1.75;margin-bottom:32px;">Enter your monthly bill or daily kWh usage and we'll calculate the exact system size, your monthly savings, payback period, and full pricing — in under 2 minutes.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:32px;">
+        <div style="display:flex;align-items:center;gap:12px;font-size:.875rem;color:rgba(255,255,255,.7);">
+          <span style="width:28px;height:28px;background:rgba(240,180,41,.15);border:1px solid rgba(240,180,41,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem;color:var(--gold);font-weight:700;">1</span>
+          Tell us your property type and electricity bill
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:.875rem;color:rgba(255,255,255,.7);">
+          <span style="width:28px;height:28px;background:rgba(240,180,41,.15);border:1px solid rgba(240,180,41,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem;color:var(--gold);font-weight:700;">2</span>
+          Pick your roof or project type
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:.875rem;color:rgba(255,255,255,.7);">
+          <span style="width:28px;height:28px;background:rgba(240,180,41,.15);border:1px solid rgba(240,180,41,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem;color:var(--gold);font-weight:700;">3</span>
+          Get your full solar proposal with pricing and savings
+        </div>
+      </div>
+      <a href="calculator.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--navy);font-weight:700;font-size:.95rem;padding:14px 28px;border-radius:9px;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='var(--gold2)'" onmouseout="this.style.background='var(--gold)'">
+        Open Solar Design Studio →
+      </a>
+    </div>
+    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;">
+      <div style="background:var(--white);border-radius:10px;padding:20px;margin-bottom:12px;">
+        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray2);margin-bottom:6px;">Monthly Savings</div>
+        <div style="font-size:2rem;font-weight:800;color:var(--gold);font-family:'Sora',sans-serif;letter-spacing:-1px;">₱3,963</div>
+        <div style="font-size:.72rem;color:var(--gray2);margin-top:2px;">Based on ₱7,500/mo bill · 5 kWp system</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:1.1rem;font-weight:800;color:var(--white);font-family:'Sora',sans-serif;">5.88 kWp</div>
+          <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:2px;">System size</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:1.1rem;font-weight:800;color:var(--white);font-family:'Sora',sans-serif;">15 panels</div>
+          <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:2px;">400W each</div>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-bottom:2px;">Payback Period</div>
+          <div style="font-size:1rem;font-weight:700;color:var(--white);">~6 years</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-bottom:2px;">Lifetime Savings</div>
+          <div style="font-size:1rem;font-weight:700;color:#4ADE80;">₱1,140,480</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROI COMPARISON -->
+<section class="roi-section" id="roi">
+  <div class="roi-inner">
+    <p class="eyebrow">Savings over time</p>
+    <h2 class="section-title">With solar vs. without solar.</h2>
+    <p class="section-sub">Use the calculator above to generate your personalised savings projection over 5, 10, and 25 years.</p>
+    <div class="roi-empty" id="roi-empty">↑ Open the Solar Design Studio above to generate your savings comparison.</div>
+    <div class="roi-chart" id="roi-chart">
+      <div class="roi-cards">
+        <div class="roi-card"><div class="rc-label">5-year savings</div><div class="rc-val" id="roi-5">—</div><div class="rc-sub">vs. paying full utility bills</div></div>
+        <div class="roi-card"><div class="rc-label">10-year savings</div><div class="rc-val" id="roi-10">—</div><div class="rc-sub">after payback period</div></div>
+        <div class="roi-card"><div class="rc-label">25-year savings</div><div class="rc-val" id="roi-25">—</div><div class="rc-sub">full panel lifetime</div></div>
+      </div>
+      <div class="roi-compare">
+        <p class="roi-compare-title">Total electricity cost — with solar vs. without</p>
+        <div class="roi-bar-row">
+          <span class="roi-bar-period">5 years</span>
+          <div class="roi-track"><div class="roi-bar-with" id="bw5">With TruSolar</div></div>
+          <div class="roi-track"><div class="roi-bar-without" id="bwo5">Without solar</div></div>
+        </div>
+        <div class="roi-bar-row" style="margin-top:10px;">
+          <span class="roi-bar-period">25 years</span>
+          <div class="roi-track"><div class="roi-bar-with" id="bw25">With TruSolar</div></div>
+          <div class="roi-track"><div class="roi-bar-without" id="bwo25">Without solar</div></div>
+        </div>
+        <div class="roi-legend">
+          <div class="roi-legend-item"><div class="roi-legend-dot" style="background:var(--navy)"></div>With TruSolar</div>
+          <div class="roi-legend-item"><div class="roi-legend-dot" style="background:var(--line)"></div>Without solar</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- PROJECTS -->
-<section class="projects" id="projects">
-  <div class="projects-inner">
+<section class="projects-section" id="projects">
+  <div class="proj-inner">
     <div class="proj-head">
-      <h2>Completed projects</h2>
-      <p>Homes and businesses we've powered up.</p>
+      <div><p class="eyebrow">Portfolio</p><h2 class="section-title" style="margin-bottom:0;">Completed installations.</h2></div>
+      <p style="font-size:.875rem;color:var(--gray);">Real homes and businesses we've powered up.</p>
     </div>
-    <div>
-      <div class="proj-item">
-        <div><p class="proj-name">Arcellana Family</p><p class="proj-loc">Alaminos City, Pangasinan</p></div>
-        <p class="proj-type">Residential · Hybrid</p>
-        <div class="proj-tags-wrap"><span class="ptag">5 kW</span><span class="ptag">6 panels</span><span class="ptag">10 kWh battery</span></div>
+    <div class="proj-table">
+      <div class="proj-row"><div><p class="proj-name">Arcellana Family</p><p class="proj-loc">Alaminos City, Pangasinan</p></div><p class="proj-type">Residential · Hybrid</p><div class="proj-tags"><span class="ptag">5 kW</span><span class="ptag">6 panels</span><span class="ptag">10 kWh battery</span></div></div>
+      <div class="proj-row"><div><p class="proj-name">Metro Feeds Commercial</p><p class="proj-loc">Sta Maria, Bulacan</p></div><p class="proj-type">Commercial · Large-scale</p><div class="proj-tags"><span class="ptag">Commercial</span><span class="ptag">Energy reduction</span></div></div>
+      <div class="proj-row"><div><p class="proj-name">Dargantes Family</p><p class="proj-loc">SJDM, Bulacan</p></div><p class="proj-type">Residential · Grid-tied</p><div class="proj-tags"><span class="ptag">Rooftop</span><span class="ptag">Grid-tied</span></div></div>
+      <div class="proj-row"><div><p class="proj-name">Abrera Family</p><p class="proj-loc">Novaliches, Quezon City</p></div><p class="proj-type">Residential · Rooftop</p><div class="proj-tags"><span class="ptag">Rooftop</span><span class="ptag">Long-term savings</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi-section" id="testimonials">
+  <div class="testi-inner">
+    <p class="eyebrow">What clients say</p>
+    <h2 class="section-title">Real results, real families.</h2>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">Malaki ang natipid namin sa kuryente every month. Dati ₱6,000+ ang bill namin, ngayon below ₱500 na lang. Best investment talaga.</p>
+        <div class="testi-author"><p class="testi-name">Arcellana Family</p><p class="testi-loc">Alaminos City, Pangasinan</p><p class="testi-system">5 kW Hybrid · 10 kWh Battery</p></div>
       </div>
-      <div class="proj-item">
-        <div><p class="proj-name">Metro Feeds Commercial Setup</p><p class="proj-loc">Sta Maria, Bulacan</p></div>
-        <p class="proj-type">Commercial · Large-scale</p>
-        <div class="proj-tags-wrap"><span class="ptag">Commercial</span><span class="ptag">Energy reduction</span></div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">Ang TruSolar team ay propesyonal at maayos mag-trabaho. Hindi sila basta-basta nag-install — inexplain nila sa amin ang lahat bago simulan.</p>
+        <div class="testi-author"><p class="testi-name">Dargantes Family</p><p class="testi-loc">SJDM, Bulacan</p><p class="testi-system">Residential · Grid-tied System</p></div>
       </div>
-      <div class="proj-item">
-        <div><p class="proj-name">Dargantes Family</p><p class="proj-loc">SJDM, Bulacan</p></div>
-        <p class="proj-type">Residential · Grid-tied</p>
-        <div class="proj-tags-wrap"><span class="ptag">Rooftop</span><span class="ptag">Grid-tied</span></div>
-      </div>
-      <div class="proj-item">
-        <div><p class="proj-name">Abrera Family</p><p class="proj-loc">Novaliches, Quezon City</p></div>
-        <p class="proj-type">Residential · Rooftop</p>
-        <div class="proj-tags-wrap"><span class="ptag">Rooftop</span><span class="ptag">Long-term savings</span></div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">For our business, ang solar system ng TruSolar ang pinaka-magandang desisyon na nagawa namin. Ang bilis ng ROI — within 4 years pa lang, recovered na namin.</p>
+        <div class="testi-author"><p class="testi-name">Metro Feeds</p><p class="testi-loc">Sta Maria, Bulacan</p><p class="testi-system">Commercial · Large-scale Setup</p></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- WHY -->
-<section class="why" id="why">
+<section class="why-section" id="why">
   <div class="why-inner">
-    <h2>Why homeowners and businesses pick us</h2>
+    <p class="eyebrow">Why TruSolar</p>
+    <h2 class="section-title">Why homeowners and businesses pick us.</h2>
     <div class="why-grid">
-      <div class="why-item">
-        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
-        <h3>Experienced installation team</h3>
-        <p>Professional technicians who prioritize safety and quality on every job, regardless of size.</p>
-      </div>
-      <div class="why-item">
-        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
-        <h3>High-quality components only</h3>
-        <p>Tier-1 panels, proven inverters, and reliable hardware — nothing we wouldn't put on our own roof.</p>
-      </div>
-      <div class="why-item">
-        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
-        <h3>Systems built around your usage</h3>
-        <p>Every system is sized for your actual consumption — no upselling, no generic packages.</p>
-      </div>
-      <div class="why-item">
-        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
-        <h3>Philippine Electrical Code compliant</h3>
-        <p>Full compliance with safety and electrical standards. We handle all permits and paperwork.</p>
-      </div>
-      <div class="why-item">
-        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
-        <h3>After-sales support you can rely on</h3>
-        <p>Ongoing maintenance, monitoring, and repair so your system runs well for years, not just months.</p>
-      </div>
-      <div class="why-item">
-        <div class="why-tick"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></div>
-        <h3>Honest pricing, flexible options</h3>
-        <p>Competitive rates and installment options — because solar should be accessible, not just aspirational.</p>
-      </div>
+      <div class="why-cell"><div class="why-icon">👷</div><h3>Experienced installation team</h3><p>Certified technicians who prioritize safety and quality on every job, regardless of size.</p></div>
+      <div class="why-cell"><div class="why-icon">🔋</div><h3>High-quality components only</h3><p>Tier-1 panels, proven inverters, and reliable hardware — nothing we wouldn't put on our own roof.</p></div>
+      <div class="why-cell"><div class="why-icon">📐</div><h3>Sized for your actual usage</h3><p>Every system is designed around your real consumption — no upselling, no generic packages.</p></div>
+      <div class="why-cell"><div class="why-icon">⚡</div><h3>PEC compliant installations</h3><p>Full compliance with the Philippine Electrical Code. We handle all permits and paperwork.</p></div>
+      <div class="why-cell"><div class="why-icon">🛠</div><h3>Reliable after-sales support</h3><p>Ongoing maintenance, monitoring, and repair so your system performs well for decades.</p></div>
+      <div class="why-cell"><div class="why-icon">💳</div><h3>Honest pricing & flexible terms</h3><p>Competitive rates and installment options — because solar should be accessible, not just aspirational.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="faq-inner">
+    <p class="eyebrow">Common questions</p>
+    <h2 class="section-title">FAQ</h2>
+    <div class="faq-list">
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Magkano ang solar system?<span class="faq-icon">+</span></button><div class="faq-a">Depende sa laki ng system. Sa average na bahay na gumagamit ng 20 kWh/day, ang 4–5 kWp system ay nasa ₱220,000–₱280,000. Libre ang site assessment namin para malaman ang exact na quote para sa inyong tahanan.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Ilang taon bago mabawi ang investment?<span class="faq-icon">+</span></button><div class="faq-a">Sa karamihan ng residential installations, ang payback period ay 4–7 taon. Pagkatapos noon, essentially libre na ang iyong kuryente — at ang mga panels ay tumatagal ng 25+ taon.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Anong mangyayari kapag brownout?<span class="faq-icon">+</span></button><div class="faq-a">Grid-tied systems ay nag-o-off din kapag brownout para sa safety ng linemen. Hybrid systems na may battery storage ay nagbibigay ng kuryente kahit brownout — ito ang recommended para sa mas mataas na proteksyon.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Covered ba ang buong Pilipinas?<span class="faq-icon">+</span></button><div class="faq-a">Oo, nagse-serve kami nationwide. Ang aming main operations ay nasa Quezon City, pero nagtatrabaho kami sa buong Luzon, Visayas, at Mindanao.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Gaano katagal ang installation?<span class="faq-icon">+</span></button><div class="faq-a">Ang karaniwang residential installation ay tatagal ng 1–2 araw. Ang mas malalaking commercial projects ay maaaring 3–7 araw depende sa laki. Gagawin naming maayos at malinis ang trabaho.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">May net metering ba?<span class="faq-icon">+</span></button><div class="faq-a">Oo! Tinutulungan namin ang aming mga kliyente na mag-apply para sa net metering sa Meralco o sa kanilang lokal na utility. Ibig sabihin, ang sobrang kuryente na nagagawa ng inyong solar panels ay ibabalik sa grid — at makakakuha kayo ng credit sa inyong bill. Approval typically takes 4–8 months.</div></div>
     </div>
   </div>
 </section>
 
 <!-- CONTACT -->
-<section class="contact" id="contact">
+<section class="contact-section" id="contact">
   <div class="contact-inner">
-    <h2>Get in touch</h2>
-    <p>Free site assessment — no hard sell, no obligation.</p>
-    <div class="contact-grid">
-      <div>
-        <div class="cinfo-block"><h4>Phone</h4><p><a href="tel:09271374314">0927 137 4314</a></p></div>
-        <div class="cinfo-block"><h4>Email</h4><p><a href="mailto:trusolarph@gmail.com">trusolarph@gmail.com</a></p></div>
-        <div class="cinfo-block"><h4>Office</h4><p>Room 333 Celandine Residences<br>Balintawak, Quezon City</p></div>
-        <div class="cinfo-block"><h4>Facebook</h4><p><a href="https://facebook.com/trusolar.ph" target="_blank">facebook.com/trusolar.ph</a></p></div>
-        <div class="cinfo-block"><h4>Service areas</h4><p>SSS Fairview · Novaliches · Bulacan · Pangasinan · Nationwide</p></div>
-        <div class="safety-note">
+    <p class="eyebrow" style="color:var(--gold);">Get in touch</p>
+    <h2 class="section-title" style="color:var(--white);">Start your solar journey today.</h2>
+    <div class="contact-layout">
+      <div class="contact-info">
+        <div class="ci-block"><h4>Phone</h4><p><a href="tel:09271374314">0927 137 4314</a></p></div>
+        <div class="ci-block"><h4>Email</h4><p><a href="mailto:trusolarph@gmail.com">trusolarph@gmail.com</a></p></div>
+        <div class="ci-block"><h4>Office</h4><p>Room 333 Celandine Residences<br>Balintawak, Quezon City</p></div>
+        <div class="ci-block"><h4>Facebook</h4><p><a href="https://facebook.com/trusolar.ph" target="_blank">facebook.com/trusolar.ph</a></p></div>
+        <div class="ci-block"><h4>Service areas</h4><p>SSS Fairview · Novaliches · Bulacan · Pangasinan · Nationwide</p></div>
+        <div class="map-box"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3859.5!2d121.0!3d14.66!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b0e2d4b0c5e7%3A0x1!2sBalintawak%2C%20Quezon%20City!5e0!3m2!1sen!2sph" allowfullscreen loading="lazy"></iframe></div>
+        <div class="safety-box">
           <h4>Safety & quality</h4>
           <ul>
-            <li>Safety-first on every project</li>
+            <li>Safety-first approach on every project</li>
             <li>Full PPE compliance on all sites</li>
             <li>Philippine Electrical Code compliant</li>
-            <li>Premium components, strict QC</li>
+            <li>Premium components, strict quality control</li>
           </ul>
         </div>
       </div>
-      <div>
-        <div class="cta-box">
-          <div>
-            <h3>Book a free site visit</h3>
-            <p>We'll come to you, assess your roof and current usage, and give you an honest quote — at no cost.</p>
+      <div class="contact-form">
+        <h3>Request a free site assessment</h3>
+        <div id="form-body">
+          <div class="form-row">
+            <div class="form-field"><label>Full name</label><input type="text" id="f-name" placeholder="Juan dela Cruz"></div>
+            <div class="form-field"><label>Phone number</label><input type="tel" id="f-phone" placeholder="09XX XXX XXXX"></div>
           </div>
-          <a href="tel:09271374314">Call now →</a>
+          <div class="form-field"><label>Email address</label><input type="email" id="f-email" placeholder="juan@email.com"></div>
+          <div class="form-field"><label>Location</label><input type="text" id="f-location" placeholder="City, Province"></div>
+          <div class="form-field"><label>Type of inquiry</label>
+            <select id="f-type">
+              <option value="">Select...</option>
+              <option>Residential installation</option>
+              <option>Commercial installation</option>
+              <option>Battery / hybrid system</option>
+              <option>Maintenance / repair</option>
+              <option>General inquiry</option>
+            </select>
+          </div>
+          <div class="form-field"><label>Message</label><textarea id="f-message" placeholder="Tell us about your home or business — roof size, current bill, anything helps."></textarea></div>
+          <button class="form-submit" onclick="submitForm()">Send inquiry →</button>
+        </div>
+        <div class="form-success" id="form-success">
+          <div class="fs-check">✅</div>
+          <h4>Inquiry received!</h4>
+          <p>Thank you! TruSolar will reach out within 24 hours to schedule your free site assessment.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer>
-  <p>© 2025 TruSolar Philippines — The Best Way to Power Up</p>
-  <a href="https://facebook.com/trusolar.ph" target="_blank">facebook.com/trusolar.ph</a>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-brand-name">TRU<span>SOLAR</span></div>
+        <p class="footer-tagline">The Best Way to Power Up. Created to help transition the Philippines into a sustainable future.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Office</h4>
+        <p>Room 333 Celandine Residences<br>Balintawak, Quezon City<br><br>Mon–Sat · 8AM to 5PM</p>
+      </div>
+      <div class="footer-col">
+        <h4>Sales</h4>
+        <p><a href="mailto:trusolarph@gmail.com">trusolarph@gmail.com</a><br><a href="tel:09271374314">0927 137 4314</a></p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick links</h4>
+        <ul>
+          <li><a href="#clients">Services</a></li>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="calculator.html">Calculator</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#contact">Contact us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">Copyright © 2025 TruSolar Philippines. All rights reserved.</p>
+      <div class="footer-socials">
+        <a class="social-link" href="https://facebook.com/trusolar.ph" target="_blank">f</a>
+      </div>
+    </div>
+  </div>
 </footer>
 
 <script>
-// ── Appliances data (watts) ──
-const APPLIANCES = [
-  { name: 'Air conditioner (1HP)', w: 750 },
-  { name: 'Air conditioner (1.5HP)', w: 1100 },
-  { name: 'Refrigerator', w: 150 },
-  { name: 'Washing machine', w: 500 },
-  { name: 'Electric fan', w: 60 },
-  { name: 'LED TV (40")', w: 80 },
-  { name: 'Rice cooker', w: 700 },
-  { name: 'Electric iron', w: 1000 },
-  { name: 'Desktop computer', w: 200 },
-  { name: 'Laptop', w: 65 },
-  { name: 'Water heater', w: 1500 },
-  { name: 'Microwave oven', w: 1000 },
-  { name: 'LED lights (per bulb)', w: 10 },
-  { name: 'Water pump', w: 370 },
+// Progress bar
+window.addEventListener('scroll',()=>{
+  const pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+  document.getElementById('pbar').style.width=Math.min(pct,100)+'%';
+});
+
+// FAQ
+function toggleFaq(btn){btn.parentElement.classList.toggle('open');}
+
+// Client tabs
+function switchClient(id,btn){
+  document.querySelectorAll('.client-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.client-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('cp-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Appliances
+const APPLIANCES=[
+  {name:'Air con (1HP)',w:750},{name:'Air con (1.5HP)',w:1100},
+  {name:'Refrigerator',w:150},{name:'Washing machine',w:500},
+  {name:'Electric fan',w:60},{name:'LED TV (40")',w:80},
+  {name:'Rice cooker',w:700},{name:'Electric iron',w:1000},
+  {name:'Desktop PC',w:200},{name:'Laptop',w:65},
+  {name:'Water heater',w:1500},{name:'Microwave',w:1000},
+  {name:'LED bulb (each)',w:10},{name:'Water pump',w:370},
 ];
+const qty={};
+APPLIANCES.forEach((_,i)=>qty[i]=0);
 
-// qty state
-const qty = {};
-APPLIANCES.forEach((_,i) => qty[i] = 0);
-
-function renderAppliances() {
-  const grid = document.getElementById('appl-grid');
-  grid.innerHTML = APPLIANCES.map((a, i) => `
+function renderAppliances(){
+  document.getElementById('appl-grid').innerHTML=APPLIANCES.map((a,i)=>`
     <div class="appl-row">
-      <div>
-        <div class="appl-name">${a.name}</div>
-        <div class="appl-watts">${a.w}W</div>
-      </div>
+      <div><div class="appl-name">${a.name}</div><div class="appl-watts">${a.w}W</div></div>
       <div class="appl-qty-wrap">
         <button class="appl-qty-btn" onclick="adjQty(${i},-1)">−</button>
         <span class="appl-qty" id="qty-${i}">0</span>
         <button class="appl-qty-btn" onclick="adjQty(${i},1)">+</button>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function adjQty(i, delta) {
-  qty[i] = Math.max(0, (qty[i] || 0) + delta);
-  document.getElementById('qty-' + i).textContent = qty[i];
+function adjQty(i,d){
+  qty[i]=Math.max(0,(qty[i]||0)+d);
+  document.getElementById('qty-'+i).textContent=qty[i];
   updateApplTotal();
 }
-
-function updateApplTotal() {
-  const hours = parseFloat(document.getElementById('appl-hours').value) || 8;
-  let totalW = 0;
-  APPLIANCES.forEach((a, i) => { totalW += a.w * (qty[i] || 0); });
-  const dailyKwh = (totalW * hours) / 1000;
-  document.getElementById('appl-total-val').textContent = dailyKwh.toFixed(2) + ' kWh/day';
+function updateApplTotal(){
+  const h=parseFloat(document.getElementById('appl-hours').value)||8;
+  let w=0; APPLIANCES.forEach((a,i)=>{w+=a.w*(qty[i]||0);});
+  document.getElementById('appl-total-val').textContent=((w*h)/1000).toFixed(2)+' kWh/day';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded',()=>{
   renderAppliances();
-  document.getElementById('appl-hours').addEventListener('input', updateApplTotal);
+  document.getElementById('appl-hours').addEventListener('input',updateApplTotal);
 });
 
-// ── Tabs ──
-let activeTab = 'kwh';
-function switchTab(t) {
-  activeTab = t;
-  ['kwh','bill','appl'].forEach(id => {
-    document.getElementById('panel-' + id).style.display = t === id ? 'block' : 'none';
-    document.getElementById('tab-' + id).classList.toggle('on', t === id);
+// Calculator tabs
+let activeTab='kwh';
+function switchTab(t){
+  activeTab=t;
+  ['kwh','bill','appl'].forEach(id=>{
+    document.getElementById('panel-'+id).style.display=t===id?'block':'none';
+    document.getElementById('tab-'+id).classList.toggle('on',t===id);
   });
-  document.getElementById('cresult').classList.remove('show');
+  document.getElementById('res-filled').classList.remove('show');
+  document.getElementById('res-empty').classList.remove('hide');
+}
+function updateLabels(){
+  const p=document.getElementById('usage-period').value;
+  document.getElementById('kwh-label').textContent=p==='daily'?'Daily usage':'Monthly usage';
+  document.getElementById('kwh-hint').textContent=p==='daily'?'Typical PH home: 15–30 kWh/day':'Typical PH home: 400–900 kWh/month';
+  document.getElementById('kwh-input').placeholder=p==='daily'?'e.g. 20':'e.g. 600';
 }
 
-function updateLabels() {
-  const p = document.getElementById('usage-period').value;
-  document.getElementById('kwh-label').textContent = p === 'daily' ? 'Daily usage' : 'Monthly usage';
-  document.getElementById('kwh-hint').textContent  = p === 'daily'
-    ? 'Typical PH home: 15–30 kWh/day'
-    : 'Typical PH home: 400–900 kWh/month';
-  document.getElementById('kwh-input').placeholder = p === 'daily' ? 'e.g. 20' : 'e.g. 600';
-}
+function fmt(n){return '₱'+Math.round(n).toLocaleString();}
 
-// ── Calculate ──
-function fmt(n) { return '₱' + Math.round(n).toLocaleString(); }
-
-function calculate() {
-  const RATE = 12, CPK = 55000;
-  let daily, monthly, bill;
-
-  if (activeTab === 'kwh') {
-    const v = parseFloat(document.getElementById('kwh-input').value);
-    if (!v || v <= 0) { alert('Please enter your kWh usage.'); return; }
-    const p = document.getElementById('usage-period').value;
-    daily   = p === 'daily' ? v : v / 30;
-    monthly = daily * 30;
-    bill    = monthly * RATE;
-  } else if (activeTab === 'bill') {
-    const b = parseFloat(document.getElementById('bill-input').value);
-    const r = parseFloat(document.getElementById('rate-input').value) || RATE;
-    if (!b || b <= 0) { alert('Please enter your monthly bill.'); return; }
-    bill    = b;
-    monthly = b / r;
-    daily   = monthly / 30;
-  } else {
-    // appliances
-    const hours = parseFloat(document.getElementById('appl-hours').value) || 8;
-    let totalW = 0;
-    APPLIANCES.forEach((a, i) => { totalW += a.w * (qty[i] || 0); });
-    if (totalW === 0) { alert('Please add at least one appliance.'); return; }
-    daily   = (totalW * hours) / 1000;
-    monthly = daily * 30;
-    bill    = monthly * RATE;
+function calculate(){
+  const RATE=12,CPK=55000;
+  let daily,monthly,bill;
+  if(activeTab==='kwh'){
+    const v=parseFloat(document.getElementById('kwh-input').value);
+    if(!v||v<=0){alert('Please enter your kWh usage.');return;}
+    const p=document.getElementById('usage-period').value;
+    daily=p==='daily'?v:v/30; monthly=daily*30; bill=monthly*RATE;
+  }else if(activeTab==='bill'){
+    const b=parseFloat(document.getElementById('bill-input').value);
+    const r=parseFloat(document.getElementById('rate-input').value)||RATE;
+    if(!b||b<=0){alert('Please enter your monthly bill.');return;}
+    bill=b; monthly=b/r; daily=monthly/30;
+  }else{
+    const h=parseFloat(document.getElementById('appl-hours').value)||8;
+    let w=0; APPLIANCES.forEach((a,i)=>{w+=a.w*(qty[i]||0);});
+    if(w===0){alert('Please add at least one appliance.');return;}
+    daily=(w*h)/1000; monthly=daily*30; bill=monthly*RATE;
   }
+  const sunEl=activeTab==='kwh'?'sun-hours':activeTab==='bill'?'sun-hours-bill':'sun-hours-appl';
+  const effEl=activeTab==='kwh'?'eff-kwh':activeTab==='bill'?'eff-bill':'eff-appl';
+  const sun=parseFloat(document.getElementById(sunEl).value);
+  const eff=parseFloat(document.getElementById(effEl).value);
+  const kwp=daily/(sun*eff);
+  const off=0.95,save=bill*off,ann=save*12,cost=kwp*CPK,pbk=cost/ann;
+  const pnls=Math.ceil((kwp*1000)/400),free=Math.max(0,25-pbk);
 
-  const sunEl = activeTab === 'kwh'   ? 'sun-hours'
-              : activeTab === 'bill'  ? 'sun-hours-bill'
-                                      : 'sun-hours-appl';
-  const effEl = activeTab === 'kwh'   ? 'eff-kwh'
-              : activeTab === 'bill'  ? 'eff-bill'
-                                      : 'eff-appl';
+  document.getElementById('r-size').textContent=kwp.toFixed(2)+' kWp';
+  document.getElementById('r-daily').textContent=daily.toFixed(2)+' kWh';
+  document.getElementById('r-mwh').textContent=Math.round(monthly)+' kWh';
+  document.getElementById('r-bill').textContent=fmt(bill);
+  document.getElementById('r-save').textContent=fmt(save)+'/mo';
+  document.getElementById('r-annual').textContent=fmt(ann)+'/yr';
+  document.getElementById('r-payback').textContent=pbk.toFixed(1)+' years';
+  document.getElementById('r-bar-label').textContent=Math.round(off*100)+'% of bill offset by solar';
+  document.getElementById('r-note').innerHTML='~<strong>'+pnls+' × 400W panels</strong>. Est. system cost <strong>'+fmt(cost)+'</strong>. Pays back in '+pbk.toFixed(1)+' yrs — then <strong>'+free.toFixed(0)+' years</strong> of near-free electricity. <a href="#contact">Get an exact quote →</a>';
+  setTimeout(()=>{document.getElementById('r-bar').style.width=(off*100)+'%';},80);
+  document.getElementById('res-empty').classList.add('hide');
+  document.getElementById('res-filled').classList.add('show');
+  updateROI(ann,cost,bill);
+}
 
-  const sun  = parseFloat(document.getElementById(sunEl).value);
-  const eff  = parseFloat(document.getElementById(effEl).value);
-  const kwp  = daily / (sun * eff);
-  const off  = 0.95;
-  const save = bill * off;
-  const ann  = save * 12;
-  const cost = kwp * CPK;
-  const pbk  = cost / ann;
-  const pnls = Math.ceil((kwp * 1000) / 400);
-  const free = Math.max(0, 25 - pbk);
+function updateROI(ann,cost,bill){
+  const bpy=bill*12;
+  const with5=cost+(bill*0.05*12*5),with10=cost+(bill*0.05*12*10),with25=cost+(bill*0.05*12*25);
+  const wo5=bpy*5,wo10=bpy*10,wo25=bpy*25;
+  document.getElementById('roi-5').textContent=fmt(Math.max(0,wo5-with5));
+  document.getElementById('roi-10').textContent=fmt(Math.max(0,wo10-with10));
+  document.getElementById('roi-25').textContent=fmt(Math.max(0,wo25-with25));
+  const m5=Math.max(with5,wo5),m25=Math.max(with25,wo25);
+  setTimeout(()=>{
+    document.getElementById('bw5').style.width=((with5/m5)*100)+'%';
+    document.getElementById('bwo5').style.width=((wo5/m5)*100)+'%';
+    document.getElementById('bw25').style.width=((with25/m25)*100)+'%';
+    document.getElementById('bwo25').style.width=((wo25/m25)*100)+'%';
+    document.getElementById('bw5').textContent=fmt(with5);
+    document.getElementById('bwo5').textContent=fmt(wo5);
+    document.getElementById('bw25').textContent=fmt(with25);
+    document.getElementById('bwo25').textContent=fmt(wo25);
+  },200);
+  document.getElementById('roi-empty').style.display='none';
+  document.getElementById('roi-chart').classList.add('show');
+}
 
-  document.getElementById('r-size').textContent   = kwp.toFixed(2) + ' kWp';
-  document.getElementById('r-daily').textContent  = daily.toFixed(2) + ' kWh';
-  document.getElementById('r-mwh').textContent    = Math.round(monthly) + ' kWh';
-  document.getElementById('r-bill').textContent   = fmt(bill);
-  document.getElementById('r-save').textContent   = fmt(save) + '/mo';
-  document.getElementById('r-annual').textContent = fmt(ann) + '/yr';
-  document.getElementById('r-payback').textContent= pbk.toFixed(1) + ' years';
-  document.getElementById('r-bar-label').textContent = Math.round(off * 100) + '% of bill offset by solar';
-  document.getElementById('r-note').innerHTML =
-    `~<strong>${pnls} × 400W panels</strong>. Est. system cost <strong>${fmt(cost)}</strong>. ` +
-    `Pays for itself in ${pbk.toFixed(1)} yrs — then <strong>${free.toFixed(0)} years</strong> of near-free power. ` +
-    `<a href="#contact">Get an exact quote →</a>`;
-
-  setTimeout(() => { document.getElementById('r-bar').style.width = (off * 100) + '%'; }, 80);
-  document.getElementById('cresult').classList.add('show');
+function submitForm(){
+  const name=document.getElementById('f-name').value.trim();
+  const phone=document.getElementById('f-phone').value.trim();
+  if(!name||!phone){alert('Please enter your name and phone number.');return;}
+  document.getElementById('form-body').style.display='none';
+  document.getElementById('form-success').classList.add('show');
 }
 </script>
 </body>
