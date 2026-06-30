@@ -13,17 +13,17 @@
 
 <!-- ROOF TYPE MODAL -->
 <div class="modal-overlay" id="roofModal">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="roofModalTitle">
     <div class="modal-header">
-      <h3>Select Roof Type</h3>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h3 id="roofModalTitle">Select Roof Type</h3>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
     </div>
     <div class="modal-img" id="modalRoofImg">🏠</div>
-    <div class="modal-options">
-      <div class="modal-opt" onclick="selectRoofType('Metal',this)">Metal</div>
-      <div class="modal-opt" onclick="selectRoofType('Shingles',this)">Shingles</div>
-      <div class="modal-opt" onclick="selectRoofType('Tiles',this)">Tiles</div>
-      <div class="modal-opt" onclick="selectRoofType('Flatroof',this)">Flatroof</div>
+    <div class="modal-options" role="group" aria-label="Roof type">
+      <div class="modal-opt" role="button" tabindex="0" aria-pressed="false" onclick="selectRoofType('Metal',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Metal</div>
+      <div class="modal-opt" role="button" tabindex="0" aria-pressed="false" onclick="selectRoofType('Shingles',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Shingles</div>
+      <div class="modal-opt" role="button" tabindex="0" aria-pressed="false" onclick="selectRoofType('Tiles',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Tiles</div>
+      <div class="modal-opt" role="button" tabindex="0" aria-pressed="false" onclick="selectRoofType('Flatroof',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Flatroof</div>
     </div>
     <button class="modal-select" id="modalSelectBtn" disabled onclick="confirmRoofType()">Select</button>
   </div>
@@ -71,11 +71,11 @@
 
       <!-- Step 2: graph -->
       <div class="vis-graph" id="vis2">
-        <div class="graph-tabs">
-          <button class="graph-tab active" onclick="setGraphMode('day',this)">Day time</button>
-          <button class="graph-tab" onclick="setGraphMode('night',this)">Night time</button>
-          <button class="graph-tab" onclick="setGraphMode('24h',this)">24 Hours</button>
-          <button class="graph-tab" onclick="setGraphMode('custom',this)">Custom</button>
+        <div class="graph-tabs" role="group" aria-label="Usage profile view">
+          <button class="graph-tab active" aria-pressed="true" onclick="setGraphMode('day',this)">Day time</button>
+          <button class="graph-tab" aria-pressed="false" onclick="setGraphMode('night',this)">Night time</button>
+          <button class="graph-tab" aria-pressed="false" onclick="setGraphMode('24h',this)">24 Hours</button>
+          <button class="graph-tab" aria-pressed="false" onclick="setGraphMode('custom',this)">Custom</button>
         </div>
         <div class="graph-canvas-wrap">
           <canvas id="usageChart"></canvas>
@@ -92,7 +92,7 @@
 
       <!-- Step 4: map -->
       <div class="vis-map" id="vis4">
-        <iframe id="mapFrame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247289!2d121.0!3d14.6!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ca03571ec38b%3A0x69d1d5751069c0b0!2sQuezon%20City%2C%20Metro%20Manila!5e0!3m2!1sen!2sph!4v1" allowfullscreen loading="lazy"></iframe>
+        <iframe id="mapFrame" title="Map of your project address" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247289!2d121.0!3d14.6!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ca03571ec38b%3A0x69d1d5751069c0b0!2sQuezon%20City%2C%20Metro%20Manila!5e0!3m2!1sen!2sph!4v1" allowfullscreen loading="lazy"></iframe>
       </div>
 
       <!-- Step 5: proposal visuals -->
@@ -154,9 +154,9 @@
         <div class="w-section-label">Solar Design Studio</div>
         <h1 class="w-title">Get a personalized solar proposal instantly</h1>
         <p style="font-size:.875rem;color:var(--gray);margin-bottom:24px;line-height:1.6;">I'm looking to get solar for:</p>
-        <div class="choice-grid">
-          <button class="choice-btn" onclick="selectType('residential',this)"><span class="cb-icon">🏠</span> Residential</button>
-          <button class="choice-btn" onclick="selectType('commercial',this)"><span class="cb-icon">🏢</span> Commercial</button>
+        <div class="choice-grid" role="group" aria-label="Property type">
+          <button class="choice-btn" aria-pressed="false" onclick="selectType('residential',this)"><span class="cb-icon">🏠</span> Residential</button>
+          <button class="choice-btn" aria-pressed="false" onclick="selectType('commercial',this)"><span class="cb-icon">🏢</span> Commercial</button>
         </div>
       </div>
 
@@ -165,24 +165,24 @@
         <div class="w-section-label">Solar Design Studio</div>
         <h1 class="w-title">Tell us more about your energy usage.</h1>
         <div id="bill-mode">
-          <p style="font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:10px;">What is your average monthly electricity bill?</p>
+          <label for="billInput" style="display:block;font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:10px;">What is your average monthly electricity bill?</label>
           <div style="text-align:right;margin-bottom:6px;">
             <span class="bill-toggle" onclick="toggleInputMode()">⇌ Enter by kWh instead</span>
           </div>
           <div class="bill-input-wrap">
             <span class="bi-prefix">₱</span>
-            <input type="number" id="billInput" placeholder="18,000" oninput="onBillInput()" min="0">
+            <input type="number" id="billInput" placeholder="18,000" oninput="onBillInput()" onkeydown="onWizardInputKeydown(event)" min="0">
           </div>
           <p class="bill-hint">We will use this info to determine the optimal system size for you. <span style="color:var(--blue);cursor:pointer;">Don't know yet?</span></p>
         </div>
         <div id="kwh-mode" style="display:none">
-          <p style="font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:10px;">What is your average daily kWh usage?</p>
+          <label for="kwhInput" style="display:block;font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:10px;">What is your average daily kWh usage?</label>
           <div style="text-align:right;margin-bottom:6px;">
             <span class="bill-toggle" onclick="toggleInputMode()">⇌ Enter by bill instead</span>
           </div>
           <div class="bill-input-wrap">
             <span class="bi-prefix" style="left:auto;right:14px;transform:translateY(-50%);">kWh</span>
-            <input type="number" id="kwhInput" placeholder="20" oninput="onKwhInput()" min="0" style="padding-left:14px;padding-right:48px;">
+            <input type="number" id="kwhInput" placeholder="20" oninput="onKwhInput()" onkeydown="onWizardInputKeydown(event)" min="0" style="padding-left:14px;padding-right:48px;">
           </div>
           <p class="bill-hint">Typical Philippine home: 15–30 kWh/day</p>
         </div>
@@ -193,10 +193,10 @@
         <div class="w-section-label">Solar Design Studio</div>
         <h1 class="w-title">Tell us about your project.</h1>
         <p style="font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:12px;">What type of solar project is this?</p>
-        <div class="choice-grid" style="grid-template-columns:1fr 1fr 1fr;">
-          <button class="choice-btn" onclick="selectProject('Roof',this)">Roof</button>
-          <button class="choice-btn" onclick="selectProject('Ground',this)">Ground</button>
-          <button class="choice-btn" onclick="selectProject('Canopy',this)">Canopy</button>
+        <div class="choice-grid" style="grid-template-columns:1fr 1fr 1fr;" role="group" aria-label="Project type">
+          <button class="choice-btn" aria-pressed="false" onclick="selectProject('Roof',this)">Roof</button>
+          <button class="choice-btn" aria-pressed="false" onclick="selectProject('Ground',this)">Ground</button>
+          <button class="choice-btn" aria-pressed="false" onclick="selectProject('Canopy',this)">Canopy</button>
         </div>
         <p style="font-size:.75rem;color:var(--gray2);line-height:1.5;margin-top:8px;">This info gives us an understanding of how much you can save with the different types of systems available.</p>
       </div>
@@ -205,9 +205,9 @@
       <div id="step4" style="display:none">
         <div class="w-section-label">Solar Design Studio</div>
         <h1 class="w-title">Tell us more about your project.</h1>
-        <p style="font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:10px;">Address of your project</p>
+        <label for="addrInput" style="display:block;font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:10px;">Address of your project</label>
         <div class="addr-wrap">
-          <input type="text" id="addrInput" placeholder="22 Ilagan St, Quezon City" oninput="onAddrInput()">
+          <input type="text" id="addrInput" placeholder="22 Ilagan St, Quezon City" oninput="onAddrInput()" onkeydown="onWizardInputKeydown(event)">
         </div>
         <p class="addr-hint">We only use your address so that we can check your roof layout & panel placements.</p>
       </div>
@@ -219,7 +219,7 @@
 
         <!-- System specs accordion -->
         <div class="prop-accordion">
-          <button class="prop-acc-header open" onclick="toggleAcc(this)">Your System Specs <span class="acc-arrow">▼</span></button>
+          <button class="prop-acc-header open" aria-expanded="true" onclick="toggleAcc(this)">Your System Specs <span class="acc-arrow">▼</span></button>
           <div class="prop-acc-body open">
             <div class="savings-grid">
               <div class="estat"><div class="ev" id="spec-kwp">0 kWp</div><div class="el">System Size</div></div>
@@ -231,7 +231,7 @@
 
         <!-- Savings accordion -->
         <div class="prop-accordion">
-          <button class="prop-acc-header open" onclick="toggleAcc(this)">Savings <span class="acc-arrow">▼</span></button>
+          <button class="prop-acc-header open" aria-expanded="true" onclick="toggleAcc(this)">Savings <span class="acc-arrow">▼</span></button>
           <div class="prop-acc-body open">
             <div class="savings-stat"><div class="ss-label">Monthly Savings</div><div class="ss-val" id="acc-monthly">₱0</div></div>
             <div class="savings-grid">
@@ -245,7 +245,7 @@
 
         <!-- Pricing accordion -->
         <div class="prop-accordion">
-          <button class="prop-acc-header" onclick="toggleAcc(this)">Pricing Summary <span class="acc-arrow">▼</span></button>
+          <button class="prop-acc-header" aria-expanded="false" onclick="toggleAcc(this)">Pricing Summary <span class="acc-arrow">▼</span></button>
           <div class="prop-acc-body">
             <div style="font-size:.82rem;color:var(--gray);line-height:2;">
               <div style="display:flex;justify-content:space-between;"><span>Solar, Wiring, Mounting</span><span id="p-solar" style="color:var(--ink);font-weight:600;">₱0</span></div>
