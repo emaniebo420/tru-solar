@@ -18,7 +18,13 @@
       <h3 id="roofModalTitle">Select Roof Type</h3>
       <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
     </div>
-    <div class="modal-img" id="modalRoofImg">🏠</div>
+    <div class="modal-img" id="modalRoofImg">
+      <svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="300" height="160" fill="var(--off)"/>
+        <path d="M90,140 L150,60 L210,140 Z" fill="none" stroke="var(--navy)" stroke-width="5" stroke-linejoin="round"/>
+        <line x1="60" y1="140" x2="240" y2="140" stroke="var(--navy)" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+    </div>
     <div class="modal-options" role="group" aria-label="Roof type">
       <div class="modal-opt" role="button" tabindex="0" aria-pressed="false" onclick="selectRoofType('Metal',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Metal</div>
       <div class="modal-opt" role="button" tabindex="0" aria-pressed="false" onclick="selectRoofType('Shingles',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Shingles</div>
@@ -65,7 +71,35 @@
     <div class="w-visual">
       <!-- Step 1: intro visual -->
       <div class="vis-home active" id="vis1">
-        <div class="vis-home-icon">☀️🏠</div>
+        <div class="vis-icon-badge vis-icon-badge--lg">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <line x1="20" y1="168" x2="180" y2="168" stroke="var(--navy)" stroke-width="4" stroke-linecap="round"/>
+            <ellipse cx="48" cy="164" rx="12" ry="8" fill="var(--navy)" opacity=".15"/>
+            <ellipse cx="152" cy="164" rx="12" ry="8" fill="var(--navy)" opacity=".15"/>
+            <g>
+              <line x1="172" y1="46" x2="181" y2="46" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+              <line x1="166" y1="60" x2="173" y2="67" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+              <line x1="152" y1="66" x2="152" y2="75" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+              <line x1="138" y1="60" x2="132" y2="67" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+              <line x1="132" y1="46" x2="123" y2="46" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+              <line x1="138" y1="32" x2="132" y2="26" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+              <line x1="152" y1="26" x2="152" y2="17" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+              <line x1="166" y1="32" x2="173" y2="26" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="152" cy="46" r="16" fill="var(--gold)"/>
+            </g>
+            <path d="M40,100 L100,42 L160,100 Z" fill="var(--navy)"/>
+            <rect x="55" y="100" width="90" height="60" rx="3" fill="var(--off)" stroke="var(--navy)" stroke-width="4"/>
+            <rect x="66" y="112" width="18" height="16" rx="2" fill="#fff" stroke="var(--navy)" stroke-width="3"/>
+            <rect x="116" y="112" width="18" height="16" rx="2" fill="#fff" stroke="var(--navy)" stroke-width="3"/>
+            <rect x="92" y="128" width="16" height="32" rx="2" fill="var(--navy)"/>
+            <g transform="rotate(42 118 71)">
+              <rect x="93" y="61" width="50" height="20" rx="2" fill="var(--gold)" stroke="var(--navy)" stroke-width="3"/>
+              <line x1="110" y1="61" x2="110" y2="81" stroke="var(--navy)" stroke-width="2"/>
+              <line x1="127" y1="61" x2="127" y2="81" stroke="var(--navy)" stroke-width="2"/>
+              <line x1="93" y1="71" x2="143" y2="71" stroke="var(--navy)" stroke-width="2"/>
+            </g>
+          </svg>
+        </div>
         <p style="font-size:.9rem;color:var(--gray);text-align:center;max-width:280px;line-height:1.6;">Get a personalized solar proposal instantly. Tell us a few details and we'll design the right system for you.</p>
       </div>
 
@@ -85,7 +119,20 @@
       <!-- Step 3: roof visual -->
       <div class="vis-roof" id="vis3">
         <div style="text-align:center">
-          <div class="vis-roof-icon" id="vis3Icon">🏗️</div>
+          <div class="vis-icon-badge" id="vis3Icon" style="margin:0 auto;">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <line x1="20" y1="168" x2="180" y2="168" stroke="var(--navy)" stroke-width="4" stroke-linecap="round"/>
+              <rect x="70" y="145" width="8" height="20" fill="var(--navy)"/>
+              <rect x="122" y="145" width="8" height="20" fill="var(--navy)"/>
+              <rect x="35" y="45" width="130" height="100" rx="6" fill="var(--off)" stroke="var(--navy)" stroke-width="5"/>
+              <rect x="45" y="55" width="110" height="80" rx="2" fill="var(--gold)" stroke="var(--navy)" stroke-width="3"/>
+              <line x1="81.5" y1="55" x2="81.5" y2="135" stroke="var(--navy)" stroke-width="2"/>
+              <line x1="118.5" y1="55" x2="118.5" y2="135" stroke="var(--navy)" stroke-width="2"/>
+              <line x1="45" y1="75" x2="155" y2="75" stroke="var(--navy)" stroke-width="2"/>
+              <line x1="45" y1="95" x2="155" y2="95" stroke="var(--navy)" stroke-width="2"/>
+              <line x1="45" y1="115" x2="155" y2="115" stroke="var(--navy)" stroke-width="2"/>
+            </svg>
+          </div>
           <p style="font-size:.9rem;color:var(--gray);margin-top:12px;" id="vis3Label">Select your project type</p>
         </div>
       </div>

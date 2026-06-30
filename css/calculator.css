@@ -37,7 +37,11 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--off);color
 /* Visual states */
 .vis-home{display:none;width:100%;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
 .vis-home.active{display:flex;}
-.vis-home-icon{font-size:8rem;filter:grayscale(30%);}
+
+.vis-icon-badge{width:200px;height:200px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0%,var(--off) 70%);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 28px rgba(27,45,107,.10);flex-shrink:0;}
+.vis-icon-badge svg{width:140px;height:140px;display:block;}
+.vis-icon-badge--lg{width:240px;height:240px;}
+.vis-icon-badge--lg svg{width:170px;height:170px;}
 
 .vis-graph{display:none;flex-direction:column;width:100%;height:100%;}
 .vis-graph.active{display:flex;}
@@ -49,7 +53,6 @@ canvas#usageChart{width:100%!important;height:100%!important;}
 
 .vis-roof{display:none;width:100%;height:100%;align-items:center;justify-content:center;}
 .vis-roof.active{display:flex;}
-.vis-roof-icon{font-size:7rem;}
 
 .vis-map{display:none;width:100%;height:100%;}
 .vis-map.active{display:block;}
@@ -197,7 +200,8 @@ canvas#usageChart{width:100%!important;height:100%!important;}
 .modal-header{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);}
 .modal-header h3{font-size:1rem;font-weight:700;}
 .modal-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--gray);}
-.modal-img{height:180px;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:5rem;}
+.modal-img{height:180px;background:var(--off);overflow:hidden;}
+.modal-img svg{width:100%;height:100%;display:block;}
 .modal-options{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:16px;}
 .modal-opt{border:1.5px solid var(--line);border-radius:8px;padding:10px;text-align:center;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .15s;font-family:'Inter',sans-serif;}
 .modal-opt:hover{border-color:var(--navy);}
