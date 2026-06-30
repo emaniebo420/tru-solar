@@ -124,17 +124,8 @@ canvas#usageChart{width:100%!important;height:100%!important;}
 .bill-input-wrap input:focus{border-color:var(--navy);}
 .bill-toggle{font-size:.78rem;color:var(--blue);font-weight:500;cursor:pointer;margin-bottom:20px;display:inline-flex;align-items:center;gap:4px;}
 .bill-hint{font-size:.75rem;color:var(--gray2);margin-bottom:20px;}
-
-/* Roof options */
-.roof-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
-.roof-btn{
-  border:1.5px solid var(--line);border-radius:8px;padding:12px;
-  background:var(--white);cursor:pointer;
-  font-size:.82rem;font-weight:600;color:var(--ink);
-  transition:all .15s;font-family:'Inter',sans-serif;text-align:center;
-}
-.roof-btn:hover{border-color:var(--navy);}
-.roof-btn.selected{border-color:var(--navy);background:var(--navy);color:var(--white);}
+.input-error{border-color:var(--red)!important;}
+.input-error:focus{border-color:var(--red)!important;}
 
 /* Address input */
 .addr-wrap{position:relative;margin-bottom:6px;}
