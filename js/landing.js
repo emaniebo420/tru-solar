@@ -46,10 +46,25 @@ function switchClient(id, btn) {
 }
 
 // Contact form — opens the visitor's email client with the inquiry pre-filled
+function setFieldError(inputId, errorId, isInvalid) {
+  document.getElementById(inputId).classList.toggle('input-error', isInvalid);
+  document.getElementById(errorId).classList.toggle('show', isInvalid);
+}
+
 function submitForm() {
-  const name = document.getElementById('f-name').value.trim();
-  const phone = document.getElementById('f-phone').value.trim();
-  if (!name || !phone) { alert('Please enter your name and phone number.'); return; }
+  const nameInput  = document.getElementById('f-name');
+  const phoneInput = document.getElementById('f-phone');
+  const name  = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+
+  const nameInvalid  = !name;
+  const phoneInvalid = !phone;
+  setFieldError('f-name', 'err-name', nameInvalid);
+  setFieldError('f-phone', 'err-phone', phoneInvalid);
+  if (nameInvalid || phoneInvalid) {
+    (nameInvalid ? nameInput : phoneInput).focus();
+    return;
+  }
 
   const email = document.getElementById('f-email').value.trim();
   const location = document.getElementById('f-location').value.trim();
@@ -71,6 +86,12 @@ function submitForm() {
   document.getElementById('form-body').style.display = 'none';
   document.getElementById('form-success').classList.add('show');
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  [['f-name', 'err-name'], ['f-phone', 'err-phone']].forEach(([inputId, errorId]) => {
+    document.getElementById(inputId).addEventListener('input', () => setFieldError(inputId, errorId, false));
+  });
+});
 
 // Footer copyright year
 document.addEventListener('DOMContentLoaded', () => {

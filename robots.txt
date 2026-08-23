@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.trusolar.ph/sitemap.xml
+Sitemap: https://emaniebo420.github.io/tru-solar/sitemap.xml

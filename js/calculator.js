@@ -11,6 +11,8 @@ let state = {
   graphMode: 'day',
 };
 const RATE = 12;      // ₱/kWh
+const MAX_BILL = 10000000; // ₱/mo — sanity ceiling to catch fat-fingered input
+const MAX_KWH  = 30000;    // kWh/day — equivalent ceiling for the kWh entry mode
 
 // Target self-consumption offset by building type — commercial loads run mostly during
 // daylight hours (matching solar output), so a commercial system can offset a larger
@@ -66,6 +68,10 @@ function updateUI(moveFocus = true) {
     const heading = document.querySelector('#step' + step + ' .w-title');
     if (heading) { heading.setAttribute('tabindex', '-1'); heading.focus(); }
   }
+
+  // The canvas needs a visible, sized container before it can measure itself,
+  // so redraw whenever step 2 becomes the active panel (not just on input).
+  if (step === 2) drawGraph();
 }
 
 function canProceed() {
@@ -116,11 +122,12 @@ function toggleInputMode() {
 function onBillInput() {
   const input = document.getElementById('billInput');
   const v = parseFloat(input.value);
-  if (v > 0) {
+  const valid = v > 0 && v <= MAX_BILL;
+  if (valid) {
     state.bill     = v;
     state.dailyKwh = (v / RATE) / 30;
   } else { state.bill = null; state.dailyKwh = null; }
-  setInputValidity(input, input.value !== '' && !(v > 0));
+  setInputValidity(input, input.value !== '' && !valid);
   drawGraph();
   updateUI(false);
 }
@@ -128,11 +135,12 @@ function onBillInput() {
 function onKwhInput() {
   const input = document.getElementById('kwhInput');
   const v = parseFloat(input.value);
-  if (v > 0) {
+  const valid = v > 0 && v <= MAX_KWH;
+  if (valid) {
     state.dailyKwh = v;
     state.bill     = v * 30 * RATE;
   } else { state.dailyKwh = null; state.bill = null; }
-  setInputValidity(input, input.value !== '' && !(v > 0));
+  setInputValidity(input, input.value !== '' && !valid);
   drawGraph();
   updateUI(false);
 }

@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TruSolar — Solar Design Studio</title>
 <meta name="description" content="Get an instant, personalized solar proposal for your home or business in the Philippines — system size, monthly savings, payback period, and pricing.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TruSolar">
+<meta property="og:title" content="TruSolar — Solar Design Studio">
+<meta property="og:description" content="Get an instant, personalized solar proposal for your home or business in the Philippines — system size, monthly savings, payback period, and pricing.">
+<meta property="og:locale" content="en_PH">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TruSolar — Solar Design Studio">
+<meta name="twitter:description" content="Get an instant, personalized solar proposal for your home or business in the Philippines.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/calculator.css">
@@ -243,7 +251,7 @@
           </div>
           <div class="bill-input-wrap">
             <span class="bi-prefix">₱</span>
-            <input type="number" id="billInput" placeholder="18,000" oninput="onBillInput()" onkeydown="onWizardInputKeydown(event)" min="0">
+            <input type="number" id="billInput" placeholder="18,000" oninput="onBillInput()" onkeydown="onWizardInputKeydown(event)" min="0" max="10000000">
           </div>
           <p class="bill-hint">We will use this info to determine the optimal system size for you. <span style="color:var(--blue);cursor:pointer;">Don't know yet?</span></p>
         </div>
@@ -254,7 +262,7 @@
           </div>
           <div class="bill-input-wrap">
             <span class="bi-prefix" style="left:auto;right:14px;transform:translateY(-50%);">kWh</span>
-            <input type="number" id="kwhInput" placeholder="20" oninput="onKwhInput()" onkeydown="onWizardInputKeydown(event)" min="0" style="padding-left:14px;padding-right:48px;">
+            <input type="number" id="kwhInput" placeholder="20" oninput="onKwhInput()" onkeydown="onWizardInputKeydown(event)" min="0" max="30000" style="padding-left:14px;padding-right:48px;">
           </div>
           <p class="bill-hint">Typical Philippine home: 15–30 kWh/day</p>
         </div>
