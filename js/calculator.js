@@ -12,6 +12,18 @@ let state = {
 };
 const RATE = 12;      // ₱/kWh
 
+// Target self-consumption offset by building type — commercial loads run mostly during
+// daylight hours (matching solar output), so a commercial system can offset a larger
+// share of the bill than a typical residential home with evening-heavy usage.
+const OFFSET_BY_TYPE = { residential: 0.45, commercial: 0.60 };
+
+// Relative system yield by project type — ground-mount allows optimal tilt/orientation
+// and better airflow cooling than a fixed roof array; canopy structures sit in between.
+const YIELD_BY_PROJECT = { Roof: 1.00, Ground: 1.08, Canopy: 1.04 };
+
+// Roof-mount derate reflecting real installation constraints (Roof projects only).
+const YIELD_BY_ROOF = { Metal: 1.00, Shingles: 0.98, Tiles: 0.95, Flatroof: 0.97 };
+
 // ── Navigation ──
 function updateUI(moveFocus = true) {
   // Show/hide panels
@@ -492,8 +504,15 @@ function buildProposal() {
   const daily   = state.dailyKwh || 20;
   const monthly = daily * 30;
   const bill    = state.bill || monthly * RATE;
-  const sun     = 5.0, eff = 0.85;
-  const off     = 0.53; // target self-consumption offset — drives both system sizing and savings
+  const sun     = 5.0, baseEff = 0.85;
+
+  let yieldMult = YIELD_BY_PROJECT[state.project] ?? 1.00;
+  if (state.project === 'Roof' && state.roofType) {
+    yieldMult *= YIELD_BY_ROOF[state.roofType] ?? 1.00;
+  }
+  const eff = baseEff * yieldMult; // system yield, adjusted for mount type
+
+  const off     = OFFSET_BY_TYPE[state.type] ?? 0.50; // target self-consumption offset — drives both system sizing and savings
   const kwp     = (daily * off) / (sun * eff);
   const panels  = Math.ceil((kwp * 1000) / 400);
   const mSave   = bill * off;
@@ -510,7 +529,7 @@ function buildProposal() {
   const futureBill = bill - mSave;
   const prodKwh = daily * off;
   const importKwh = daily - prodKwh;
-  const score = Math.round(off * 100 + 20);
+  const score = Math.round(Math.min(99, off * 100 + 20 + (yieldMult - 1) * 40));
 
   // Top bar
   document.getElementById('ptbSavings').textContent = fmt(mSave);
