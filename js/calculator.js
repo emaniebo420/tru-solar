@@ -78,7 +78,7 @@ function canProceed() {
   if (step === 1) return !!state.type;
   if (step === 2) return !!(state.bill || state.dailyKwh);
   if (step === 3) return !!state.project;
-  if (step === 4) return state.address.length > 3;
+  if (step === 4) return state.address.trim().length > 3;
   return true;
 }
 
@@ -512,7 +512,8 @@ function buildProposal() {
   const daily   = state.dailyKwh || 20;
   const monthly = daily * 30;
   const bill    = state.bill || monthly * RATE;
-  const sun     = 5.0, baseEff = 0.85;
+  const sun     = 5.0;  // peak sun hours/day (Philippines average)
+  const baseEff = 0.85; // system derate — inverter, wiring, and temperature losses
 
   let yieldMult = YIELD_BY_PROJECT[state.project] ?? 1.00;
   if (state.project === 'Roof' && state.roofType) {
@@ -548,12 +549,12 @@ function buildProposal() {
   arc.setAttribute('stroke-dasharray', circ);
   arc.setAttribute('stroke-dashoffset', circ - circ * off);
 
-  // Bill bars (normalize to max height 100%)
-  const maxBill = Math.max(bill, futureBill);
-  const curH  = (bill / maxBill * 75).toFixed(0);
-  const solH  = ((mSave / bill) * (bill / maxBill * 75)).toFixed(0);
-  document.getElementById('bar-current').style.height = curH + '%';
-  document.getElementById('bar-future-bg').style.height = (bill / maxBill * 75) + '%';
+  // Both bars are drawn at the same height (they represent the same bill scale);
+  // the future bar's solar-covered portion is highlighted within it.
+  const barH = 75;
+  const solH = (off * barH).toFixed(0);
+  document.getElementById('bar-current').style.height = barH + '%';
+  document.getElementById('bar-future-bg').style.height = barH + '%';
   document.getElementById('bar-future-solar').style.height = solH + '%';
   document.getElementById('lbl-current').textContent = fmt(bill);
   document.getElementById('lbl-future').textContent  = fmt(futureBill);

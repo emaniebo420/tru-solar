@@ -208,6 +208,8 @@ canvas#usageChart{width:100%!important;height:100%!important;}
 .modal-opt.selected{border-color:var(--navy);background:var(--navy);color:var(--white);}
 .modal-select{width:calc(100% - 32px);margin:0 16px 16px;padding:12px;background:var(--navy);color:var(--white);border:none;border-radius:8px;font-size:.875rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
 .modal-select:disabled{background:var(--gray2);cursor:not-allowed;}
+.modal-select-hint{display:none;text-align:center;font-size:.75rem;color:var(--gray);margin:-8px 16px 16px;}
+.modal-select:disabled + .modal-select-hint{display:block;}
 
 /* Responsive */
 @media(max-width:768px){
