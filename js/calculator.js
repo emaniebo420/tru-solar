@@ -578,6 +578,12 @@ function buildProposal() {
   document.getElementById('p-install').textContent  = fmt(install);
   document.getElementById('p-vat').textContent      = fmt(vat);
   document.getElementById('p-total').textContent    = fmt(total);
+
+  // Save so the homepage ROI section can show this visitor's real comparison
+  // when they navigate back, instead of a generic placeholder.
+  try {
+    localStorage.setItem('trusolar_proposal', JSON.stringify({ bill, futureBill, total, aSave }));
+  } catch (e) { /* storage unavailable (private browsing, quota) — ROI section just stays hidden */ }
 }
 
 function toggleAcc(btn) {

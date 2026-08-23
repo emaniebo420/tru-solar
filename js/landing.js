@@ -50,3 +50,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const yearEl = document.getElementById('copy-year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 });
+
+// ROI comparison — populated from the visitor's last completed calculator run
+function fmtPeso(n) { return '₱' + Math.round(n).toLocaleString(); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  let saved;
+  try { saved = JSON.parse(localStorage.getItem('trusolar_proposal')); } catch (e) { return; }
+  if (!saved || !(saved.bill > 0)) return;
+
+  const { bill, futureBill, total, aSave } = saved;
+
+  document.getElementById('roi-5').textContent  = fmtPeso(aSave * 5 - total);
+  document.getElementById('roi-10').textContent = fmtPeso(aSave * 10 - total);
+  document.getElementById('roi-25').textContent = fmtPeso(aSave * 25 - total);
+
+  [5, 25].forEach(years => {
+    const withCost    = total + futureBill * 12 * years;
+    const withoutCost = bill * 12 * years;
+    const max = Math.max(withCost, withoutCost);
+    const withBar    = document.getElementById('bw' + years);
+    const withoutBar = document.getElementById('bwo' + years);
+    withBar.style.width    = Math.max(15, (withCost / max) * 100) + '%';
+    withBar.textContent    = 'With TruSolar — ' + fmtPeso(withCost);
+    withoutBar.style.width = Math.max(15, (withoutCost / max) * 100) + '%';
+    withoutBar.textContent = 'Without solar — ' + fmtPeso(withoutCost);
+  });
+
+  document.getElementById('roi-empty').style.display = 'none';
+  document.getElementById('roi-chart').classList.add('show');
+});
