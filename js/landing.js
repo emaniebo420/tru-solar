@@ -4,6 +4,33 @@ window.addEventListener('scroll', () => {
   document.getElementById('pbar').style.width = Math.min(pct, 100) + '%';
 });
 
+// Mobile nav
+function toggleMobileNav() {
+  const open = document.getElementById('mobileNav').classList.toggle('open');
+  const btn = document.getElementById('navToggle');
+  btn.classList.toggle('is-open', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+function closeMobileNav() {
+  document.getElementById('mobileNav').classList.remove('open');
+  const btn = document.getElementById('navToggle');
+  btn.classList.remove('is-open');
+  btn.setAttribute('aria-expanded', 'false');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeMobileNav();
+});
+
+document.addEventListener('click', e => {
+  const nav = document.getElementById('mobileNav');
+  const toggle = document.getElementById('navToggle');
+  if (nav.classList.contains('open') && !nav.contains(e.target) && !toggle.contains(e.target)) {
+    closeMobileNav();
+  }
+});
+
 // FAQ
 function toggleFaq(btn) {
   const open = btn.parentElement.classList.toggle('open');
