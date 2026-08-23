@@ -111,7 +111,10 @@ button{cursor:pointer;font-family:'Inter',sans-serif;}
 
 /* Hero image strip */
 .hero-img-strip{
-  background:linear-gradient(to bottom, var(--white) 0%, var(--off) 100%);
+  background:
+    radial-gradient(circle at 12% 15%, rgba(240,180,41,.18) 0%, rgba(240,180,41,0) 45%),
+    radial-gradient(circle at 88% 80%, rgba(27,45,107,.14) 0%, rgba(27,45,107,0) 50%),
+    linear-gradient(to bottom, var(--white) 0%, var(--off) 100%);
   border-radius:16px 16px 0 0;
   border:1px solid var(--line);
   border-bottom:none;
@@ -120,9 +123,20 @@ button{cursor:pointer;font-family:'Inter',sans-serif;}
   overflow:hidden;
   position:relative;
 }
+.hero-img-strip::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(27,45,107,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27,45,107,.05) 1px, transparent 1px);
+  background-size:36px 36px;
+  mask-image:radial-gradient(ellipse at center, #000 55%, transparent 90%);
+  -webkit-mask-image:radial-gradient(ellipse at center, #000 55%, transparent 90%);
+}
 .hero-img-inner{
   display:flex;align-items:center;justify-content:center;
   gap:20px;width:100%;padding:32px;
+  position:relative;z-index:1;
 }
 .hero-stat-pill{
   background:var(--white);
