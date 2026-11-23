@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://emaniebo420.github.io/tru-solar/sitemap.xml
+Sitemap: https://tru-solar.vercel.app/sitemap.xml

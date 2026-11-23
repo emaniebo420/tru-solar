@@ -1,616 +1,390 @@
-// ── State ──
-let step = 1;
-let totalSteps = 5;
-let state = {
-  type: null,        // residential / commercial
-  bill: null,        // monthly ₱
-  dailyKwh: null,
-  project: null,     // Roof / Ground / Canopy
-  roofType: null,    // Metal / Shingles / Tiles / Flatroof
-  address: '',
-  graphMode: 'day',
-};
-const RATE = 12;      // ₱/kWh
-const MAX_BILL = 10000000; // ₱/mo — sanity ceiling to catch fat-fingered input
-const MAX_KWH  = 30000;    // kWh/day — equivalent ceiling for the kWh entry mode
+(function () {
+  'use strict';
 
-// Target self-consumption offset by building type — commercial loads run mostly during
-// daylight hours (matching solar output), so a commercial system can offset a larger
-// share of the bill than a typical residential home with evening-heavy usage.
-const OFFSET_BY_TYPE = { residential: 0.45, commercial: 0.60 };
+  const { CONFIG, compute, formatPeso, billToDailyKwh, dailyKwhToBill } = window.TruSolar;
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const STORAGE_KEY = 'trusolar_proposal';
+  const TOTAL_STEPS = 5;
 
-// Relative system yield by project type — ground-mount allows optimal tilt/orientation
-// and better airflow cooling than a fixed roof array; canopy structures sit in between.
-const YIELD_BY_PROJECT = { Roof: 1.00, Ground: 1.08, Canopy: 1.04 };
+  /* ── State ─────────────────────────────────────────────────────── */
+  const state = {
+    step: 1,
+    type: null,        // residential | commercial
+    bill: null,        // PHP per month
+    dailyKwh: null,
+    project: null,     // Roof | Ground | Canopy
+    roofType: null,    // Metal | Shingles | Tiles | Flatroof
+    address: '',
+    graphMode: 'day',
+    inputMode: 'bill', // bill | kwh
+  };
 
-// Roof-mount derate reflecting real installation constraints (Roof projects only).
-const YIELD_BY_ROOF = { Metal: 1.00, Shingles: 0.98, Tiles: 0.95, Flatroof: 0.97 };
+  /* ── Elements ──────────────────────────────────────────────────── */
+  const el = {
+    back: $('#btnBack'), next: $('#btnNext'), book: $('#btnBook'),
+    progress: $('#progressHeader'), progressBar: $('#progressBar'), progressFill: $('#progressFill'),
+    stepLabel: $('#stepLabel'), pctLabel: $('#pctLabel'), topbar: $('#proposalTopbar'),
+    bill: $('#billInput'), kwh: $('#kwhInput'), addr: $('#addrInput'),
+    billErr: $('#billErr'), kwhErr: $('#kwhErr'),
+    modal: $('#roofModal'), roofConfirm: $('#roofConfirm'), roofHint: $('#roofHint'), roofImg: $('#modalRoofImg'),
+    roofSummary: $('#roofSummary'), canvas: $('#usageChart'),
+  };
 
-// ── Navigation ──
-function updateUI(moveFocus = true) {
-  // Show/hide panels
-  for (let i = 1; i <= totalSteps; i++) {
-    document.getElementById('step' + i).style.display = i === step ? 'block' : 'none';
-    const vis = document.getElementById('vis' + i);
-    if (vis) { vis.classList.toggle('active', i === step); }
+  function canProceed() {
+    switch (state.step) {
+      case 1: return !!state.type;
+      case 2: return !!(state.bill || state.dailyKwh);
+      case 3: return !!state.project && (state.project !== 'Roof' || !!state.roofType);
+      case 4: return state.address.trim().length > 3;
+      default: return true;
+    }
   }
 
-  // Progress bar
-  const pct = Math.round((step / totalSteps) * 100);
-  document.getElementById('progressHeader').style.display = step > 1 && step < 5 ? 'flex' : 'none';
-  document.getElementById('stepLabel').textContent = `Step ${step} of ${totalSteps}`;
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('pctLabel').textContent = pct + '%';
+  /* ── Rendering ─────────────────────────────────────────────────── */
+  function render({ moveFocus = true } = {}) {
+    for (let i = 1; i <= TOTAL_STEPS; i++) {
+      $('#step' + i).hidden = i !== state.step;
+      $('#vis' + i).classList.toggle('is-active', i === state.step);
+    }
 
-  // Back button
-  document.getElementById('btnBack').style.display = step > 1 ? 'inline-block' : 'none';
+    const pct = Math.round((state.step / TOTAL_STEPS) * 100);
+    el.progress.hidden = !(state.step > 1 && state.step < TOTAL_STEPS);
+    el.stepLabel.textContent = `Step ${state.step} of ${TOTAL_STEPS}`;
+    el.pctLabel.textContent = pct + '%';
+    el.progressFill.style.width = pct + '%';
+    el.progressBar.setAttribute('aria-valuenow', String(pct));
+    el.topbar.hidden = state.step !== TOTAL_STEPS;
 
-  // Proposal top bar
-  document.getElementById('proposalTopbar').classList.toggle('show', step === 5);
+    const final = state.step === TOTAL_STEPS;
+    el.back.hidden = state.step === 1;
+    el.next.hidden = final;
+    el.book.hidden = !final;
+    el.next.disabled = !canProceed();
 
-  // Footer on step 5
-  const footer = document.getElementById('wizardFooter');
-  if (step === 5) {
-    footer.innerHTML = `
-      <button class="btn-back" onclick="goBack()">‹ Back</button>
-      <button class="btn-book" onclick="bookVisit()">Book Site Visit</button>
-    `;
-  } else {
-    footer.innerHTML = `
-      <button class="btn-back" id="btnBack" onclick="goBack()" style="${step > 1 ? '' : 'display:none'}">Back</button>
-      <button class="btn-next" id="btnNext" onclick="goNext()" ${canProceed() ? '' : 'disabled'}>Next</button>
-    `;
+    if (moveFocus) {
+      const heading = $(`#step${state.step} .w-title`);
+      if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: false }); }
+    }
+    if (state.step === 2) drawGraph();
   }
 
-  // Move focus to the new step's heading so screen reader users get an announcement
-  // (skipped on the initial page render so we don't steal focus on load)
-  if (moveFocus) {
-    const heading = document.querySelector('#step' + step + ' .w-title');
-    if (heading) { heading.setAttribute('tabindex', '-1'); heading.focus(); }
+  /* ── Navigation ────────────────────────────────────────────────── */
+  function goNext() {
+    if (!canProceed()) {
+      if (state.step === 3 && state.project === 'Roof' && !state.roofType) openRoofModal();
+      return;
+    }
+    if (state.step >= TOTAL_STEPS) return;
+    state.step += 1;
+    if (state.step === TOTAL_STEPS) buildProposal();
+    render();
   }
 
-  // The canvas needs a visible, sized container before it can measure itself,
-  // so redraw whenever step 2 becomes the active panel (not just on input).
-  if (step === 2) drawGraph();
-}
-
-function canProceed() {
-  if (step === 1) return !!state.type;
-  if (step === 2) return !!(state.bill || state.dailyKwh);
-  if (step === 3) return !!state.project;
-  if (step === 4) return state.address.trim().length > 3;
-  return true;
-}
-
-function goNext() {
-  if (!canProceed()) return;
-  if (step === 3 && state.project === 'Roof' && !state.roofType) {
-    openModal(); return;
-  }
-  if (step < totalSteps) { step++; updateUI(); }
-  if (step === 5) buildProposal();
-}
-
-function goBack() {
-  if (step > 1) { step--; updateUI(); }
-}
-
-function onWizardInputKeydown(e) {
-  if (e.key === 'Enter') { e.preventDefault(); goNext(); }
-}
-
-// ── Step 1 ──
-function selectType(t, el) {
-  state.type = t;
-  document.querySelectorAll('#step1 .choice-btn').forEach(b => {
-    b.classList.remove('selected');
-    b.setAttribute('aria-pressed', 'false');
-  });
-  el.classList.add('selected');
-  el.setAttribute('aria-pressed', 'true');
-  updateUI(false);
-}
-
-// ── Step 2 ──
-let inputMode = 'bill'; // bill | kwh
-function toggleInputMode() {
-  inputMode = inputMode === 'bill' ? 'kwh' : 'bill';
-  document.getElementById('bill-mode').style.display = inputMode === 'bill' ? 'block' : 'none';
-  document.getElementById('kwh-mode').style.display  = inputMode === 'kwh'  ? 'block' : 'none';
-}
-
-function onBillInput() {
-  const input = document.getElementById('billInput');
-  const v = parseFloat(input.value);
-  const valid = v > 0 && v <= MAX_BILL;
-  if (valid) {
-    state.bill     = v;
-    state.dailyKwh = (v / RATE) / 30;
-  } else { state.bill = null; state.dailyKwh = null; }
-  setInputValidity(input, input.value !== '' && !valid);
-  drawGraph();
-  updateUI(false);
-}
-
-function onKwhInput() {
-  const input = document.getElementById('kwhInput');
-  const v = parseFloat(input.value);
-  const valid = v > 0 && v <= MAX_KWH;
-  if (valid) {
-    state.dailyKwh = v;
-    state.bill     = v * 30 * RATE;
-  } else { state.dailyKwh = null; state.bill = null; }
-  setInputValidity(input, input.value !== '' && !valid);
-  drawGraph();
-  updateUI(false);
-}
-
-function setInputValidity(input, isInvalid) {
-  input.classList.toggle('input-error', isInvalid);
-  input.setAttribute('aria-invalid', isInvalid ? 'true' : 'false');
-}
-
-// ── Graph ──
-// Reference (relative) load shapes — scaled to the visitor's actual daily kWh below,
-// so the chart reflects what they entered rather than a fixed demo curve.
-const GRAPH_PROFILES = {
-  day:    [4,4,4.5,5,12,13,12,12,12,4,4.5,4.5],
-  night:  [8,10,11,8,3,2,2,2,3,8,12,14],
-  '24h':  [6,7,7,6,8,9,9,9,8,8,9,8],
-  custom: [4,3,4,6,10,11,9,10,11,9,7,6],
-};
-
-function setGraphMode(mode, el) {
-  state.graphMode = mode;
-  document.querySelectorAll('.graph-tab').forEach(t => {
-    t.classList.remove('active');
-    t.setAttribute('aria-pressed', 'false');
-  });
-  el.classList.add('active');
-  el.setAttribute('aria-pressed', 'true');
-  drawGraph();
-}
-
-function drawGraph() {
-  const canvas = document.getElementById('usageChart');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.offsetWidth || 600;
-  const H = canvas.offsetHeight || 300;
-  canvas.width = W; canvas.height = H;
-  ctx.clearRect(0, 0, W, H);
-
-  const hours = ['12AM','2AM','4AM','6AM','8AM','10AM','12PM','2PM','4PM','6PM','8PM','10PM'];
-  const base = GRAPH_PROFILES[state.graphMode] || GRAPH_PROFILES.day;
-  const daily = state.dailyKwh || 20;
-  const baseSum = base.reduce((a, b) => a + b, 0);
-  // Scale the reference shape so its 2-hour blocks sum to roughly the visitor's daily kWh.
-  const data = base.map(v => (v / baseSum) * daily);
-  const maxV = Math.max(...data);
-  const pad = { t:20, r:20, b:36, l:48 };
-  const cW = W - pad.l - pad.r;
-  const cH = H - pad.t - pad.b;
-  const axisMax = maxV * 1.3;
-
-  // Grid lines — labeled with the actual kWh scale of the rendered data
-  ctx.strokeStyle = '#F0F0F0'; ctx.lineWidth = 1;
-  const gridSteps = 5;
-  for (let i = 0; i <= gridSteps; i++) {
-    const v = (axisMax * i) / gridSteps;
-    const y = pad.t + cH - (v / axisMax) * cH;
-    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cW, y); ctx.stroke();
-    ctx.fillStyle = '#9CA3AF'; ctx.font = '10px Inter'; ctx.textAlign = 'right';
-    ctx.fillText(v.toFixed(1) + ' kWh', pad.l - 6, y + 3);
+  function goBack() {
+    if (state.step > 1) { state.step -= 1; render(); }
   }
 
-  // X labels
-  ctx.fillStyle = '#9CA3AF'; ctx.font = '10px Inter'; ctx.textAlign = 'center';
-  hours.forEach((h, i) => {
-    const x = pad.l + (i / (hours.length - 1)) * cW;
-    ctx.fillText(h, x, H - 6);
-  });
+  /* ── Generic single-choice button groups ───────────────────────── */
+  function choose(buttons, active) {
+    buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === active)));
+  }
 
-  // Area chart
-  const pts = data.map((v, i) => ({
-    x: pad.l + (i / (data.length - 1)) * cW,
-    y: pad.t + cH - (v / axisMax) * cH,
+  /* Step 1 */
+  $$('[data-type]').forEach((btn) => btn.addEventListener('click', () => {
+    state.type = btn.dataset.type;
+    choose($$('[data-type]'), btn);
+    render({ moveFocus: false });
   }));
 
-  // Fill
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x, pad.t + cH);
-  pts.forEach(p => ctx.lineTo(p.x, p.y));
-  ctx.lineTo(pts[pts.length-1].x, pad.t + cH);
-  ctx.closePath();
-  const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t + cH);
-  grad.addColorStop(0, 'rgba(59,130,246,.35)');
-  grad.addColorStop(1, 'rgba(59,130,246,.03)');
-  ctx.fillStyle = grad;
-  ctx.fill();
-
-  // Line
-  ctx.beginPath();
-  pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-  ctx.strokeStyle = '#3B82F6'; ctx.lineWidth = 2.5; ctx.stroke();
-
-  // Dots
-  pts.forEach(p => {
-    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
-    ctx.fillStyle = '#fff'; ctx.fill();
-    ctx.strokeStyle = '#3B82F6'; ctx.lineWidth = 2; ctx.stroke();
-  });
-}
-
-// ── Step 3 ──
-const PROJECT_VISUALS = {
-  Roof: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <defs>
-      <linearGradient id="prRoofGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="var(--navy2)"/><stop offset="1" stop-color="var(--navy)"/>
-      </linearGradient>
-      <linearGradient id="prPanelGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="var(--navy2)"/><stop offset="1" stop-color="#070D24"/>
-      </linearGradient>
-      <clipPath id="prPanelClip"><rect x="93" y="61" width="50" height="20" rx="2"/></clipPath>
-    </defs>
-    <ellipse cx="100" cy="170" rx="78" ry="6" fill="var(--navy)" opacity=".08"/>
-    <line x1="20" y1="168" x2="180" y2="168" stroke="var(--navy)" stroke-width="3" stroke-linecap="round" opacity=".25"/>
-    <path d="M40,100 L100,42 L160,100 Z" fill="url(#prRoofGrad)"/>
-    <rect x="55" y="100" width="90" height="60" rx="3" fill="var(--off)" stroke="var(--navy)" stroke-width="3"/>
-    <rect x="66" y="112" width="18" height="16" rx="2" fill="#fff" stroke="var(--navy)" stroke-width="2"/>
-    <rect x="116" y="112" width="18" height="16" rx="2" fill="#fff" stroke="var(--navy)" stroke-width="2"/>
-    <rect x="92" y="128" width="16" height="32" rx="2" fill="var(--navy)"/>
-    <g transform="rotate(42 118 71)">
-      <rect x="93" y="61" width="50" height="20" rx="2" fill="url(#prPanelGrad)" stroke="var(--gold)" stroke-width="2"/>
-      <g clip-path="url(#prPanelClip)"><polygon points="93,81 106,61 114,61 101,81" fill="#fff" opacity=".14"/></g>
-      <line x1="110" y1="61" x2="110" y2="81" stroke="var(--off)" stroke-width="1" opacity=".4"/>
-      <line x1="127" y1="61" x2="127" y2="81" stroke="var(--off)" stroke-width="1" opacity=".4"/>
-      <line x1="93" y1="71" x2="143" y2="71" stroke="var(--off)" stroke-width="1" opacity=".4"/>
-    </g>
-  </svg>`,
-  Ground: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <defs>
-      <linearGradient id="pgPanelGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="var(--navy2)"/><stop offset="1" stop-color="#070D24"/>
-      </linearGradient>
-      <clipPath id="pgPanelClip"><rect x="55" y="93" width="90" height="34" rx="3"/></clipPath>
-    </defs>
-    <ellipse cx="63" cy="161" rx="14" ry="4" fill="var(--navy)" opacity=".12"/>
-    <ellipse cx="147" cy="161" rx="14" ry="4" fill="var(--navy)" opacity=".12"/>
-    <line x1="20" y1="160" x2="180" y2="160" stroke="var(--navy)" stroke-width="3" stroke-linecap="round" opacity=".25"/>
-    <path d="M30,160 L34,150 M38,160 L34,150" stroke="var(--navy)" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".6"/>
-    <path d="M158,160 L162,150 M166,160 L162,150" stroke="var(--navy)" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".6"/>
-    <line x1="63" y1="160" x2="63" y2="140" stroke="var(--navy)" stroke-width="5" stroke-linecap="round"/>
-    <line x1="147" y1="160" x2="147" y2="113" stroke="var(--navy)" stroke-width="5" stroke-linecap="round"/>
-    <g transform="rotate(-18 100 110)">
-      <rect x="55" y="93" width="90" height="34" rx="3" fill="url(#pgPanelGrad)" stroke="var(--gold)" stroke-width="2.5"/>
-      <g clip-path="url(#pgPanelClip)"><polygon points="55,127 80,93 92,93 67,127" fill="#fff" opacity=".12"/></g>
-      <line x1="77.5" y1="93" x2="77.5" y2="127" stroke="var(--off)" stroke-width="1" opacity=".4"/>
-      <line x1="100" y1="93" x2="100" y2="127" stroke="var(--off)" stroke-width="1" opacity=".4"/>
-      <line x1="122.5" y1="93" x2="122.5" y2="127" stroke="var(--off)" stroke-width="1" opacity=".4"/>
-      <line x1="55" y1="110" x2="145" y2="110" stroke="var(--off)" stroke-width="1" opacity=".4"/>
-    </g>
-  </svg>`,
-  Canopy: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <defs>
-      <linearGradient id="pcPanelGrad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="var(--navy2)"/><stop offset="1" stop-color="#070D24"/>
-      </linearGradient>
-      <linearGradient id="pcCarGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="var(--navy2)"/><stop offset="1" stop-color="var(--navy)"/>
-      </linearGradient>
-      <clipPath id="pcPanelClip"><rect x="40" y="55" width="120" height="26" rx="3"/></clipPath>
-    </defs>
-    <ellipse cx="100" cy="171" rx="62" ry="5" fill="var(--navy)" opacity=".1"/>
-    <line x1="20" y1="170" x2="180" y2="170" stroke="var(--navy)" stroke-width="3" stroke-linecap="round" opacity=".25"/>
-    <rect x="58" y="80" width="10" height="88" fill="var(--navy)"/>
-    <rect x="132" y="80" width="10" height="88" fill="var(--navy)"/>
-    <rect x="40" y="55" width="120" height="26" rx="3" fill="url(#pcPanelGrad)" stroke="var(--gold)" stroke-width="2.5"/>
-    <g clip-path="url(#pcPanelClip)"><polygon points="40,81 70,55 85,55 55,81" fill="#fff" opacity=".12"/></g>
-    <line x1="64" y1="55" x2="64" y2="81" stroke="var(--off)" stroke-width="1" opacity=".35"/>
-    <line x1="88" y1="55" x2="88" y2="81" stroke="var(--off)" stroke-width="1" opacity=".35"/>
-    <line x1="112" y1="55" x2="112" y2="81" stroke="var(--off)" stroke-width="1" opacity=".35"/>
-    <line x1="136" y1="55" x2="136" y2="81" stroke="var(--off)" stroke-width="1" opacity=".35"/>
-    <path d="M84,128 L92,112 L116,112 L122,128 Z" fill="var(--navy2)" opacity=".85"/>
-    <rect x="72" y="128" width="56" height="20" rx="8" fill="url(#pcCarGrad)"/>
-    <circle cx="86" cy="150" r="9" fill="var(--navy2)"/>
-    <circle cx="86" cy="150" r="3" fill="var(--off)"/>
-    <circle cx="114" cy="150" r="9" fill="var(--navy2)"/>
-    <circle cx="114" cy="150" r="3" fill="var(--off)"/>
-  </svg>`,
-};
-
-function selectProject(type, el) {
-  state.project = type;
-  document.querySelectorAll('#step3 .choice-btn').forEach(b => {
-    b.classList.remove('selected');
-    b.setAttribute('aria-pressed', 'false');
-  });
-  el.classList.add('selected');
-  el.setAttribute('aria-pressed', 'true');
-  document.getElementById('vis3Icon').innerHTML = PROJECT_VISUALS[type] || PROJECT_VISUALS.Roof;
-  document.getElementById('vis3Label').textContent = type + ' solar installation';
-  updateUI(false);
-  if (type === 'Roof') setTimeout(openModal, 300);
-}
-
-// ── Modal ──
-let selectedRoofType = null;
-let modalReturnFocusEl = null;
-function openModal() {
-  modalReturnFocusEl = document.activeElement;
-  const modal = document.getElementById('roofModal');
-  modal.classList.add('show');
-  selectedRoofType = null;
-  document.getElementById('modalSelectBtn').disabled = true;
-  document.querySelectorAll('.modal-opt').forEach(o => {
-    o.classList.remove('selected');
-    o.setAttribute('aria-pressed', 'false');
-  });
-  document.addEventListener('keydown', onModalKeydown);
-  const firstOpt = modal.querySelector('.modal-opt');
-  if (firstOpt) firstOpt.focus();
-}
-function closeModal() {
-  document.getElementById('roofModal').classList.remove('show');
-  document.removeEventListener('keydown', onModalKeydown);
-  if (modalReturnFocusEl) { modalReturnFocusEl.focus(); modalReturnFocusEl = null; }
-}
-function onModalKeydown(e) {
-  if (e.key === 'Escape') { closeModal(); return; }
-  if (e.key !== 'Tab') return;
-  const modal = document.getElementById('roofModal');
-  const focusable = modal.querySelectorAll('button, [tabindex]:not([tabindex="-1"])');
-  if (!focusable.length) return;
-  const first = focusable[0];
-  const last = focusable[focusable.length - 1];
-  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-}
-const ROOF_TYPE_VISUALS = {
-  Metal: `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <defs>
-      <linearGradient id="metalSheen" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#fff" stop-opacity=".35"/>
-        <stop offset=".5" stop-color="#fff" stop-opacity="0"/>
-        <stop offset="1" stop-color="var(--navy)" stop-opacity=".1"/>
-      </linearGradient>
-    </defs>
-    <rect width="300" height="160" fill="var(--off)"/>
-    <rect x="25" width="25" height="160" fill="var(--line)"/>
-    <rect x="75" width="25" height="160" fill="var(--line)"/>
-    <rect x="125" width="25" height="160" fill="var(--line)"/>
-    <rect x="175" width="25" height="160" fill="var(--line)"/>
-    <rect x="225" width="25" height="160" fill="var(--line)"/>
-    <rect x="275" width="25" height="160" fill="var(--line)"/>
-    <g stroke="var(--navy)" stroke-width="2.5">
-      <line x1="0" y1="0" x2="0" y2="160"/><line x1="25" y1="0" x2="25" y2="160"/>
-      <line x1="50" y1="0" x2="50" y2="160"/><line x1="75" y1="0" x2="75" y2="160"/>
-      <line x1="100" y1="0" x2="100" y2="160"/><line x1="125" y1="0" x2="125" y2="160"/>
-      <line x1="150" y1="0" x2="150" y2="160"/><line x1="175" y1="0" x2="175" y2="160"/>
-      <line x1="200" y1="0" x2="200" y2="160"/><line x1="225" y1="0" x2="225" y2="160"/>
-      <line x1="250" y1="0" x2="250" y2="160"/><line x1="275" y1="0" x2="275" y2="160"/>
-      <line x1="300" y1="0" x2="300" y2="160"/>
-    </g>
-    <rect width="300" height="160" fill="url(#metalSheen)"/>
-  </svg>`,
-  Shingles: `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <defs>
-      <linearGradient id="shingleGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="var(--navy2)"/><stop offset="1" stop-color="var(--navy)"/>
-      </linearGradient>
-      <linearGradient id="shingleShade" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#fff" stop-opacity=".12"/>
-        <stop offset="1" stop-color="#000" stop-opacity=".12"/>
-      </linearGradient>
-    </defs>
-    <rect width="300" height="160" fill="var(--off)"/>
-    <g fill="url(#shingleGrad)" stroke="var(--off)" stroke-width="2">
-      <rect x="-10" y="0" width="40" height="34" rx="2"/><rect x="32" y="0" width="40" height="34" rx="2"/>
-      <rect x="74" y="0" width="40" height="34" rx="2"/><rect x="116" y="0" width="40" height="34" rx="2"/>
-      <rect x="158" y="0" width="40" height="34" rx="2"/><rect x="200" y="0" width="40" height="34" rx="2"/>
-      <rect x="242" y="0" width="40" height="34" rx="2"/><rect x="284" y="0" width="40" height="34" rx="2"/>
-      <rect x="10" y="36" width="40" height="34" rx="2"/><rect x="52" y="36" width="40" height="34" rx="2"/>
-      <rect x="94" y="36" width="40" height="34" rx="2"/><rect x="136" y="36" width="40" height="34" rx="2"/>
-      <rect x="178" y="36" width="40" height="34" rx="2"/><rect x="220" y="36" width="40" height="34" rx="2"/>
-      <rect x="262" y="36" width="40" height="34" rx="2"/>
-      <rect x="-10" y="72" width="40" height="34" rx="2"/><rect x="32" y="72" width="40" height="34" rx="2"/>
-      <rect x="74" y="72" width="40" height="34" rx="2"/><rect x="116" y="72" width="40" height="34" rx="2"/>
-      <rect x="158" y="72" width="40" height="34" rx="2"/><rect x="200" y="72" width="40" height="34" rx="2"/>
-      <rect x="242" y="72" width="40" height="34" rx="2"/><rect x="284" y="72" width="40" height="34" rx="2"/>
-      <rect x="10" y="108" width="40" height="34" rx="2"/><rect x="52" y="108" width="40" height="34" rx="2"/>
-      <rect x="94" y="108" width="40" height="34" rx="2"/><rect x="136" y="108" width="40" height="34" rx="2"/>
-      <rect x="178" y="108" width="40" height="34" rx="2"/><rect x="220" y="108" width="40" height="34" rx="2"/>
-      <rect x="262" y="108" width="40" height="34" rx="2"/>
-      <rect x="-10" y="144" width="40" height="20" rx="2"/><rect x="32" y="144" width="40" height="20" rx="2"/>
-      <rect x="74" y="144" width="40" height="20" rx="2"/><rect x="116" y="144" width="40" height="20" rx="2"/>
-      <rect x="158" y="144" width="40" height="20" rx="2"/><rect x="200" y="144" width="40" height="20" rx="2"/>
-      <rect x="242" y="144" width="40" height="20" rx="2"/><rect x="284" y="144" width="40" height="20" rx="2"/>
-    </g>
-    <rect width="300" height="160" fill="url(#shingleShade)"/>
-  </svg>`,
-  Tiles: `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <defs>
-      <linearGradient id="tileGradTop" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="var(--navy2)"/><stop offset="1" stop-color="var(--navy)"/>
-      </linearGradient>
-      <linearGradient id="tileGradBottom" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="var(--navy)"/><stop offset="1" stop-color="#0A1638"/>
-      </linearGradient>
-    </defs>
-    <rect width="300" height="160" fill="var(--off)"/>
-    <g fill="url(#tileGradTop)">
-      <rect x="5" y="-10" width="26" height="90" rx="13"/><rect x="41" y="-10" width="26" height="90" rx="13"/>
-      <rect x="77" y="-10" width="26" height="90" rx="13"/><rect x="113" y="-10" width="26" height="90" rx="13"/>
-      <rect x="149" y="-10" width="26" height="90" rx="13"/><rect x="185" y="-10" width="26" height="90" rx="13"/>
-      <rect x="221" y="-10" width="26" height="90" rx="13"/><rect x="257" y="-10" width="26" height="90" rx="13"/>
-      <rect x="293" y="-10" width="26" height="90" rx="13"/>
-    </g>
-    <g fill="url(#tileGradBottom)" opacity=".85">
-      <rect x="23" y="60" width="26" height="100" rx="13"/><rect x="59" y="60" width="26" height="100" rx="13"/>
-      <rect x="95" y="60" width="26" height="100" rx="13"/><rect x="131" y="60" width="26" height="100" rx="13"/>
-      <rect x="167" y="60" width="26" height="100" rx="13"/><rect x="203" y="60" width="26" height="100" rx="13"/>
-      <rect x="239" y="60" width="26" height="100" rx="13"/><rect x="275" y="60" width="26" height="100" rx="13"/>
-    </g>
-  </svg>`,
-  Flatroof: `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <defs>
-      <linearGradient id="flatParapetGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="var(--navy2)"/><stop offset="1" stop-color="var(--navy)"/>
-      </linearGradient>
-    </defs>
-    <rect width="300" height="160" fill="var(--off)"/>
-    <rect x="0" y="0" width="300" height="14" fill="url(#flatParapetGrad)"/>
-    <g stroke="var(--line)" stroke-width="3">
-      <line x1="0" y1="44" x2="300" y2="44"/><line x1="0" y1="74" x2="300" y2="74"/>
-      <line x1="0" y1="104" x2="300" y2="104"/><line x1="0" y1="134" x2="300" y2="134"/>
-    </g>
-    <ellipse cx="220" cy="124" rx="38" ry="6" fill="var(--navy)" opacity=".1"/>
-    <rect x="190" y="80" width="60" height="40" rx="4" fill="url(#flatParapetGrad)"/>
-    <line x1="200" y1="90" x2="240" y2="90" stroke="var(--off)" stroke-width="3"/>
-    <line x1="200" y1="100" x2="240" y2="100" stroke="var(--off)" stroke-width="3"/>
-    <line x1="200" y1="110" x2="240" y2="110" stroke="var(--off)" stroke-width="3"/>
-    <rect x="60" y="60" width="14" height="60" rx="4" fill="var(--navy2)"/>
-    <ellipse cx="67" cy="60" rx="10" ry="4" fill="var(--navy2)"/>
-  </svg>`,
-};
-
-function selectRoofType(t, el) {
-  selectedRoofType = t;
-  document.querySelectorAll('.modal-opt').forEach(o => {
-    o.classList.remove('selected');
-    o.setAttribute('aria-pressed', 'false');
-  });
-  el.classList.add('selected');
-  el.setAttribute('aria-pressed', 'true');
-  document.getElementById('modalSelectBtn').disabled = false;
-  document.getElementById('modalRoofImg').innerHTML = ROOF_TYPE_VISUALS[t];
-}
-function confirmRoofType() {
-  state.roofType = selectedRoofType;
-  closeModal();
-  updateUI(false);
-}
-
-// ── Step 4 ──
-let mapDebounceTimer = null;
-function onAddrInput() {
-  state.address = document.getElementById('addrInput').value;
-  updateUI(false);
-  clearTimeout(mapDebounceTimer);
-  mapDebounceTimer = setTimeout(updateMap, 600);
-}
-
-function updateMap() {
-  const frame = document.getElementById('mapFrame');
-  const query = state.address.trim() || 'Philippines';
-  frame.src = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
-}
-
-// ── Step 5: Proposal ──
-function buildProposal() {
-  const daily   = state.dailyKwh || 20;
-  const monthly = daily * 30;
-  const bill    = state.bill || monthly * RATE;
-  const sun     = 5.0;  // peak sun hours/day (Philippines average)
-  const baseEff = 0.85; // system derate — inverter, wiring, and temperature losses
-
-  let yieldMult = YIELD_BY_PROJECT[state.project] ?? 1.00;
-  if (state.project === 'Roof' && state.roofType) {
-    yieldMult *= YIELD_BY_ROOF[state.roofType] ?? 1.00;
+  /* Step 2 */
+  function showInputMode(mode) {
+    state.inputMode = mode;
+    $('#bill-mode').hidden = mode !== 'bill';
+    $('#kwh-mode').hidden = mode !== 'kwh';
+    (mode === 'bill' ? el.bill : el.kwh).focus();
   }
-  const eff = baseEff * yieldMult; // system yield, adjusted for mount type
+  $$('[data-toggle-mode]').forEach((b) => b.addEventListener('click', () => showInputMode(state.inputMode === 'bill' ? 'kwh' : 'bill')));
 
-  const off     = OFFSET_BY_TYPE[state.type] ?? 0.50; // target self-consumption offset — drives both system sizing and savings
-  const kwp     = (daily * off) / (sun * eff);
-  const panels  = Math.ceil((kwp * 1000) / 400);
-  const mSave   = bill * off;
-  const aSave   = mSave * 12;
-  const solarCost = kwp * 18000;
-  const inverter  = kwp * 8000;
-  const install   = kwp * 7000;
-  const subtotal  = solarCost + inverter + install;
-  const vat       = subtotal * 0.12;
-  const total     = subtotal + vat;
-  const pbk       = total / aSave;
-  const lifetime  = aSave * 25;
-  const monthly36 = total / 36;
-  const futureBill = bill - mSave;
-  const prodKwh = daily * off;
-  const importKwh = daily - prodKwh;
-  const score = Math.round(Math.min(99, off * 100 + 20 + (yieldMult - 1) * 40));
+  function setInvalid(input, errorEl, invalid) {
+    input.setAttribute('aria-invalid', String(invalid));
+    errorEl.hidden = !invalid;
+  }
 
-  // Top bar
-  document.getElementById('ptbSavings').textContent = fmt(mSave);
-  document.getElementById('ptbCost').textContent    = fmt(monthly36);
-  document.getElementById('ptbPct').textContent     = Math.round(off*100)+'%';
-  const arc = document.getElementById('ptbArc');
-  const circ = 2 * Math.PI * 19;
-  arc.setAttribute('stroke-dasharray', circ);
-  arc.setAttribute('stroke-dashoffset', circ - circ * off);
+  el.bill.addEventListener('input', () => {
+    const v = parseFloat(el.bill.value);
+    const valid = v > 0 && v <= CONFIG.MAX_BILL;
+    state.bill = valid ? v : null;
+    state.dailyKwh = valid ? billToDailyKwh(v) : null;
+    setInvalid(el.bill, el.billErr, el.bill.value !== '' && !valid);
+    drawGraph();
+    render({ moveFocus: false });
+  });
 
-  // Both bars are drawn at the same height (they represent the same bill scale);
-  // the future bar's solar-covered portion is highlighted within it.
-  const barH = 75;
-  const solH = (off * barH).toFixed(0);
-  document.getElementById('bar-current').style.height = barH + '%';
-  document.getElementById('bar-future-bg').style.height = barH + '%';
-  document.getElementById('bar-future-solar').style.height = solH + '%';
-  document.getElementById('lbl-current').textContent = fmt(bill);
-  document.getElementById('lbl-future').textContent  = fmt(futureBill);
+  el.kwh.addEventListener('input', () => {
+    const v = parseFloat(el.kwh.value);
+    const valid = v > 0 && v <= CONFIG.MAX_DAILY_KWH;
+    state.dailyKwh = valid ? v : null;
+    state.bill = valid ? dailyKwhToBill(v) : null;
+    setInvalid(el.kwh, el.kwhErr, el.kwh.value !== '' && !valid);
+    drawGraph();
+    render({ moveFocus: false });
+  });
 
-  // Energy stats
-  document.getElementById('es-usage').textContent  = daily.toFixed(2) + ' kWh';
-  document.getElementById('es-prod').textContent   = prodKwh.toFixed(2) + ' kWh';
-  document.getElementById('es-import').textContent = importKwh.toFixed(2) + ' kWh';
-  document.getElementById('scoreVal').textContent  = score + '%';
-  const sArc = document.getElementById('scoreArc');
-  const sc = 2 * Math.PI * 18;
-  sArc.setAttribute('stroke-dasharray', sc);
-  sArc.setAttribute('stroke-dashoffset', sc - sc * (score/100));
-  document.getElementById('energyFill').style.width = Math.round(off*100) + '%';
+  [el.bill, el.kwh, el.addr].forEach((input) => input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); goNext(); }
+  }));
 
-  // Spec accordion
-  document.getElementById('spec-kwp').textContent    = kwp.toFixed(2) + ' kWp';
-  document.getElementById('spec-panels').textContent = panels + ' panels';
+  /* Usage graph */
+  const GRAPH_PROFILES = {
+    day:    [4, 4, 4.5, 5, 12, 13, 12, 12, 12, 4, 4.5, 4.5],
+    night:  [8, 10, 11, 8, 3, 2, 2, 2, 3, 8, 12, 14],
+    '24h':  [6, 7, 7, 6, 8, 9, 9, 9, 8, 8, 9, 8],
+    custom: [4, 3, 4, 6, 10, 11, 9, 10, 11, 9, 7, 6],
+  };
+  const HOURS = ['12AM', '2AM', '4AM', '6AM', '8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM', '10PM'];
 
-  // Savings accordion
-  document.getElementById('acc-monthly').textContent  = fmt(mSave);
-  document.getElementById('acc-daily').textContent    = fmt(mSave / 30);
-  document.getElementById('acc-weekly').textContent   = fmt(mSave / 4.3);
-  document.getElementById('acc-lifetime').textContent = fmt(lifetime);
-  document.getElementById('acc-roi').textContent      = pbk.toFixed(1) + ' years';
+  $$('[data-mode]').forEach((btn) => btn.addEventListener('click', () => {
+    state.graphMode = btn.dataset.mode;
+    $$('[data-mode]').forEach((b) => {
+      const on = b === btn;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+    drawGraph();
+  }));
 
-  // Pricing
-  document.getElementById('p-solar').textContent    = fmt(solarCost);
-  document.getElementById('p-inverter').textContent = fmt(inverter);
-  document.getElementById('p-install').textContent  = fmt(install);
-  document.getElementById('p-vat').textContent      = fmt(vat);
-  document.getElementById('p-total').textContent    = fmt(total);
+  function drawGraph() {
+    const canvas = el.canvas;
+    if (!canvas || !canvas.offsetWidth) return;
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.offsetWidth;
+    const H = canvas.offsetHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
 
-  // Save so the homepage ROI section can show this visitor's real comparison
-  // when they navigate back, instead of a generic placeholder.
-  try {
-    localStorage.setItem('trusolar_proposal', JSON.stringify({ bill, futureBill, total, aSave }));
-  } catch (e) { /* storage unavailable (private browsing, quota) — ROI section just stays hidden */ }
-}
+    const base = GRAPH_PROFILES[state.graphMode];
+    const daily = state.dailyKwh || 20;
+    const sum = base.reduce((a, b) => a + b, 0);
+    const data = base.map((v) => (v / sum) * daily);
+    const pad = { t: 16, r: 16, b: 32, l: 56 };
+    const cW = W - pad.l - pad.r;
+    const cH = H - pad.t - pad.b;
+    const axisMax = Math.max(...data) * 1.3;
+    const font = '11px Inter, system-ui, sans-serif';
 
-function toggleAcc(btn) {
-  const open = btn.classList.toggle('open');
-  btn.nextElementSibling.classList.toggle('open');
-  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-}
+    ctx.font = font;
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 5; i++) {
+      const v = (axisMax * i) / 5;
+      const y = pad.t + cH - (v / axisMax) * cH;
+      ctx.strokeStyle = '#E3E6EE';
+      ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cW, y); ctx.stroke();
+      ctx.fillStyle = '#6B7280'; ctx.textAlign = 'right';
+      ctx.fillText(v.toFixed(1) + ' kWh', pad.l - 8, y + 4);
+    }
 
-function bookVisit() {
-  window.location.href = 'index.html#contact';
-}
+    ctx.textAlign = 'center'; ctx.fillStyle = '#6B7280';
+    const every = W < 480 ? 2 : 1;
+    HOURS.forEach((h, i) => {
+      if (i % every === 0) ctx.fillText(h, pad.l + (i / (HOURS.length - 1)) * cW, H - 8);
+    });
 
-function fmt(n) { return '₱' + Math.round(n).toLocaleString(); }
+    const pts = data.map((v, i) => ({ x: pad.l + (i / (data.length - 1)) * cW, y: pad.t + cH - (v / axisMax) * cH }));
 
-// ── Init ──
-updateUI(false);
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pad.t + cH);
+    pts.forEach((p) => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(pts[pts.length - 1].x, pad.t + cH);
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t + cH);
+    grad.addColorStop(0, 'rgba(27,45,107,.28)');
+    grad.addColorStop(1, 'rgba(27,45,107,.02)');
+    ctx.fillStyle = grad; ctx.fill();
 
-// Redraw graph on resize
-window.addEventListener('resize', () => {
-  if (step === 2 && (state.bill || state.dailyKwh)) drawGraph();
-});
+    ctx.beginPath();
+    pts.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
+    ctx.strokeStyle = '#1B2D6B'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.stroke();
+
+    pts.forEach((p) => {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.strokeStyle = '#F0B429'; ctx.lineWidth = 2.5; ctx.stroke();
+    });
+
+    canvas.setAttribute('aria-label',
+      `Estimated usage by time of day, about ${daily.toFixed(1)} kilowatt-hours in total per day. Illustrative shape.`);
+  }
+
+  /* Step 3 */
+  const PROJECT_VISUALS = {
+    Roof: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="prRoofGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0F1D4A"/><stop offset="1" stop-color="#1B2D6B"/></linearGradient>
+      <linearGradient id="prPanelGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#31509F"/><stop offset="1" stop-color="#0F1D4A"/></linearGradient></defs>
+      <ellipse cx="100" cy="170" rx="78" ry="6" fill="#1B2D6B" opacity=".08"/>
+      <line x1="20" y1="168" x2="180" y2="168" stroke="#1B2D6B" stroke-width="3" stroke-linecap="round" opacity=".25"/>
+      <path d="M40,100 L100,42 L160,100 Z" fill="url(#prRoofGrad)"/>
+      <rect x="55" y="100" width="90" height="60" rx="3" fill="#F6F7FB" stroke="#1B2D6B" stroke-width="3"/>
+      <rect x="66" y="112" width="18" height="16" rx="2" fill="#fff" stroke="#1B2D6B" stroke-width="2"/>
+      <rect x="116" y="112" width="18" height="16" rx="2" fill="#fff" stroke="#1B2D6B" stroke-width="2"/>
+      <rect x="92" y="128" width="16" height="32" rx="2" fill="#1B2D6B"/>
+      <g transform="rotate(42 118 71)"><rect x="93" y="61" width="50" height="20" rx="2" fill="url(#prPanelGrad)" stroke="#F0B429" stroke-width="2"/>
+      <line x1="110" y1="61" x2="110" y2="81" stroke="#F6F7FB" stroke-width="1" opacity=".4"/><line x1="127" y1="61" x2="127" y2="81" stroke="#F6F7FB" stroke-width="1" opacity=".4"/><line x1="93" y1="71" x2="143" y2="71" stroke="#F6F7FB" stroke-width="1" opacity=".4"/></g></svg>`,
+    Ground: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="pgPanelGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#31509F"/><stop offset="1" stop-color="#0F1D4A"/></linearGradient></defs>
+      <ellipse cx="63" cy="161" rx="14" ry="4" fill="#1B2D6B" opacity=".12"/><ellipse cx="147" cy="161" rx="14" ry="4" fill="#1B2D6B" opacity=".12"/>
+      <line x1="20" y1="160" x2="180" y2="160" stroke="#1B2D6B" stroke-width="3" stroke-linecap="round" opacity=".25"/>
+      <line x1="63" y1="160" x2="63" y2="140" stroke="#1B2D6B" stroke-width="5" stroke-linecap="round"/><line x1="147" y1="160" x2="147" y2="113" stroke="#1B2D6B" stroke-width="5" stroke-linecap="round"/>
+      <g transform="rotate(-18 100 110)"><rect x="55" y="93" width="90" height="34" rx="3" fill="url(#pgPanelGrad)" stroke="#F0B429" stroke-width="2.5"/>
+      <line x1="77.5" y1="93" x2="77.5" y2="127" stroke="#F6F7FB" stroke-width="1" opacity=".4"/><line x1="100" y1="93" x2="100" y2="127" stroke="#F6F7FB" stroke-width="1" opacity=".4"/><line x1="122.5" y1="93" x2="122.5" y2="127" stroke="#F6F7FB" stroke-width="1" opacity=".4"/><line x1="55" y1="110" x2="145" y2="110" stroke="#F6F7FB" stroke-width="1" opacity=".4"/></g></svg>`,
+    Canopy: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="pcPanelGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#31509F"/><stop offset="1" stop-color="#0F1D4A"/></linearGradient>
+      <linearGradient id="pcCarGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0F1D4A"/><stop offset="1" stop-color="#1B2D6B"/></linearGradient></defs>
+      <ellipse cx="100" cy="171" rx="62" ry="5" fill="#1B2D6B" opacity=".1"/>
+      <line x1="20" y1="170" x2="180" y2="170" stroke="#1B2D6B" stroke-width="3" stroke-linecap="round" opacity=".25"/>
+      <rect x="58" y="80" width="10" height="88" fill="#1B2D6B"/><rect x="132" y="80" width="10" height="88" fill="#1B2D6B"/>
+      <rect x="40" y="55" width="120" height="26" rx="3" fill="url(#pcPanelGrad)" stroke="#F0B429" stroke-width="2.5"/>
+      <line x1="64" y1="55" x2="64" y2="81" stroke="#F6F7FB" stroke-width="1" opacity=".35"/><line x1="88" y1="55" x2="88" y2="81" stroke="#F6F7FB" stroke-width="1" opacity=".35"/><line x1="112" y1="55" x2="112" y2="81" stroke="#F6F7FB" stroke-width="1" opacity=".35"/><line x1="136" y1="55" x2="136" y2="81" stroke="#F6F7FB" stroke-width="1" opacity=".35"/>
+      <path d="M84,128 L92,112 L116,112 L122,128 Z" fill="#0F1D4A" opacity=".85"/><rect x="72" y="128" width="56" height="20" rx="8" fill="url(#pcCarGrad)"/>
+      <circle cx="86" cy="150" r="9" fill="#0F1D4A"/><circle cx="86" cy="150" r="3" fill="#F6F7FB"/><circle cx="114" cy="150" r="9" fill="#0F1D4A"/><circle cx="114" cy="150" r="3" fill="#F6F7FB"/></svg>`,
+  };
+
+  $$('[data-project]').forEach((btn) => btn.addEventListener('click', () => {
+    state.project = btn.dataset.project;
+    if (state.project !== 'Roof') state.roofType = null;
+    choose($$('[data-project]'), btn);
+    $('#vis3Icon').innerHTML = PROJECT_VISUALS[state.project];
+    updateProjectLabels();
+    render({ moveFocus: false });
+    if (state.project === 'Roof') openRoofModal();
+  }));
+
+  function updateProjectLabels() {
+    const roofText = state.project === 'Roof' && state.roofType
+      ? `${state.roofType === 'Flatroof' ? 'Flat' : state.roofType} roof selected.` : '';
+    $('#vis3Label').textContent = state.project
+      ? `${state.project} solar installation${state.roofType ? ' · ' + (state.roofType === 'Flatroof' ? 'Flat' : state.roofType) + ' roof' : ''}`
+      : 'Select your project type';
+    el.roofSummary.hidden = !roofText;
+    el.roofSummary.textContent = roofText;
+  }
+
+  /* Roof dialog (native <dialog>: focus trap, Esc and backdrop handled by the browser) */
+  const ROOF_IMAGES = {
+    Metal: `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="160" fill="#F6F7FB"/>${[25, 75, 125, 175, 225, 275].map((x) => `<rect x="${x}" width="25" height="160" fill="#E3E6EE"/>`).join('')}<g stroke="#1B2D6B" stroke-width="2.5">${Array.from({ length: 13 }, (_, i) => `<line x1="${i * 25}" y1="0" x2="${i * 25}" y2="160"/>`).join('')}</g></svg>`,
+    Shingles: `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="160" fill="#F6F7FB"/><g fill="#1B2D6B" stroke="#F6F7FB" stroke-width="2">${[0, 1, 2, 3, 4].map((r) => Array.from({ length: 8 }, (_, c) => `<rect x="${c * 42 - (r % 2 ? 20 : 10)}" y="${r * 36}" width="40" height="34" rx="2"/>`).join('')).join('')}</g></svg>`,
+    Tiles: `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="160" fill="#F6F7FB"/><g fill="#1B2D6B">${Array.from({ length: 9 }, (_, i) => `<rect x="${5 + i * 36}" y="-10" width="26" height="90" rx="13"/>`).join('')}</g><g fill="#0F1D4A" opacity=".85">${Array.from({ length: 8 }, (_, i) => `<rect x="${23 + i * 36}" y="60" width="26" height="100" rx="13"/>`).join('')}</g></svg>`,
+    Flatroof: `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="160" fill="#F6F7FB"/><rect width="300" height="14" fill="#1B2D6B"/><g stroke="#E3E6EE" stroke-width="3">${[44, 74, 104, 134].map((y) => `<line x1="0" y1="${y}" x2="300" y2="${y}"/>`).join('')}</g><rect x="190" y="80" width="60" height="40" rx="4" fill="#1B2D6B"/><g stroke="#F6F7FB" stroke-width="3"><line x1="200" y1="90" x2="240" y2="90"/><line x1="200" y1="100" x2="240" y2="100"/><line x1="200" y1="110" x2="240" y2="110"/></g><rect x="60" y="60" width="14" height="60" rx="4" fill="#0F1D4A"/></svg>`,
+  };
+  let pendingRoof = null;
+
+  function openRoofModal() {
+    pendingRoof = state.roofType;
+    $$('.modal__opt').forEach((o) => o.setAttribute('aria-pressed', String(o.dataset.roof === pendingRoof)));
+    if (pendingRoof) el.roofImg.innerHTML = ROOF_IMAGES[pendingRoof];
+    el.roofConfirm.disabled = !pendingRoof;
+    el.roofHint.hidden = !!pendingRoof;
+    if (typeof el.modal.showModal === 'function') el.modal.showModal(); else el.modal.setAttribute('open', '');
+  }
+  function closeRoofModal() {
+    if (typeof el.modal.close === 'function') el.modal.close(); else el.modal.removeAttribute('open');
+  }
+
+  $$('.modal__opt').forEach((btn) => btn.addEventListener('click', () => {
+    pendingRoof = btn.dataset.roof;
+    $$('.modal__opt').forEach((o) => o.setAttribute('aria-pressed', String(o === btn)));
+    el.roofImg.innerHTML = ROOF_IMAGES[pendingRoof];
+    el.roofConfirm.disabled = false;
+    el.roofHint.hidden = true;
+  }));
+  $('#roofClose').addEventListener('click', closeRoofModal);
+  el.modal.addEventListener('click', (e) => { if (e.target === el.modal) closeRoofModal(); });
+  el.roofConfirm.addEventListener('click', () => {
+    state.roofType = pendingRoof;
+    closeRoofModal();
+    updateProjectLabels();
+    render({ moveFocus: false });
+    el.next.focus();
+  });
+
+  /* Step 4 */
+  let mapTimer = null;
+  el.addr.addEventListener('input', () => {
+    state.address = el.addr.value;
+    render({ moveFocus: false });
+    clearTimeout(mapTimer);
+    mapTimer = setTimeout(() => {
+      const q = state.address.trim() || 'Philippines';
+      $('#mapFrame').src = `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed`;
+    }, 600);
+  });
+
+  /* ── Step 5: proposal ──────────────────────────────────────────── */
+  function setText(id, text) { document.getElementById(id).textContent = text; }
+
+  function buildProposal() {
+    const r = compute({ type: state.type, bill: state.bill, dailyKwh: state.dailyKwh, project: state.project, roofType: state.roofType });
+    if (!r) return;
+    const pct = Math.round(r.offset * 100);
+
+    setText('ptbSavings', formatPeso(r.monthlySavings));
+    setText('ptbPct', pct + '%');
+    const circ = 2 * Math.PI * 19;
+    const arc = $('#ptbArc');
+    arc.setAttribute('stroke-dasharray', circ.toFixed(2));
+    arc.setAttribute('stroke-dashoffset', (circ * (1 - r.offset)).toFixed(2));
+
+    $('#barCurrent').style.height = '100%';
+    $('#barFuture').style.height = (100 - pct) + '%';
+    $('#barSaved').style.height = pct + '%';
+    setText('lblCurrent', formatPeso(r.bill));
+    setText('lblFuture', formatPeso(r.futureBill));
+
+    setText('esUsage', r.dailyKwh.toFixed(1) + ' kWh');
+    setText('esProd', r.productionKwh.toFixed(1) + ' kWh');
+    setText('esImport', r.importKwh.toFixed(1) + ' kWh');
+    setText('esShare', pct + '%');
+    $('#energyFill').style.width = pct + '%';
+
+    setText('specKwp', r.kwp.toFixed(2) + ' kWp');
+    setText('specPanels', r.panels + ' panels');
+    setText('accMonthly', formatPeso(r.monthlySavings));
+    setText('accDaily', formatPeso(r.monthlySavings / CONFIG.DAYS_PER_MONTH));
+    setText('accWeekly', formatPeso(r.monthlySavings / 4.345));
+    setText('accPayback', r.paybackYears.toFixed(1) + ' years');
+    setText('accLifetime', formatPeso(r.lifetimeSavings));
+
+    setText('pSolar', formatPeso(r.cost.panels));
+    setText('pInverter', formatPeso(r.cost.inverter));
+    setText('pInstall', formatPeso(r.cost.install));
+    setText('pVat', formatPeso(r.cost.vat));
+    setText('pTotal', formatPeso(r.cost.total));
+
+    // Inputs only; the homepage recomputes from the same model so numbers can never drift apart.
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        v: 2,
+        input: { type: state.type, bill: state.bill, dailyKwh: state.dailyKwh, project: state.project, roofType: state.roofType, address: state.address.trim() },
+      }));
+    } catch (e) { /* storage unavailable (private mode / quota): homepage projection simply stays hidden */ }
+  }
+
+  /* Accordions */
+  $$('.acc__head').forEach((head) => head.addEventListener('click', () => {
+    const open = head.getAttribute('aria-expanded') !== 'true';
+    head.setAttribute('aria-expanded', String(open));
+    document.getElementById(head.getAttribute('aria-controls')).hidden = !open;
+  }));
+
+  /* Footer actions */
+  el.next.addEventListener('click', goNext);
+  el.back.addEventListener('click', goBack);
+  el.book.addEventListener('click', () => { window.location.href = 'index.html?from=calculator#contact'; });
+
+  window.addEventListener('resize', () => { if (state.step === 2) drawGraph(); });
+
+  render({ moveFocus: false });
+})();

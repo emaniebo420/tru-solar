@@ -24,22 +24,26 @@ directly in a browser) with no setup beyond the files in this repo.
 ├── index.html              # Landing page markup
 ├── calculator.html         # Solar Design Studio wizard markup
 ├── css/
+│   ├── base.css            # Design tokens, fonts, reset, buttons, header (all pages)
 │   ├── landing.css         # Styles for index.html
 │   └── calculator.css      # Styles for calculator.html
 ├── js/
-│   ├── landing.js          # Behavior for index.html (FAQ, tabs, contact form)
-│   └── calculator.js       # Wizard state machine + proposal calculations
+│   ├── model.js            # Sizing, savings and pricing model (single source of truth)
+│   ├── landing.js          # Nav, tabs, example card, ROI section, contact form
+│   └── calculator.js       # Wizard state machine and rendering
 ├── assets/
-│   └── favicon.svg
+│   ├── favicon.svg
+│   ├── og-image.png        # Social sharing preview (1200x630)
+│   └── fonts/              # Self-hosted Inter and Sora (variable woff2)
 ├── robots.txt
 ├── sitemap.xml
 └── README.md
 ```
 
-CSS and JS are split per-page rather than shared, since `index.html` and
-`calculator.html` use slightly different design tokens (`:root` variables).
-Keeping them separate avoids accidentally changing one page's look while
-editing the other.
+Both pages share `css/base.css` so colours, type and buttons cannot drift apart.
+Every number shown on the site (calculator, homepage example card, savings
+projection) comes from `js/model.js`. To change pricing, offset or yield
+assumptions, edit the `CONFIG` object at the top of that file.
 
 ## Running locally
 
@@ -61,8 +65,8 @@ processed server-side.
 
 ## Notes
 
-- `robots.txt` and `sitemap.xml` reference a placeholder domain
-  (`https://www.trusolar.ph`). Update these once a production domain is
-  finalized.
+- `robots.txt`, `sitemap.xml`, the canonical links and the Open Graph URLs point
+  at the Vercel address (`https://tru-solar.vercel.app/`).
+  Update them once a custom domain is connected.
 - This is proprietary business content for TruSolar, not an open-source
   project, so no license file is included.
