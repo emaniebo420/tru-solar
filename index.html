@@ -134,6 +134,25 @@
       <input id="bill-range" type="range" min="2000" max="30000" step="500" value="7500" aria-describedby="bill-note">
       <div class="bill__scale" aria-hidden="true"><span>₱2,000</span><span>₱30,000</span></div>
 
+      <div class="bill__custom">
+        <div class="bill__field">
+          <label for="bill-panels">Panels</label>
+          <div class="stepper">
+            <button type="button" id="bill-panels-minus" aria-label="Fewer panels">&minus;</button>
+            <input id="bill-panels" type="number" inputmode="numeric" min="1" max="200" step="1" value="5">
+            <button type="button" id="bill-panels-plus" aria-label="More panels">+</button>
+          </div>
+        </div>
+        <div class="bill__field">
+          <label for="bill-battery">Battery (kWh)</label>
+          <div class="stepper">
+            <button type="button" id="bill-battery-minus" aria-label="Smaller battery">&minus;</button>
+            <input id="bill-battery" type="number" inputmode="decimal" min="0" max="60" step="0.5" value="0">
+            <button type="button" id="bill-battery-plus" aria-label="Larger battery">+</button>
+          </div>
+        </div>
+      </div>
+
       <div class="bill__bars" aria-hidden="true">
         <div class="bill__bar"><i id="bar-before" style="width:100%"></i></div>
         <div class="bill__bar bill__bar--after"><i id="bar-after" style="width:55%"></i></div>
@@ -143,7 +162,8 @@
         <div><dt>Bill with solar</dt><dd id="bill-after">₱4,125</dd></div>
         <div class="bill__row--key"><dt>You keep each month</dt><dd id="bill-save">₱3,375</dd></div>
         <div><dt>System size</dt><dd id="bill-kwp">1.70 kWp · 5 panels</dd></div>
-        <div><dt>Estimated payback</dt><dd id="bill-payback">2.8 years</dd></div>
+        <div><dt>Estimated system cost</dt><dd id="bill-cost">₱85,027</dd></div>
+        <div><dt>Estimated payback</dt><dd id="bill-payback">2.6 years</dd></div>
       </dl>
       <p class="bill__note" id="bill-note">Estimate for a residential metal roof, using Meralco's November 2026 rate of ₱15.55/kWh. Your real quote needs a site visit.</p>
     </form>

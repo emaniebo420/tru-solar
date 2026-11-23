@@ -78,22 +78,40 @@
   function initExample() {
     const range = document.getElementById('bill-range');
     if (!range) return;
+    const pIn = document.getElementById('bill-panels');
+    const bIn = document.getElementById('bill-battery');
+    const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+    let panels = null;   // null = recommended for the chosen bill
+    let battery = 0;
+
     const update = () => {
       const bill = Number(range.value);
-      const r = compute({ ...EXAMPLE, bill });
+      const r = compute({ ...EXAMPLE, bill, panels, batteryKwh: battery });
       if (!r) return;
       const pct = ((bill - range.min) / (range.max - range.min)) * 100;
       range.style.setProperty('--fill', pct + '%');
       range.setAttribute('aria-valuetext', formatPeso(bill) + ' per month');
+      pIn.value = r.panels;
+      bIn.value = battery;
       setText('bill-now', formatPeso(bill));
       setText('bill-after', formatPeso(r.futureBill));
       setText('bill-save', formatPeso(r.monthlySavings));
       setText('bill-kwp', `${r.kwp.toFixed(2)} kWp · ${r.panels} panels`);
+      setText('bill-cost', formatPeso(r.cost.total));
       setText('bill-payback', r.paybackYears.toFixed(1) + ' years');
       const after = document.getElementById('bar-after');
       if (after) after.style.width = Math.round((r.futureBill / bill) * 100) + '%';
     };
-    range.addEventListener('input', update);
+    const setPanels = (v) => { if (Number.isFinite(v)) { panels = clamp(Math.round(v), 1, 200); update(); } };
+    const setBattery = (v) => { if (Number.isFinite(v)) { battery = clamp(Math.round(v * 2) / 2, 0, 60); update(); } };
+
+    range.addEventListener('input', () => { panels = null; update(); });
+    document.getElementById('bill-panels-minus').addEventListener('click', () => setPanels(Number(pIn.value) - 1));
+    document.getElementById('bill-panels-plus').addEventListener('click', () => setPanels(Number(pIn.value) + 1));
+    pIn.addEventListener('change', () => setPanels(Number(pIn.value)));
+    document.getElementById('bill-battery-minus').addEventListener('click', () => setBattery(Number(bIn.value) - 0.5));
+    document.getElementById('bill-battery-plus').addEventListener('click', () => setBattery(Number(bIn.value) + 0.5));
+    bIn.addEventListener('change', () => setBattery(Number(bIn.value)));
     update();
   }
 
