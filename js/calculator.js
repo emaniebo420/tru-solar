@@ -11,6 +11,20 @@ let state = {
   graphMode: 'day',
 };
 const RATE = 12;      // ₱/kWh
+const MAX_BILL = 10000000; // ₱/mo — sanity ceiling to catch fat-fingered input
+const MAX_KWH  = 30000;    // kWh/day — equivalent ceiling for the kWh entry mode
+
+// Target self-consumption offset by building type — commercial loads run mostly during
+// daylight hours (matching solar output), so a commercial system can offset a larger
+// share of the bill than a typical residential home with evening-heavy usage.
+const OFFSET_BY_TYPE = { residential: 0.45, commercial: 0.60 };
+
+// Relative system yield by project type — ground-mount allows optimal tilt/orientation
+// and better airflow cooling than a fixed roof array; canopy structures sit in between.
+const YIELD_BY_PROJECT = { Roof: 1.00, Ground: 1.08, Canopy: 1.04 };
+
+// Roof-mount derate reflecting real installation constraints (Roof projects only).
+const YIELD_BY_ROOF = { Metal: 1.00, Shingles: 0.98, Tiles: 0.95, Flatroof: 0.97 };
 
 // ── Navigation ──
 function updateUI(moveFocus = true) {
@@ -54,13 +68,17 @@ function updateUI(moveFocus = true) {
     const heading = document.querySelector('#step' + step + ' .w-title');
     if (heading) { heading.setAttribute('tabindex', '-1'); heading.focus(); }
   }
+
+  // The canvas needs a visible, sized container before it can measure itself,
+  // so redraw whenever step 2 becomes the active panel (not just on input).
+  if (step === 2) drawGraph();
 }
 
 function canProceed() {
   if (step === 1) return !!state.type;
   if (step === 2) return !!(state.bill || state.dailyKwh);
   if (step === 3) return !!state.project;
-  if (step === 4) return state.address.length > 3;
+  if (step === 4) return state.address.trim().length > 3;
   return true;
 }
 
@@ -104,11 +122,12 @@ function toggleInputMode() {
 function onBillInput() {
   const input = document.getElementById('billInput');
   const v = parseFloat(input.value);
-  if (v > 0) {
+  const valid = v > 0 && v <= MAX_BILL;
+  if (valid) {
     state.bill     = v;
     state.dailyKwh = (v / RATE) / 30;
   } else { state.bill = null; state.dailyKwh = null; }
-  setInputValidity(input, input.value !== '' && !(v > 0));
+  setInputValidity(input, input.value !== '' && !valid);
   drawGraph();
   updateUI(false);
 }
@@ -116,11 +135,12 @@ function onBillInput() {
 function onKwhInput() {
   const input = document.getElementById('kwhInput');
   const v = parseFloat(input.value);
-  if (v > 0) {
+  const valid = v > 0 && v <= MAX_KWH;
+  if (valid) {
     state.dailyKwh = v;
     state.bill     = v * 30 * RATE;
   } else { state.dailyKwh = null; state.bill = null; }
-  setInputValidity(input, input.value !== '' && !(v > 0));
+  setInputValidity(input, input.value !== '' && !valid);
   drawGraph();
   updateUI(false);
 }
@@ -492,8 +512,16 @@ function buildProposal() {
   const daily   = state.dailyKwh || 20;
   const monthly = daily * 30;
   const bill    = state.bill || monthly * RATE;
-  const sun     = 5.0, eff = 0.85;
-  const off     = 0.53; // target self-consumption offset — drives both system sizing and savings
+  const sun     = 5.0;  // peak sun hours/day (Philippines average)
+  const baseEff = 0.85; // system derate — inverter, wiring, and temperature losses
+
+  let yieldMult = YIELD_BY_PROJECT[state.project] ?? 1.00;
+  if (state.project === 'Roof' && state.roofType) {
+    yieldMult *= YIELD_BY_ROOF[state.roofType] ?? 1.00;
+  }
+  const eff = baseEff * yieldMult; // system yield, adjusted for mount type
+
+  const off     = OFFSET_BY_TYPE[state.type] ?? 0.50; // target self-consumption offset — drives both system sizing and savings
   const kwp     = (daily * off) / (sun * eff);
   const panels  = Math.ceil((kwp * 1000) / 400);
   const mSave   = bill * off;
@@ -510,7 +538,7 @@ function buildProposal() {
   const futureBill = bill - mSave;
   const prodKwh = daily * off;
   const importKwh = daily - prodKwh;
-  const score = Math.round(off * 100 + 20);
+  const score = Math.round(Math.min(99, off * 100 + 20 + (yieldMult - 1) * 40));
 
   // Top bar
   document.getElementById('ptbSavings').textContent = fmt(mSave);
@@ -521,12 +549,12 @@ function buildProposal() {
   arc.setAttribute('stroke-dasharray', circ);
   arc.setAttribute('stroke-dashoffset', circ - circ * off);
 
-  // Bill bars (normalize to max height 100%)
-  const maxBill = Math.max(bill, futureBill);
-  const curH  = (bill / maxBill * 75).toFixed(0);
-  const solH  = ((mSave / bill) * (bill / maxBill * 75)).toFixed(0);
-  document.getElementById('bar-current').style.height = curH + '%';
-  document.getElementById('bar-future-bg').style.height = (bill / maxBill * 75) + '%';
+  // Both bars are drawn at the same height (they represent the same bill scale);
+  // the future bar's solar-covered portion is highlighted within it.
+  const barH = 75;
+  const solH = (off * barH).toFixed(0);
+  document.getElementById('bar-current').style.height = barH + '%';
+  document.getElementById('bar-future-bg').style.height = barH + '%';
   document.getElementById('bar-future-solar').style.height = solH + '%';
   document.getElementById('lbl-current').textContent = fmt(bill);
   document.getElementById('lbl-future').textContent  = fmt(futureBill);
@@ -559,6 +587,12 @@ function buildProposal() {
   document.getElementById('p-install').textContent  = fmt(install);
   document.getElementById('p-vat').textContent      = fmt(vat);
   document.getElementById('p-total').textContent    = fmt(total);
+
+  // Save so the homepage ROI section can show this visitor's real comparison
+  // when they navigate back, instead of a generic placeholder.
+  try {
+    localStorage.setItem('trusolar_proposal', JSON.stringify({ bill, futureBill, total, aSave }));
+  } catch (e) { /* storage unavailable (private browsing, quota) — ROI section just stays hidden */ }
 }
 
 function toggleAcc(btn) {

@@ -14,8 +14,32 @@
 <meta name="twitter:title" content="TruSolar — The Best Way to Power Up">
 <meta name="twitter:description" content="Clean energy can start with you. Get solar panels installed today in the Philippines.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="canonical" href="https://emaniebo420.github.io/tru-solar/">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/landing.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "TruSolar Philippines",
+  "url": "https://emaniebo420.github.io/tru-solar/",
+  "telephone": "+639271374314",
+  "email": "trusolarph@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Room 333 Celandine Residences, Balintawak",
+    "addressLocality": "Quezon City",
+    "addressCountry": "PH"
+  },
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "opens": "08:00",
+    "closes": "17:00"
+  },
+  "sameAs": ["https://facebook.com/trusolar.ph"]
+}
+</script>
 </head>
 <body>
 
@@ -30,23 +54,7 @@
 <nav class="nav">
   <div class="nav-left">
     <a class="nav-brand" href="#">
-      <svg viewBox="0 0 44 44" fill="none">
-        <ellipse cx="22" cy="7"    rx="3.5" ry="2"   fill="#F0B429" opacity=".95" transform="rotate(-20 22 7)"/>
-        <ellipse cx="28" cy="8.5"  rx="3.2" ry="1.8" fill="#F0B429" opacity=".9"  transform="rotate(5 28 8.5)"/>
-        <ellipse cx="33" cy="12"   rx="3"   ry="1.7" fill="#F0B429" opacity=".85" transform="rotate(30 33 12)"/>
-        <ellipse cx="36" cy="17.5" rx="2.8" ry="1.6" fill="#F0B429" opacity=".8"  transform="rotate(55 36 17.5)"/>
-        <ellipse cx="36" cy="23.5" rx="2.6" ry="1.5" fill="#F0B429" opacity=".75" transform="rotate(80 36 23.5)"/>
-        <ellipse cx="33" cy="29"   rx="2.4" ry="1.4" fill="#F0B429" opacity=".7"  transform="rotate(105 33 29)"/>
-        <ellipse cx="28" cy="33.5" rx="2.2" ry="1.3" fill="#F0B429" opacity=".65" transform="rotate(130 28 33.5)"/>
-        <ellipse cx="22" cy="36"   rx="2"   ry="1.2" fill="#F0B429" opacity=".6"  transform="rotate(155 22 36)"/>
-        <ellipse cx="16" cy="35"   rx="1.9" ry="1.1" fill="#F0B429" opacity=".55" transform="rotate(175 16 35)"/>
-        <ellipse cx="11" cy="31.5" rx="1.8" ry="1"   fill="#F0B429" opacity=".55" transform="rotate(-155 11 31.5)"/>
-        <ellipse cx="8"  cy="26.5" rx="2"   ry="1.2" fill="#F0B429" opacity=".62" transform="rotate(-130 8 26.5)"/>
-        <ellipse cx="7.5" cy="21"  rx="2.3" ry="1.4" fill="#F0B429" opacity=".7"  transform="rotate(-105 7.5 21)"/>
-        <ellipse cx="9"  cy="15.5" rx="2.6" ry="1.6" fill="#F0B429" opacity=".78" transform="rotate(-80 9 15.5)"/>
-        <ellipse cx="13" cy="10.5" rx="3"   ry="1.8" fill="#F0B429" opacity=".86" transform="rotate(-55 13 10.5)"/>
-        <ellipse cx="17.5" cy="7.5" rx="3.3" ry="1.9" fill="#F0B429" opacity=".93" transform="rotate(-30 17.5 7.5)"/>
-      </svg>
+      <img src="assets/favicon.svg" alt="" width="38" height="38">
       <span class="nav-brand-name">TRU<span>SOLAR</span></span>
     </a>
     <ul class="nav-links">
@@ -60,8 +68,25 @@
   <div class="nav-right">
     <a class="nav-btn-ghost" href="tel:09271374314">0927 137 4314</a>
     <a class="nav-btn-solid" href="#contact">Get started</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<div class="mobile-nav" id="mobileNav">
+  <ul class="mobile-nav-links">
+    <li><a href="#clients" onclick="closeMobileNav()">Services</a></li>
+    <li><a href="#how" onclick="closeMobileNav()">How it works</a></li>
+    <li><a href="calculator.html">Calculator</a></li>
+    <li><a href="#projects" onclick="closeMobileNav()">Projects</a></li>
+    <li><a href="#faq" onclick="closeMobileNav()">FAQ</a></li>
+  </ul>
+  <div class="mobile-nav-actions">
+    <a class="mnav-call" href="tel:09271374314">0927 137 4314</a>
+    <a class="mnav-cta" href="#contact" onclick="closeMobileNav()">Get started</a>
+  </div>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -91,7 +116,7 @@
         <div class="hsp-label">Panel warranty</div>
       </div>
       <div class="hero-stat-pill">
-        <div class="hsp-num">95%</div>
+        <div class="hsp-num">Up to 60%</div>
         <div class="hsp-label">Bill reduction</div>
       </div>
       <div class="hero-stat-pill gold-pill">
@@ -137,9 +162,9 @@
           <a class="client-cta" href="#contact">Get a free assessment →</a>
         </div>
         <div class="client-visual">
-          <div class="cv-icon">🏡</div>
+          <div class="cv-icon" aria-hidden="true">🏡</div>
           <div class="cv-badge">
-            <div class="cvb-num">Up to 95%</div>
+            <div class="cvb-num">Up to 60%</div>
             <div class="cvb-label">Bill reduction possible</div>
           </div>
         </div>
@@ -160,7 +185,7 @@
           <a class="client-cta" href="#contact">Talk to our team →</a>
         </div>
         <div class="client-visual">
-          <div class="cv-icon">🏢</div>
+          <div class="cv-icon" aria-hidden="true">🏢</div>
           <div class="cv-badge">
             <div class="cvb-num">Fast ROI</div>
             <div class="cvb-label">Daytime operations = max solar use</div>
@@ -183,7 +208,7 @@
           <a class="client-cta" href="#contact">Get a quote →</a>
         </div>
         <div class="client-visual">
-          <div class="cv-icon">🏨</div>
+          <div class="cv-icon" aria-hidden="true">🏨</div>
           <div class="cv-badge">
             <div class="cvb-num">24/7</div>
             <div class="cvb-label">Power strategy designed for you</div>
@@ -206,7 +231,7 @@
           <a class="client-cta" href="#contact">Contact our team →</a>
         </div>
         <div class="client-visual">
-          <div class="cv-icon">🏭</div>
+          <div class="cv-icon" aria-hidden="true">🏭</div>
           <div class="cv-badge">
             <div class="cvb-num">Lower OpEx</div>
             <div class="cvb-label">Reduce cost of production</div>
@@ -365,17 +390,17 @@
     <div class="testi-grid">
       <div class="testi-card">
         <div class="testi-stars">★★★★★</div>
-        <p class="testi-quote">Malaki ang natipid namin sa kuryente every month. Dati ₱6,000+ ang bill namin, ngayon below ₱500 na lang. Best investment talaga.</p>
+        <p class="testi-quote" lang="tl">Malaki ang natipid namin sa kuryente every month. Dati ₱6,000+ ang bill namin, ngayon below ₱500 na lang. Best investment talaga.</p>
         <div class="testi-author"><p class="testi-name">Arcellana Family</p><p class="testi-loc">Alaminos City, Pangasinan</p><p class="testi-system">5 kW Hybrid · 10 kWh Battery</p></div>
       </div>
       <div class="testi-card">
         <div class="testi-stars">★★★★★</div>
-        <p class="testi-quote">Ang TruSolar team ay propesyonal at maayos mag-trabaho. Hindi sila basta-basta nag-install — inexplain nila sa amin ang lahat bago simulan.</p>
+        <p class="testi-quote" lang="tl">Ang TruSolar team ay propesyonal at maayos mag-trabaho. Hindi sila basta-basta nag-install — inexplain nila sa amin ang lahat bago simulan.</p>
         <div class="testi-author"><p class="testi-name">Dargantes Family</p><p class="testi-loc">SJDM, Bulacan</p><p class="testi-system">Residential · Grid-tied System</p></div>
       </div>
       <div class="testi-card">
         <div class="testi-stars">★★★★★</div>
-        <p class="testi-quote">For our business, ang solar system ng TruSolar ang pinaka-magandang desisyon na nagawa namin. Ang bilis ng ROI — within 4 years pa lang, recovered na namin.</p>
+        <p class="testi-quote" lang="tl">For our business, ang solar system ng TruSolar ang pinaka-magandang desisyon na nagawa namin. Ang bilis ng ROI — within 4 years pa lang, recovered na namin.</p>
         <div class="testi-author"><p class="testi-name">Metro Feeds</p><p class="testi-loc">Sta Maria, Bulacan</p><p class="testi-system">Commercial · Large-scale Setup</p></div>
       </div>
     </div>
@@ -388,12 +413,12 @@
     <p class="eyebrow">Why TruSolar</p>
     <h2 class="section-title">Why homeowners and businesses pick us.</h2>
     <div class="why-grid">
-      <div class="why-cell"><div class="why-icon">👷</div><h3>Experienced installation team</h3><p>Certified technicians who prioritize safety and quality on every job, regardless of size.</p></div>
-      <div class="why-cell"><div class="why-icon">🔋</div><h3>High-quality components only</h3><p>Tier-1 panels, proven inverters, and reliable hardware — nothing we wouldn't put on our own roof.</p></div>
-      <div class="why-cell"><div class="why-icon">📐</div><h3>Sized for your actual usage</h3><p>Every system is designed around your real consumption — no upselling, no generic packages.</p></div>
-      <div class="why-cell"><div class="why-icon">⚡</div><h3>PEC compliant installations</h3><p>Full compliance with the Philippine Electrical Code. We handle all permits and paperwork.</p></div>
-      <div class="why-cell"><div class="why-icon">🛠</div><h3>Reliable after-sales support</h3><p>Ongoing maintenance, monitoring, and repair so your system performs well for decades.</p></div>
-      <div class="why-cell"><div class="why-icon">💳</div><h3>Honest pricing & flexible terms</h3><p>Competitive rates and installment options — because solar should be accessible, not just aspirational.</p></div>
+      <div class="why-cell"><div class="why-icon" aria-hidden="true">👷</div><h3>Experienced installation team</h3><p>Certified technicians who prioritize safety and quality on every job, regardless of size.</p></div>
+      <div class="why-cell"><div class="why-icon" aria-hidden="true">🔋</div><h3>High-quality components only</h3><p>Tier-1 panels, proven inverters, and reliable hardware — nothing we wouldn't put on our own roof.</p></div>
+      <div class="why-cell"><div class="why-icon" aria-hidden="true">📐</div><h3>Sized for your actual usage</h3><p>Every system is designed around your real consumption — no upselling, no generic packages.</p></div>
+      <div class="why-cell"><div class="why-icon" aria-hidden="true">⚡</div><h3>PEC compliant installations</h3><p>Full compliance with the Philippine Electrical Code. We handle all permits and paperwork.</p></div>
+      <div class="why-cell"><div class="why-icon" aria-hidden="true">🛠</div><h3>Reliable after-sales support</h3><p>Ongoing maintenance, monitoring, and repair so your system performs well for decades.</p></div>
+      <div class="why-cell"><div class="why-icon" aria-hidden="true">💳</div><h3>Honest pricing & flexible terms</h3><p>Competitive rates and installment options — because solar should be accessible, not just aspirational.</p></div>
     </div>
   </div>
 </section>
@@ -404,12 +429,12 @@
     <p class="eyebrow">Common questions</p>
     <h2 class="section-title">FAQ</h2>
     <div class="faq-list">
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Magkano ang solar system?<span class="faq-icon">+</span></button><div class="faq-a">Depende sa laki ng system. Sa average na bahay na gumagamit ng 20 kWh/day, ang 4–5 kWp system ay nasa ₱220,000–₱280,000. Libre ang site assessment namin para malaman ang exact na quote para sa inyong tahanan.</div></div>
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Ilang taon bago mabawi ang investment?<span class="faq-icon">+</span></button><div class="faq-a">Sa karamihan ng residential installations, ang payback period ay 4–7 taon. Pagkatapos noon, essentially libre na ang iyong kuryente — at ang mga panels ay tumatagal ng 25+ taon.</div></div>
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Anong mangyayari kapag brownout?<span class="faq-icon">+</span></button><div class="faq-a">Grid-tied systems ay nag-o-off din kapag brownout para sa safety ng linemen. Hybrid systems na may battery storage ay nagbibigay ng kuryente kahit brownout — ito ang recommended para sa mas mataas na proteksyon.</div></div>
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Covered ba ang buong Pilipinas?<span class="faq-icon">+</span></button><div class="faq-a">Oo, nagse-serve kami nationwide. Ang aming main operations ay nasa Quezon City, pero nagtatrabaho kami sa buong Luzon, Visayas, at Mindanao.</div></div>
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Gaano katagal ang installation?<span class="faq-icon">+</span></button><div class="faq-a">Ang karaniwang residential installation ay tatagal ng 1–2 araw. Ang mas malalaking commercial projects ay maaaring 3–7 araw depende sa laki. Gagawin naming maayos at malinis ang trabaho.</div></div>
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">May net metering ba?<span class="faq-icon">+</span></button><div class="faq-a">Oo! Tinutulungan namin ang aming mga kliyente na mag-apply para sa net metering sa Meralco o sa kanilang lokal na utility. Ibig sabihin, ang sobrang kuryente na nagagawa ng inyong solar panels ay ibabalik sa grid — at makakakuha kayo ng credit sa inyong bill. Approval typically takes 4–8 months.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" lang="tl">Magkano ang solar system?<span class="faq-icon">+</span></button><div class="faq-a" lang="tl">Depende sa laki ng system. Sa average na bahay na gumagamit ng 20 kWh/day, ang 4–5 kWp system ay nasa ₱220,000–₱280,000. Libre ang site assessment namin para malaman ang exact na quote para sa inyong tahanan.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" lang="tl">Ilang taon bago mabawi ang investment?<span class="faq-icon">+</span></button><div class="faq-a" lang="tl">Sa karamihan ng residential installations, ang payback period ay 4–7 taon. Pagkatapos noon, essentially libre na ang iyong kuryente — at ang mga panels ay tumatagal ng 25+ taon.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" lang="tl">Anong mangyayari kapag brownout?<span class="faq-icon">+</span></button><div class="faq-a" lang="tl">Grid-tied systems ay nag-o-off din kapag brownout para sa safety ng linemen. Hybrid systems na may battery storage ay nagbibigay ng kuryente kahit brownout — ito ang recommended para sa mas mataas na proteksyon.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" lang="tl">Covered ba ang buong Pilipinas?<span class="faq-icon">+</span></button><div class="faq-a" lang="tl">Oo, nagse-serve kami nationwide. Ang aming main operations ay nasa Quezon City, pero nagtatrabaho kami sa buong Luzon, Visayas, at Mindanao.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" lang="tl">Gaano katagal ang installation?<span class="faq-icon">+</span></button><div class="faq-a" lang="tl">Ang karaniwang residential installation ay tatagal ng 1–2 araw. Ang mas malalaking commercial projects ay maaaring 3–7 araw depende sa laki. Gagawin naming maayos at malinis ang trabaho.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" lang="tl">May net metering ba?<span class="faq-icon">+</span></button><div class="faq-a" lang="tl">Oo! Tinutulungan namin ang aming mga kliyente na mag-apply para sa net metering sa Meralco o sa kanilang lokal na utility. Ibig sabihin, ang sobrang kuryente na nagagawa ng inyong solar panels ay ibabalik sa grid — at makakakuha kayo ng credit sa inyong bill. Approval typically takes 4–8 months.</div></div>
     </div>
   </div>
 </section>
@@ -424,7 +449,7 @@
         <div class="ci-block"><h4>Phone</h4><p><a href="tel:09271374314">0927 137 4314</a></p></div>
         <div class="ci-block"><h4>Email</h4><p><a href="mailto:trusolarph@gmail.com">trusolarph@gmail.com</a></p></div>
         <div class="ci-block"><h4>Office</h4><p>Room 333 Celandine Residences<br>Balintawak, Quezon City</p></div>
-        <div class="ci-block"><h4>Facebook</h4><p><a href="https://facebook.com/trusolar.ph" target="_blank">facebook.com/trusolar.ph</a></p></div>
+        <div class="ci-block"><h4>Facebook</h4><p><a href="https://facebook.com/trusolar.ph" target="_blank" rel="noopener noreferrer">facebook.com/trusolar.ph</a></p></div>
         <div class="ci-block"><h4>Service areas</h4><p>SSS Fairview · Novaliches · Bulacan · Pangasinan · Nationwide</p></div>
         <div class="map-box"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3859.5!2d121.0!3d14.66!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b0e2d4b0c5e7%3A0x1!2sBalintawak%2C%20Quezon%20City!5e0!3m2!1sen!2sph" allowfullscreen loading="lazy"></iframe></div>
         <div class="safety-box">
@@ -441,8 +466,8 @@
         <h3>Request a free site assessment</h3>
         <div id="form-body">
           <div class="form-row">
-            <div class="form-field"><label for="f-name">Full name</label><input type="text" id="f-name" placeholder="Juan dela Cruz"></div>
-            <div class="form-field"><label for="f-phone">Phone number</label><input type="tel" id="f-phone" placeholder="09XX XXX XXXX"></div>
+            <div class="form-field"><label for="f-name">Full name</label><input type="text" id="f-name" placeholder="Juan dela Cruz"><span class="field-error" id="err-name">Please enter your name.</span></div>
+            <div class="form-field"><label for="f-phone">Phone number</label><input type="tel" id="f-phone" placeholder="09XX XXX XXXX"><span class="field-error" id="err-phone">Please enter your phone number.</span></div>
           </div>
           <div class="form-field"><label for="f-email">Email address</label><input type="email" id="f-email" placeholder="juan@email.com"></div>
           <div class="form-field"><label for="f-location">Location</label><input type="text" id="f-location" placeholder="City, Province"></div>
@@ -460,7 +485,7 @@
           <button class="form-submit" onclick="submitForm()">Send inquiry →</button>
         </div>
         <div class="form-success" id="form-success">
-          <div class="fs-check">✅</div>
+          <div class="fs-check" aria-hidden="true">✅</div>
           <h4>Inquiry received!</h4>
           <p>Thank you! TruSolar will reach out within 24 hours to schedule your free site assessment.</p>
         </div>
@@ -500,7 +525,7 @@
     <div class="footer-bottom">
       <p class="footer-copy">Copyright © <span id="copy-year">2026</span> TruSolar Philippines. All rights reserved.</p>
       <div class="footer-socials">
-        <a class="social-link" href="https://facebook.com/trusolar.ph" target="_blank">f</a>
+        <a class="social-link" href="https://facebook.com/trusolar.ph" target="_blank" rel="noopener noreferrer">f</a>
       </div>
     </div>
   </div>
