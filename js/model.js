@@ -26,8 +26,14 @@
     // Roof-mount derate (Roof projects only).
     YIELD_BY_ROOF: Object.freeze({ Metal: 1.00, Shingles: 0.98, Tiles: 0.95, Flatroof: 0.97 }),
     // PHP per kWp
-    // Estimate, before VAT (~PHP 67k/kWp incl. VAT). Not a quote: replace with TruSolar's real pricing.
-    COST_PER_KWP: Object.freeze({ panels: 27_000, inverter: 15_000, install: 18_000 }),
+    // Grid-tie system, PHP per kWp before VAT. The total (~PHP 50k/kWp incl. VAT) is anchored to
+    // published PH market ranges (5 kW ~PHP 220-260k; 6 kW PHP 200-300k). The split between
+    // panels, inverter and install is an assumption. Not a quote: replace with TruSolar's pricing.
+    COST_PER_KWP: Object.freeze({ panels: 14_000, inverter: 12_000, install: 18_600 }),
+    // Optional lithium (LiFePO4) battery, PHP per usable kWh before VAT. Least certain figure.
+    BATTERY_PER_KWH: 30_000,
+    // Share of the offset bill actually saved (some daytime solar is exported at a lower credit rate).
+    SAVINGS_REALIZATION: 0.8,
   });
 
   const isPositive = (n) => typeof n === 'number' && Number.isFinite(n) && n > 0;
@@ -62,11 +68,17 @@
     }
 
     const efficiency = CONFIG.SYSTEM_DERATE * yieldMult;
-    const offset = CONFIG.OFFSET_BY_TYPE[type];
-    const kwp = (dailyKwh * offset) / (CONFIG.PEAK_SUN_HOURS * efficiency);
-    const panels = Math.ceil((kwp * 1000) / CONFIG.PANEL_WATTS);
+    const offsetTarget = CONFIG.OFFSET_BY_TYPE[type];
+    const recKwp = (dailyKwh * offsetTarget) / (CONFIG.PEAK_SUN_HOURS * efficiency);
+    const recommendedPanels = Math.max(1, Math.ceil((recKwp * 1000) / CONFIG.PANEL_WATTS));
+    const customPanels = Number.isInteger(i.panels) && i.panels > 0 ? i.panels : null;
+    const panels = customPanels || recommendedPanels;
+    const kwp = customPanels ? (panels * CONFIG.PANEL_WATTS) / 1000 : recKwp;
+    const productionKwh = kwp * CONFIG.PEAK_SUN_HOURS * efficiency;
+    // Share of usage covered; panels beyond 100% of usage add cost but no bill savings here.
+    const offset = Math.min(1, productionKwh / dailyKwh);
 
-    const monthlySavings = bill * offset;
+    const monthlySavings = bill * offset * CONFIG.SAVINGS_REALIZATION;
     const annualSavings = monthlySavings * 12;
     const futureBill = bill - monthlySavings;
 
@@ -74,19 +86,22 @@
     const panelsCost = kwp * c.panels;
     const inverterCost = kwp * c.inverter;
     const installCost = kwp * c.install;
-    const subtotal = panelsCost + inverterCost + installCost;
+    const batteryKwh = isPositive(i.batteryKwh) ? i.batteryKwh : 0;
+    const batteryCost = batteryKwh * CONFIG.BATTERY_PER_KWH;
+    const subtotal = panelsCost + inverterCost + installCost + batteryCost;
     const vat = subtotal * CONFIG.VAT;
     const total = subtotal + vat;
 
     return {
       type, project, roofType: i.roofType || null,
-      bill, dailyKwh, offset, kwp, panels,
+      bill, dailyKwh, offset, kwp, panels, recommendedPanels, customPanels: !!customPanels,
       monthlySavings, annualSavings, futureBill,
       lifetimeSavings: annualSavings * CONFIG.LIFETIME_YEARS,
       paybackYears: total / annualSavings,
-      cost: { panels: panelsCost, inverter: inverterCost, install: installCost, vat, total },
-      productionKwh: dailyKwh * offset,
-      importKwh: dailyKwh - dailyKwh * offset,
+      batteryKwh,
+      cost: { panels: panelsCost, inverter: inverterCost, install: installCost, battery: batteryCost, vat, total },
+      productionKwh,
+      importKwh: Math.max(0, dailyKwh - productionKwh),
     };
   }
 

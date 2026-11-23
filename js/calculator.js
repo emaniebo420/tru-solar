@@ -18,7 +18,25 @@
     address: '',
     graphMode: 'day',
     inputMode: 'bill', // bill | kwh
+    batteryKwh: 0,
+    panels: null,      // null = recommended
+    customKey: null,
   };
+
+  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+  function wireCustomize() {
+    const pIn = $('#panelsInput'), bIn = $('#batteryInput');
+    const setPanels = (v) => { if (Number.isFinite(v)) { state.panels = clamp(Math.round(v), 1, 200); buildProposal(); } };
+    const setBattery = (v) => { if (Number.isFinite(v)) { state.batteryKwh = clamp(Math.round(v * 2) / 2, 0, 60); buildProposal(); } };
+    $('#panelsMinus').addEventListener('click', () => setPanels(Number(pIn.value) - 1));
+    $('#panelsPlus').addEventListener('click', () => setPanels(Number(pIn.value) + 1));
+    pIn.addEventListener('change', () => setPanels(Number(pIn.value)));
+    $('#batteryMinus').addEventListener('click', () => setBattery(Number(bIn.value) - 0.5));
+    $('#batteryPlus').addEventListener('click', () => setBattery(Number(bIn.value) + 0.5));
+    bIn.addEventListener('change', () => setBattery(Number(bIn.value)));
+    $('#customReset').addEventListener('click', () => { state.panels = null; state.batteryKwh = 0; buildProposal(); });
+  }
+  document.addEventListener('DOMContentLoaded', wireCustomize);
 
   /* ── Elements ──────────────────────────────────────────────────── */
   const el = {
@@ -326,20 +344,34 @@
   function setText(id, text) { document.getElementById(id).textContent = text; }
 
   function buildProposal() {
-    const r = compute({ type: state.type, bill: state.bill, dailyKwh: state.dailyKwh, project: state.project, roofType: state.roofType });
+    const r = compute({ type: state.type, bill: state.bill, dailyKwh: state.dailyKwh, project: state.project, roofType: state.roofType, batteryKwh: state.batteryKwh });
     if (!r) return;
+    const key = [state.type, state.bill, state.dailyKwh, state.project, state.roofType].join('|');
+    if (state.customKey !== key) { state.customKey = key; state.panels = null; state.batteryKwh = 0; }
+    const base = compute({ type: state.type, bill: state.bill, dailyKwh: state.dailyKwh, project: state.project, roofType: state.roofType });
+    state.recPanels = base.recommendedPanels;
+    const r2 = compute({ type: state.type, bill: state.bill, dailyKwh: state.dailyKwh, project: state.project, roofType: state.roofType, panels: state.panels, batteryKwh: state.batteryKwh });
+    Object.assign(r, r2);
+    const pIn = $('#panelsInput'), bIn = $('#batteryInput');
+    pIn.value = r.panels; bIn.value = state.batteryKwh;
+    const note = $('#customNote');
+    const needFull = Math.ceil(r.dailyKwh / (r.productionKwh / r.panels));
+    note.textContent = r.panels > needFull
+      ? `Panels beyond ${needFull} would produce more than you use, so they add cost but no bill savings here.`
+      : `Recommended: ${base.recommendedPanels} panels. Battery adds backup, not extra savings, so payback gets longer.`;
     const pct = Math.round(r.offset * 100);
+    const billPct = Math.round((r.monthlySavings / r.bill) * 100);
 
     setText('ptbSavings', formatPeso(r.monthlySavings));
-    setText('ptbPct', pct + '%');
+    setText('ptbPct', billPct + '%');
     const circ = 2 * Math.PI * 19;
     const arc = $('#ptbArc');
     arc.setAttribute('stroke-dasharray', circ.toFixed(2));
-    arc.setAttribute('stroke-dashoffset', (circ * (1 - r.offset)).toFixed(2));
+    arc.setAttribute('stroke-dashoffset', (circ * (1 - billPct / 100)).toFixed(2));
 
     $('#barCurrent').style.height = '100%';
-    $('#barFuture').style.height = (100 - pct) + '%';
-    $('#barSaved').style.height = pct + '%';
+    $('#barFuture').style.height = (100 - billPct) + '%';
+    $('#barSaved').style.height = billPct + '%';
     setText('lblCurrent', formatPeso(r.bill));
     setText('lblFuture', formatPeso(r.futureBill));
 
@@ -360,6 +392,8 @@
     setText('pSolar', formatPeso(r.cost.panels));
     setText('pInverter', formatPeso(r.cost.inverter));
     setText('pInstall', formatPeso(r.cost.install));
+    const batRow = document.getElementById('rowBattery');
+    if (batRow) { batRow.hidden = !r.batteryKwh; setText('pBattery', formatPeso(r.cost.battery)); }
     setText('pVat', formatPeso(r.cost.vat));
     setText('pTotal', formatPeso(r.cost.total));
 
@@ -367,7 +401,7 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         v: 2,
-        input: { type: state.type, bill: state.bill, dailyKwh: state.dailyKwh, project: state.project, roofType: state.roofType, address: state.address.trim() },
+        input: { type: state.type, bill: state.bill, dailyKwh: state.dailyKwh, project: state.project, roofType: state.roofType, address: state.address.trim(), panels: state.panels, batteryKwh: state.batteryKwh },
       }));
     } catch (e) { /* storage unavailable (private mode / quota): homepage projection simply stays hidden */ }
   }

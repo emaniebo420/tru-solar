@@ -290,6 +290,30 @@
         </div>
 
         <div class="acc">
+          <button type="button" class="acc__head" aria-expanded="true" aria-controls="acc-custom">Customize your system<svg><use href="#i-chevron"/></svg></button>
+          <div class="acc__body" id="acc-custom">
+            <div class="custom-row">
+              <label for="panelsInput">Solar panels (400 W each)</label>
+              <div class="stepper">
+                <button type="button" id="panelsMinus" aria-label="Fewer panels">&minus;</button>
+                <input id="panelsInput" type="number" inputmode="numeric" min="1" max="200" step="1">
+                <button type="button" id="panelsPlus" aria-label="More panels">+</button>
+              </div>
+            </div>
+            <div class="custom-row">
+              <label for="batteryInput">Battery backup (kWh)</label>
+              <div class="stepper">
+                <button type="button" id="batteryMinus" aria-label="Smaller battery">&minus;</button>
+                <input id="batteryInput" type="number" inputmode="decimal" min="0" max="60" step="0.5" value="0">
+                <button type="button" id="batteryPlus" aria-label="Larger battery">+</button>
+              </div>
+            </div>
+            <p class="custom-note" id="customNote" aria-live="polite"></p>
+            <button type="button" class="btn btn--outline btn--sm" id="customReset">Use recommended size</button>
+          </div>
+        </div>
+
+        <div class="acc">
           <button type="button" class="acc__head" aria-expanded="true" aria-controls="acc-savings">Savings<svg><use href="#i-chevron"/></svg></button>
           <div class="acc__body" id="acc-savings">
             <div class="stat-feature"><div class="el">Monthly savings</div><div class="ev ev--lg" id="accMonthly">₱0</div></div>
@@ -311,6 +335,7 @@
               <div><dt>Solar panels, wiring, mounting</dt><dd id="pSolar">₱0</dd></div>
               <div><dt>Inverter</dt><dd id="pInverter">₱0</dd></div>
               <div><dt>Design &amp; installation</dt><dd id="pInstall">₱0</dd></div>
+              <div id="rowBattery" hidden><dt>Battery backup</dt><dd id="pBattery">₱0</dd></div>
               <div><dt>VAT (12%)</dt><dd id="pVat">₱0</dd></div>
               <div class="price-total"><dt>Estimated system cost</dt><dd id="pTotal">₱0</dd></div>
             </dl>
